@@ -19,7 +19,7 @@ def request_page(url):
 items = {}
 failed_items = 0
 prefix = 'https://www.carousell.sg/p/'
-start_id = 1137583000
+start_id = 1137582999
 items_to_scrap = 10
 time_taken = 0
 for id in range(start_id, start_id - items_to_scrap, -1):
@@ -68,12 +68,19 @@ for id in range(start_id, start_id - items_to_scrap, -1):
         print(prod_attr)
         prod_attr.pop("Posted")
 
+        keys = prod_attr.keys()
+
+        prod_attr_final = {}
+
+        for key in keys:
+            if prod_attr[key] != "": prod_attr_final[key] = prod_attr[key]
+
         items[str(id)] = {
             "name": prod_data["name"],
             "img": prod_data["image"],
             "desc": prod_data["description"],
             "url": url,
-            "attributes": prod_attr,
+            "attributes": prod_attr_final,
             "categories": categories.replace("on Carousell", "").split(",")[1:],
             "likes": int(likes.replace(" likes</p>", "")),
         }
