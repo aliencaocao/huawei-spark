@@ -50,7 +50,7 @@ for id in range(start_id, start_id - items_to_scrap, -1):
 
             if attr_state == "value":
                 if len(attr_text) > 20:
-                    print(prod_attr)
+                    # print(prod_attr)
                     break
 
                 prod_attr[attr_text] = ""
@@ -65,7 +65,7 @@ for id in range(start_id, start_id - items_to_scrap, -1):
 
             # print(attribute.get_text())
 
-        print(prod_attr)
+        # print(prod_attr)
         prod_attr.pop("Posted")
 
         keys = prod_attr.keys()
@@ -76,14 +76,15 @@ for id in range(start_id, start_id - items_to_scrap, -1):
             if prod_attr[key] != "": prod_attr_final[key] = prod_attr[key]
 
         items[str(id)] = {
-            "name": prod_data["name"],
+            "name": prod_data["name"].strip(),
             "img": prod_data["image"],
-            "desc": prod_data["description"],
+            "desc": prod_data["description"].strip(),
             "url": url,
             "attributes": prod_attr_final,
-            "categories": categories.replace("on Carousell", "").split(",")[1:],
+            "categories": [i.strip() for i in categories.replace("on Carousell", "").split(",")[1:]],
             "likes": int(likes.replace(" likes</p>", "")),
         }
+        print(items[str(id)])
 
     except Exception as e:  # means product already delisted, attribute error confirm is, rest is other reasons
         failed_items += 1
