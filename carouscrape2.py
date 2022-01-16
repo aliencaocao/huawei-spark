@@ -6,6 +6,8 @@ import re
 import pprint
 
 script_regex = re.compile(r"{\"@context\":(.+)</script>")
+likes_regex = re.compile(r"(\d+)\ likes<\/p>")
+
 headers = {"Accept-Language": "en-US,en;q=0.5", 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0'}
 
 
@@ -32,7 +34,12 @@ for id in range(start_id, start_id - items_to_scrap, -1):
         attributes = item_soup.body.find('p', text='Posted').parent.parent.parent.parent.find_all("p", recursive=True)
 
         # PRODUCT CATEGORY
-        print(item_soup.find("title").get_text().replace(prod_data["name"], ""))
+        categories = item_soup.find("title").get_text().replace(prod_data["name"], "")
+
+        # likes
+        likes = likes_regex.search(str(item_soup))
+        if likes: likes = likes.group()
+        else: likes = "0"
 
         attr_name = ""
         attr_state = "waiting"  # waiting = not at the Description yet; name = attribute name; value = attribute value
@@ -59,6 +66,18 @@ for id in range(start_id, start_id - items_to_scrap, -1):
             # print(attribute.get_text())
 
         print(prod_attr)
+        prod_attr.pop("Posted")
+
+        items[str(id)] = {
+            "name": prod_data["name"],
+            "img": prod_data["image"],
+            "desc": prod_data["description"],
+            "url": url,
+            "attributes": prod_attr,
+            "categories": categories.replace("on Carousell", "").split(",")[1:],
+            "likes": int(likes.replace(" likes</p>", "")),
+        }
+
     except Exception as e:  # means product already delisted, attribute error confirm is, rest is other reasons
         failed_items += 1
         print(url, e)
