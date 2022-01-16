@@ -22,10 +22,14 @@ for id in range(start_id, start_id - items_to_scrap, -1):
     url = prefix + str(id)
     item_soup = request_page(url)
     try:
+        category = ""
         prod_data = script_regex.search(str(item_soup)).group()
         prod_data = json.loads(prod_data.replace("</script>", ""))
         pprint.pprint(prod_data)
         attributes = item_soup.body.find('p', text='Posted').parent.parent.parent.parent.find_all("p", recursive=True)
+
+        # PRODUCT CATEGORY
+        print(item_soup.find("title").get_text().replace(prod_data["name"], ""))
 
         attr_name = ""
         attr_state = "waiting" # waiting = not at the Description yet; name = attribute name; value = attribute value
