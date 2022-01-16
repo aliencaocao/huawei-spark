@@ -19,8 +19,8 @@ def request_page(url):
 items = {}
 failed_items = 0
 prefix = 'https://www.carousell.sg/p/'
-start_id = 1137582999
-items_to_scrap = 10
+start_id = 1137583000  # see file bottom for records on completed parts
+items_to_scrap = 1000
 time_taken = 0
 for id in range(start_id, start_id - items_to_scrap, -1):
     start = time.time()
@@ -30,7 +30,7 @@ for id in range(start_id, start_id - items_to_scrap, -1):
         category = ""
         prod_data = script_regex.search(str(item_soup)).group()
         prod_data = json.loads(prod_data.replace("</script>", ""))
-        pprint.pprint(prod_data)
+        # pprint.pprint(prod_data)
         attributes = item_soup.body.find('p', text='Posted').parent.parent.parent.parent.find_all("p", recursive=True)
 
         # PRODUCT CATEGORY
@@ -94,10 +94,10 @@ for id in range(start_id, start_id - items_to_scrap, -1):
 
 print(f'Scraping completed. Successfully scraped {len(items)}, failed {failed_items}, total time taken: {time_taken}, average time taken: {round(time_taken / items_to_scrap, 5)}')
 
-with open('data.json', 'w') as f:
+with open(f'{start_id-items_to_scrap}-{start_id}.json', 'w') as f:
     json.dump(items, f)
 
 '''
 Scraping history: 
-scrapped range: 1137582001-1137583000, Successfully scraped 143, failed 857, total time taken: 1247.0696976184845, average time taken: 8.72077
+1137582001-1137583000, Successfully scraped 939, failed 61, total time taken: 1892.179401397705, average time taken: 1.89218
 '''
