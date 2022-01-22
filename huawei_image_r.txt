@@ -1,0 +1,77 @@
+{
+  "result": {
+    "tags": [
+      {
+        "confidence": "92.38",
+        "instances": [
+          {
+            "bounding_box": {
+                                "height": 133.32496056189905,
+                                "top_left_x": 53.134917332575874,
+                                "top_left_y": 254.21347984900842,
+                                "width": 117.5866567171537
+                            },
+            "confidence": "92.38"
+          },
+          {
+            "bounding_box": {
+                                "height": 133.32496056189905,
+                                "top_left_x": 53.134917332575874,
+                                "top_left_y": 254.21347984900842,
+                                "width": 117.5866567171537
+                            },
+            "confidence": "90.38"
+          }
+        ],
+        "tag": "Person",
+        "i18n_tag": {
+          "en": "Person",
+          "zh": "Chinese character for person"
+        },
+        "type": "Human",
+        "i18n_type": {
+          "en": "Human",
+          "zh": "Chinese characters for human"
+        }
+      },
+      {
+        "confidence": "94.38",
+        "instances": [],
+        "tag": "Book",
+        "i18n_tag": {
+          "en": "Book",
+          "zh": "Chinese characters for book"
+        },
+        "type": "Education",
+        "i18n_type": {
+          "en": "Education",
+          "zh": "Chinese characters for education"
+        }
+      },
+      {
+        "confidence": "92.38",
+        "instances": [
+          {
+            "bounding_box": {
+                                "height": 133.32496056189905,
+                                "top_left_x": 53.134917332575874,
+                                "top_left_y": 254.21347984900842,
+                                "width": 117.5866567171537
+                            },
+            "confidence": "92.38"
+          }
+        ],
+        "tag": "Bed",
+        "i18n_tag": {
+          "en": "Bed",
+          "zh": "Chinese character for bed"
+        },
+        "type": "Home",
+        "i18n_type": {
+          "en": "Home category",
+          "zh": "Chinese characters for home"
+        }
+      }
+    ]
+  }
+}
