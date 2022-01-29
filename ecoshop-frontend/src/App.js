@@ -1,23 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
+import { Button } from '@mui/material'
+import { Fragment, useState } from 'react';
+import BulkListing from './Components/BulkListing';
+import Shorts from './Components/Shorts';
 
-function App() {
+
+
+const App = () => {
+  const [page, updatePage] = useState("home")
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ margin: 10 }}>
+      {page === "home" && (
+        <Fragment>
+          <Button variant="contained" style={{ marginRight: 5 }} onClick={() => { updatePage("bulk") }}>Bulk Listing</Button>
+          <Button variant="contained" onClick={() => { updatePage("shorts") }}>EcoShop Shorts</Button>
+        </Fragment>
+      )}
+      {page === "bulk" && (
+        <BulkListing />
+      )}
+      {page === "shorts" && (
+        <Shorts />
+      )}
     </div>
   );
 }
