@@ -1,0 +1,1 @@
+python3.6 im2txt/run_inference.py --checkpoint_path="im2txt/model/Huge/train/newmodel.ckpt-2000000" --vocab_file="im2txt/data/Hugh/word_counts.txt" --input_files="im2txt/data/images/test.jpg"
