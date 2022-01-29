@@ -10,7 +10,7 @@ const App = () => {
   const [page, updatePage] = useState("home")
 
   return (
-    <div style={{ margin: 10 }}>
+    <div style={{ margin: 10, overflowX: "hidden" }}>
       {page === "home" && (
         <Fragment>
           <Button variant="contained" style={{ marginRight: 5 }} onClick={() => { updatePage("bulk") }}>Bulk Listing</Button>

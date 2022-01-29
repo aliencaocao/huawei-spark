@@ -1,0 +1,6 @@
+.MuiDrawer-paperAnchorBottom {
+    border: 2ch transparent;
+    border-top-left-radius: 2ch;
+    border-top-right-radius: 2ch;
+    top: -500px;
+}
