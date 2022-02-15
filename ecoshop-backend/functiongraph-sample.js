@@ -6,7 +6,7 @@ var server = http.createServer(function (req, res) {   //create web server
     res.write('<html><body><h2>This is http function.</h2></body></html>');
     res.write(JSON.stringify(req.headers));
     console.log(req.headers);
-    console.log(req.method);
+    // console.log(req.method);
 
     if (req.method === "POST") {
       let reqBody = "";
