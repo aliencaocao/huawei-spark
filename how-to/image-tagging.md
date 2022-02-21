@@ -3,12 +3,11 @@
 **Image tagging only works in some regions. For this case, we'll use `ap-southeast-1` (Hong Kong).**
 
 ## Authorisation - IAM User
----
 
 IAM users behave like sub-users under your main account, and can be created to perform tasks using a restricted user account context. You can even disable login to the HUAWEI CLOUD Console for these sub-users.
 
 ### **Part 1: Creating a user group**
----
+
 Users within a group can share the same permissions to access resources.
 **You can skip to Part 2 if you don't need to care about security.**
 
@@ -35,7 +34,7 @@ Users within a group can share the same permissions to access resources.
 7. Once the permissions are assigned, just **Next** and then **Finish**.
 
 ### **Part 2: Creating an IAM user**
----
+
 You will use this user to access the Image Tagging API.
 
 1. Go to **IAM** > **Users** and then click **Create**
@@ -53,7 +52,7 @@ You will use this user to access the Image Tagging API.
 4. **Next**. Save the password when prompted to. It will be inside the CSV file you download.
 
 ## Accessing Image Tagging
----
+
 Copy this JSON into a file somewhere, we'll assume it's called "post-auth.json":
 ```JSON
 {
