@@ -14,6 +14,7 @@ if not (os.path.isfile('token.pickle') and time.time() - os.path.getmtime('token
     response = requests.post(token_url, headers=headers, json=payload, verify=False)
     if response.status_code == 201:
         print('Token request successful!')
+        print(response.text)
         token = response.headers['X-Subject-Token']
         with open('token.pickle', 'wb') as f:
             pickle.dump(token, f)
@@ -25,7 +26,7 @@ else:
         token = pickle.load(f)
 
 
-url = "https://image.ap-southeast-1.myhuaweicloud.com/v2.0/image/tagging"
+url = "https://image.ap-southeast-1.myhuaweicloud.com/v2/017ae3a1064e417fb0c520416f56fb26/image/tagging"
 token = "Actual token value obtained by the user"
 headers = {'Content-Type': 'application/json', 'X-Auth-Token': token}
 
