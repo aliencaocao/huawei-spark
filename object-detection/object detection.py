@@ -27,13 +27,12 @@ else:
 
 
 url = "https://image.ap-southeast-1.myhuaweicloud.com/v2/017ae3a1064e417fb0c520416f56fb26/image/tagging"
-token = "Actual token value obtained by the user"
 headers = {'Content-Type': 'application/json', 'X-Auth-Token': token}
 
 image_path = r'office.jpg'
 with open(image_path, "rb") as f:
     image_base64 = base64.b64encode(f.read()).decode("utf-8")
-payload = {"image": image_base64}  # Set either the URL or the image.
+payload = {"image": image_base64, 'language': 'en'}  # Set either the URL or the image.
 
 print('POSTing request to the server')
 response = requests.post(url, headers=headers, json=payload, verify=False)
