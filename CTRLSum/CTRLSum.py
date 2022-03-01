@@ -1,5 +1,4 @@
-# Copyright (c) 2021, Hyunwoong Ko. All rights reserved.
-# Copyright (c) 2022, Billy Cao. All rights reserved.
+# Copyright (c) 2021, Hyunwoong Ko. Modified 2022 by Billy Cao.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,58 +11,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import json
 import torch
 from transformers import AutoModelForSeq2SeqLM, PreTrainedTokenizerFast
 from flask import Flask, request, jsonify
 
-app = Flask(__name__)
 
-
-class Summarizers(object):
-
-    def __init__(self, type="normal", device="cpu"):
-        """
-        Constructor of Summarizers
-
-        Args:
-            type (str): type of article. (e.g. normal, paper, patent)
-            device (str): device for inference (e.g. cpu, cuda)
-        """
-
-        type = type.lower()
-        model_name_prefix = "hyunwoongko/ctrlsum"
-
-        assert type in ['normal', 'paper', 'patent'], "param `article_type` must be one of ['normal', 'paper', 'patent']"
-
-        if type == "normal":
-            model_name = f"{model_name_prefix}-cnndm"
-        elif type == "paper":
-            model_name = f"{model_name_prefix}-arxiv"
-        elif type == "patent":
-            model_name = f"{model_name_prefix}-bigpatent"
-
+class Summarizers:
+    def __init__(self, device="cpu"):
+        print('Initializing CTRL-Sum...')
         self.device = device
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(self.device)
-        self.tokenizer = PreTrainedTokenizerFast.from_pretrained(model_name)
-        self._5w1h = [
-            "what ",
-            "what's "
-            "when ",
-            "why ",
-            "who ",
-            "who's ",
-            "where ",
-            "how ",
-            "What ",
-            "What's ",
-            "When ",
-            "Why ",
-            "Who ",
-            "Who's ",
-            "Where ",
-            "How ",
-        ]
+        self.model = AutoModelForSeq2SeqLM.from_pretrained('ctrlsum-cnndm').to(self.device)
+        self.tokenizer = PreTrainedTokenizerFast.from_pretrained('ctrlsum-cnndm')
+        self._5w1h = ["what ",
+                      "what's "
+                      "when ",
+                      "why ",
+                      "who ",
+                      "who's ",
+                      "where ",
+                      "how ",
+                      "What ",
+                      "What's ",
+                      "When ",
+                      "Why ",
+                      "Who ",
+                      "Who's ",
+                      "Where ",
+                      "How "]
+        print('CTRL-Sum initialized.')
 
     @torch.no_grad()
     def __call__(self,
@@ -150,20 +126,14 @@ class Summarizers(object):
         return summary.strip()
 
 
-ctrlsum = Summarizers('normal', device='cuda')  # normal: CNNDM, paper, patent
-
-# contents = 'Delivery within 3-days  Cash on delivery or Transfer Office Chair 04 Material: Mesh Colour: Black，Red，Grey Size:See the image Free Delivery Free Installation Fast respond to your inquiry Registered business For Your Information Dimension may be approximately 2-3cm different.  Free delivery to lift level If lift not available Extra Charges for Labour charges will apply. → 2nd level (no lift) $20 → 3rd level (no lift) $30 → 4th level (no lift) $40 → Delivery to Jurong Island, Sentosa, and Changi Airport $30  Appointment Based, Please indicate delivery date and the timing is according to the seller schedule only. Condo and office no weekend delivery. Strictly no exchange,return or refund. Blk2 Toa Payoh Industrial Park. S(319054)'
-#
-# query = input('Enter query: ')
-# prompt = input('Enter prompt: ')
-# result = ctrlsum(contents=contents, query=query, prompt=prompt, num_beams=5,
-#                  top_k=None, top_p=None, no_repeat_ngram_size=4,
-#                  length_penalty=1.0, question_detection=True)
-# print(f'Query: {query}\nPrompt: {prompt}\nResult: {result}')
+app = Flask(__name__)
+ctrlsum = Summarizers(device='cuda')
 
 
 @app.route('/qna', methods=['POST'])
 def qna():
+    """QnA"""
+    print('Running QnA')
     contents = request.json
     source = contents['source']
     query = contents['query']
@@ -176,16 +146,24 @@ def qna():
 
 @app.route('/tagger', methods=['POST'])
 def tagger():  # TODO
+    """Generate tags for source"""
+    print('Running Tagger')
     source = request.json
     source = source['source']
     return jsonify({'tags': 'None'})
 
 
 @app.route('/health', methods=['GET'])
-def health():  # TODO
-    return jsonify({'health': 'true'})
+def health():
+    """Sanity check"""
+    if ctrlsum(contents='hello my name is billy', query='', prompt='My name is:', num_beams=5, top_k=None, top_p=None, no_repeat_ngram_size=4, length_penalty=1.0, question_detection=True) == 'My name is: Billy.':
+        return jsonify({'health': 'true'})
+    return jsonify({'health': 'false'})
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', 8080, True)
-    #app.run()
+    from waitress import serve
+    import logging
+    logger = logging.getLogger('waitress')
+    logger.setLevel(logging.DEBUG)
+    serve(app, host='0.0.0.0', port=8080)
