@@ -1,3 +1,4 @@
 # Login command copy from console, sudo docker login...
+sudo docker tag <new ID> modelartsimage:latest
 sudo docker tag modelartsimage:latest swr.ap-southeast-1.myhuaweicloud.com/ecoshop/ctrlsumimage:latest
 sudo docker push swr.ap-southeast-1.myhuaweicloud.com/ecoshop/ctrlsumimage:latest

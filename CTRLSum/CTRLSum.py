@@ -162,7 +162,7 @@ ctrlsum = Summarizers('normal', device='cuda')  # normal: CNNDM, paper, patent
 # print(f'Query: {query}\nPrompt: {prompt}\nResult: {result}')
 
 
-@app.route('/qna', methods=['POST'], )
+@app.route('/qna', methods=['POST'])
 def qna():
     contents = request.json
     source = contents['source']
@@ -174,6 +174,18 @@ def qna():
     return jsonify({'answer': ans})
 
 
+@app.route('/tagger', methods=['POST'])
+def tagger():  # TODO
+    source = request.json
+    source = source['source']
+    return jsonify({'tags': 'None'})
+
+
+@app.route('/health', methods=['GET'])
+def health():  # TODO
+    return jsonify({'health': 'true'})
+
+
 if __name__ == '__main__':
-    #app.run('0.0.0.0', 5000, True)
-    app.run()
+    app.run('0.0.0.0', 8080, True)
+    #app.run()

@@ -5,24 +5,24 @@ import json
 import pickle
 import time
 
-if not (os.path.isfile('token.pickle') and time.time() - os.path.getmtime('token.pickle') < 86000):  # a day - 400 seconds buffer
+if not (os.path.isfile('../token.pickle') and time.time() - os.path.getmtime('../token.pickle') < 86000):  # a day - 400 seconds buffer
     print('Requesting token...')
     token_url = 'https://iam.myhuaweicloud.com/v3/auth/tokens'
     headers = {'Content-Type': 'application/json'}
-    with open('creds.json', 'r') as f:
+    with open('../creds.json', 'r') as f:
         payload = json.load(f)
     response = requests.post(token_url, headers=headers, json=payload, verify=False)
     if response.status_code == 201:
         print('Token request successful!')
         print(response.text)
         token = response.headers['X-Subject-Token']
-        with open('token.pickle', 'wb') as f:
+        with open('../token.pickle', 'wb') as f:
             pickle.dump(token, f)
     else:
         print(response.text)
         raise Exception('Token request failed!')
 else:
-    with open('token.pickle', 'rb') as f:
+    with open('../token.pickle', 'rb') as f:
         token = pickle.load(f)
 
 
