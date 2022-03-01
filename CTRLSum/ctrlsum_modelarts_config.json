@@ -1,0 +1,84 @@
+{
+    "model_algorithm": "Text_Summarization",
+    "model_type": "Image",
+    "apis": [
+        {
+            "protocol": "https",
+            "url": "/qna",
+            "method": "POST",
+            "request": {
+                "Content-type": "application/json",
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "source": {
+                            "type": "string"
+                        },
+                        "query": {
+                            "type": "string"
+                        },
+                        "prompt": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "source",
+                        "query",
+                        "prompt"
+                    ]
+                }
+            },
+            "response": {
+                "Content-type": "application/json",
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "answer": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "answer"
+                    ]
+                }
+            }
+        },
+        {
+            "protocol": "https",
+            "url": "/tagger",
+            "method": "POST",
+            "request": {
+                "Content-type": "application/json",
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "source": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "source"
+                    ]
+                }
+            },
+            "response": {
+                "Content-type": "application/json",
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "tags": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "tags"
+                    ]
+                }
+            }
+        }
+    ],
+    "health": {
+        "url": "/health",
+        "timeout_seconds": "10"
+    }
+}

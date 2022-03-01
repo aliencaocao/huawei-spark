@@ -1,4 +1,5 @@
 # Copyright (c) 2021, Hyunwoong Ko. All rights reserved.
+# Copyright (c) 2022, Billy Cao. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,9 @@
 
 import torch
 from transformers import AutoModelForSeq2SeqLM, PreTrainedTokenizerFast
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
 
 
 class Summarizers(object):
@@ -30,8 +34,7 @@ class Summarizers(object):
         type = type.lower()
         model_name_prefix = "hyunwoongko/ctrlsum"
 
-        assert type in ['normal', 'paper', 'patent'], \
-            "param `article_type` must be one of ['normal', 'paper', 'patent']"
+        assert type in ['normal', 'paper', 'patent'], "param `article_type` must be one of ['normal', 'paper', 'patent']"
 
         if type == "normal":
             model_name = f"{model_name_prefix}-cnndm"
@@ -39,12 +42,9 @@ class Summarizers(object):
             model_name = f"{model_name_prefix}-arxiv"
         elif type == "patent":
             model_name = f"{model_name_prefix}-bigpatent"
-        else:
-            raise Exception(f"Unknown type: {type}")
 
         self.device = device
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(
-            device)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(self.device)
         self.tokenizer = PreTrainedTokenizerFast.from_pretrained(model_name)
         self._5w1h = [
             "what ",
@@ -66,18 +66,16 @@ class Summarizers(object):
         ]
 
     @torch.no_grad()
-    def __call__(
-        self,
-        contents: str,
-        query: str = "",
-        prompt: str = "",
-        num_beams: int = 5,
-        top_k: int = None,
-        top_p: float = None,
-        no_repeat_ngram_size: int = 4,
-        length_penalty: float = 1.0,
-        question_detection: bool = True,
-    ) -> str:
+    def __call__(self,
+                 contents: str,
+                 query: str = "",
+                 prompt: str = "",
+                 num_beams: int = 5,
+                 top_k: int = None,
+                 top_p: float = None,
+                 no_repeat_ngram_size: int = 4,
+                 length_penalty: float = 1.0,
+                 question_detection: bool = True) -> str:
         """
         Conduct summarization by focus query and prompt.
 
@@ -111,19 +109,12 @@ class Summarizers(object):
                 prompt = f"Q:{query} A:"
 
         if len(prompt) > 0:
-            decoder_input_ids = self.tokenizer(
-                prompt,
-                return_tensors="pt",
-            )["input_ids"][:, :-1].to(self.device)
-            # remove eos token
+            decoder_input_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"][:, :-1].to(self.device)  # remove eos token
 
         if len(query) > 0:
             contents = f"{query} => {contents}"
 
-        tokenized = self.tokenizer(
-            contents,
-            return_tensors="pt",
-        )
+        tokenized = self.tokenizer(contents, return_tensors="pt")
 
         if decoder_input_ids is None:
             output_ids = self.model.generate(
@@ -161,12 +152,28 @@ class Summarizers(object):
 
 ctrlsum = Summarizers('normal', device='cuda')  # normal: CNNDM, paper, patent
 
-contents = 'Delivery within 3-days  Cash on delivery or Transfer Office Chair 04 Material: Mesh Colour: Black，Red，Grey Size:See the image Free Delivery Free Installation Fast respond to your inquiry Registered business For Your Information Dimension may be approximately 2-3cm different.  Free delivery to lift level If lift not available Extra Charges for Labour charges will apply. → 2nd level (no lift) $20 → 3rd level (no lift) $30 → 4th level (no lift) $40 → Delivery to Jurong Island, Sentosa, and Changi Airport $30  Appointment Based, Please indicate delivery date and the timing is according to the seller schedule only. Condo and office no weekend delivery. Strictly no exchange,return or refund. Blk2 Toa Payoh Industrial Park. S(319054)'
+# contents = 'Delivery within 3-days  Cash on delivery or Transfer Office Chair 04 Material: Mesh Colour: Black，Red，Grey Size:See the image Free Delivery Free Installation Fast respond to your inquiry Registered business For Your Information Dimension may be approximately 2-3cm different.  Free delivery to lift level If lift not available Extra Charges for Labour charges will apply. → 2nd level (no lift) $20 → 3rd level (no lift) $30 → 4th level (no lift) $40 → Delivery to Jurong Island, Sentosa, and Changi Airport $30  Appointment Based, Please indicate delivery date and the timing is according to the seller schedule only. Condo and office no weekend delivery. Strictly no exchange,return or refund. Blk2 Toa Payoh Industrial Park. S(319054)'
+#
+# query = input('Enter query: ')
+# prompt = input('Enter prompt: ')
+# result = ctrlsum(contents=contents, query=query, prompt=prompt, num_beams=5,
+#                  top_k=None, top_p=None, no_repeat_ngram_size=4,
+#                  length_penalty=1.0, question_detection=True)
+# print(f'Query: {query}\nPrompt: {prompt}\nResult: {result}')
 
-while True:
-    query = input('Enter query: ')
-    prompt = input('Enter prompt: ')
-    result = ctrlsum(contents=contents, query=query, prompt=prompt, num_beams=5,
-                     top_k=None, top_p=None, no_repeat_ngram_size=4,
-                     length_penalty=1.0, question_detection=True)
-    print(f'Query: {query}\nPrompt: {prompt}\nResult: {result}')
+
+@app.route('/qna', methods=['POST'], )
+def qna():
+    contents = request.json
+    source = contents['source']
+    query = contents['query']
+    prompt = contents['prompt']
+    ans = ctrlsum(contents=source, query=query, prompt=prompt, num_beams=5,
+                  top_k=None, top_p=None, no_repeat_ngram_size=4,
+                  length_penalty=1.0, question_detection=True)
+    return jsonify({'answer': ans})
+
+
+if __name__ == '__main__':
+    #app.run('0.0.0.0', 5000, True)
+    app.run()

@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string"
+    },
+    "query": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "source",
+    "query",
+    "prompt"
+  ]
+}
