@@ -20,6 +20,6 @@ RUN cp -a /etc/apt/sources.list /etc/apt/sources.list.bak && \
 #RUN sh NVIDIA-Linux-x86_64-440.118.02.run
 
 # Copy the application service code to the image.
-COPY CTRLSum.py .
+COPY . .
 
 CMD ["python3.8", "CTRLSum.py"]

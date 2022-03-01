@@ -25,7 +25,7 @@ else:
         token = pickle.load(f)
 
 
-url = "https://c135ace529d646bf8d9a6c6f7be78989.apig.ap-southeast-1.huaweicloudapis.com/v1/infers/47be164f-4c9f-4e96-8c8c-c8f4b6c7bf76"
+url = "https://d206d0062c244291b76468b9a883f36a.apigw.ap-southeast-1.huaweicloud.com/v1/infers/20fa221b-0179-4056-b2eb-9114a51f37dd"
 headers = {'Content-Type': 'application/json', 'X-Auth-Token': token}
 
 source = 'Delivery within 3-days  Cash on delivery or Transfer Office Chair 04 Material: Mesh Colour: Black，Red，Grey Size:See the image Free Delivery Free Installation Fast respond to your inquiry Registered business For Your Information Dimension may be approximately 2-3cm different.  Free delivery to lift level If lift not available Extra Charges for Labour charges will apply. → 2nd level (no lift) $20 → 3rd level (no lift) $30 → 4th level (no lift) $40 → Delivery to Jurong Island, Sentosa, and Changi Airport $30  Appointment Based, Please indicate delivery date and the timing is according to the seller schedule only. Condo and office no weekend delivery. Strictly no exchange,return or refund. Blk2 Toa Payoh Industrial Park. S(319054)'
@@ -34,7 +34,7 @@ query = 'How long is delivery?'
 
 payload = {'source': source, 'prompt': prompt, 'query': query}
 
-r = requests.post(f'http://192.168.1.9:8080/qna', json=payload)
+r = requests.post(f'{url}/qna', headers=headers, json=payload)
 # r = requests.get('http://192.168.1.9:8080/health')
 # r = requests.post(f'{url}/qna', json=payload)
 print(r.text)
