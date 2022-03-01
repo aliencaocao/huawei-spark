@@ -8,6 +8,8 @@ exports.handler = async (event, context) => {
     'headers': { 'Content-Type': 'application/json' },
     'isBase64Encoded': false,
     'body': JSON.stringify({
+      "function-name": context.getFunctionName(),
+      "encrypted-var1": context.getUserData("hashcat"),
       "event": event,
       "oh-nyo": signer.sign("haha yes"),
       "oh-yes": signer.unsign(signer.sign("haha yes")),
