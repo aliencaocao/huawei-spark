@@ -17,12 +17,19 @@ const App = () => {
 
   const handleNewLogin = (token) => {
     updateToken(token)
-    const tokenData = JSON.parse(token.split(".")[0].replace(/\\/g, ""))
+    const tokenData = JSON.parse(token.split(".")[0])
     updateUsername(tokenData.username)
     localStorage.setItem("ecoshop-token", token)
     window.token = token
 
     enqueueSnackbar("Welcome back " + tokenData.username + "!", {variant: "success", autoHideDuration: 2500})
+  }
+
+  const handleLogout = () => {
+    updateToken(null)
+    updateUsername("")
+    window.token = null
+    localStorage.removeItem("ecoshop-token")
   }
 
   useEffect(async () => {
@@ -39,7 +46,7 @@ const App = () => {
           return results.json(); //return data in JSON (since its JSON data)
         }).then(async (data) => {
           if (data.success === true) {
-            const tokenData = JSON.parse(localStorageToken.split(".")[0].replace(/\\/g, ""))
+            const tokenData = JSON.parse(localStorageToken.split(".")[0])
 
             updateUsername(tokenData.username)
             enqueueSnackbar("Welcome back " + tokenData.username + "!", {
@@ -73,7 +80,7 @@ const App = () => {
   }, [])
 
   return (
-    <div style={{ overflowX: "hidden", height: "100vh", padding: 10 }}>
+    <div style={{ overflowX: "hidden", height: "100vh", width: "100vw"}}>
       {loadingGlobal ? (
         <div style={{ overflow: "hidden", height: "97vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <CircularProgress size="10ch" />
@@ -88,6 +95,7 @@ const App = () => {
                   <Fragment>
                     <Button variant="contained" style={{ marginRight: 5 }} onClick={() => { updatePage("bulk") }}>Bulk Listing</Button>
                     <Button variant="contained" onClick={() => { updatePage("shorts") }}>EcoShop Shorts</Button>
+                    <Button variant="contained" onClick={() => {handleLogout()}}>Log Out</Button>
                   </Fragment>
                 )}
                 {page === "bulk" && (
@@ -96,6 +104,7 @@ const App = () => {
                 {page === "shorts" && (
                   <Shorts />
                 )}
+               
               </Fragment>
             ) :
               (

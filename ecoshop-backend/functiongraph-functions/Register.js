@@ -41,7 +41,7 @@ exports.handler = async (event, context) => {
 
     try {
 
-        const body = JSON.parse((Buffer.from(event.body, 'base64')).toString()) 
+        const body = JSON.parse((Buffer.from(event.body, 'base64')).toString())
 
         if (!("username" in body) || !("password" in body)) return validationError
 
@@ -71,7 +71,8 @@ exports.handler = async (event, context) => {
             "headers": { "Content-Type": "application/json" },
             "isBase64Encoded": false,
             "body": JSON.stringify({
-                success: true
+                success: true,
+                token: signer.sign(JSON.stringify({ username: body.username }))
             }),
         };
 

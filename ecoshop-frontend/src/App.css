@@ -4,3 +4,23 @@
     border-top-right-radius: 2ch;
     top: -500px;
 }
+
+.input-style {
+    padding-bottom: 2ch !important;
+}
+
+.login-page::before {
+    content: "";
+    background-image: url("./assets/home.webp");
+    background-size: cover;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    position: absolute;
+    -webkit-filter: blur(3px);
+    -moz-filter: blur(3px);
+    -o-filter: blur(3px);
+    -ms-filter: blur(3px);
+    filter: blur(3px);
+}
