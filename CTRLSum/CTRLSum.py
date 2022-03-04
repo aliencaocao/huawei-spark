@@ -157,9 +157,9 @@ def tagger():  # TODO
     source = source['source'].replace('\n', ' ').strip()
 
     tagger_model_dir = 'cnn_bert_tagger'
-    max_keywords = 30  # default for CNNDM is 30, but to adjust
-    conf_threshold = 0.3  # default for CNNDM is 0.25
-    summary_size = 10  # default for CNNDM is 10
+    max_keywords = 5  # default for CNNDM is 30
+    conf_threshold = '0.3'  # default for CNNDM is 0.25
+    summary_size = '10'  # default for CNNDM is 10
     dataset_name = 'temp'
 
     if not os.path.isdir(os.path.join('datasets', dataset_name)):
@@ -169,16 +169,17 @@ def tagger():  # TODO
         s.write(source)
         t.write(source[0])  # target won't be used so just use first word as placeholder
 
-    subprocess.call(f'python3.8 ctrl-sum/scripts/preprocess.py {dataset_name} --mode pipeline --split test --num-workers 1')
-    subprocess.call(f'bash ctrl-sum/scripts/gpt2_encode.sh {dataset_name}')
-    subprocess.call(f'bash ctrl-sum/scripts/binarize_dataset.sh {dataset_name}')
-    subprocess.call(f'bash ctrl-sum/scripts/train_seqlabel.sh -g 0 -d {dataset_name} -p {tagger_model_dir}')
-    subprocess.call(f'python3.8 ctrl-sum/scripts/preprocess.py {dataset_name} --split test --mode process_tagger_prediction --tag-pred {tagger_model_dir}/test_predictions.txt --threshold {conf_threshold} --maximum-word {max_keywords} --summary-size {summary_size}')
+    subprocess.run(['python3.8', 'scripts/preprocess.py', dataset_name, '--mode', 'pipeline', '--split', 'test', '--num-workers', '1'])
+    subprocess.run(['bash', 'scripts/train_seqlabel.sh', '-g', '0', '-d', dataset_name, '-p', tagger_model_dir])
+    subprocess.run(['python3.8', 'scripts/preprocess.py', dataset_name, '--split', 'test', '--mode', 'process_tagger_prediction', '--tag-pred', f'{tagger_model_dir}/test_predictions.txt', '--threshold', conf_threshold, '--maximum-word', max_keywords, '--summary-size', summary_size])
 
     with open(os.path.join('datasets', dataset_name, f'test.ts{conf_threshold}.mw{max_keywords},sumlen{summary_size}.default.predword'), 'r') as f:
-        tags = f.read()
+        tags = ';'.join(str(f.read()).split())
 
-    shutil.rmtree(os.path.join('datasets', dataset_name), ignore_errors=True)  # clean up temp files for next prediction
+    #  clean up temp files for next prediction
+    shutil.rmtree(os.path.join('datasets', dataset_name), ignore_errors=True)
+    shutil.rmtree('data-bin', ignore_errors=True)
+
     return jsonify({'tags': tags})
 
 
