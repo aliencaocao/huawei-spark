@@ -17,11 +17,14 @@ import subprocess
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
+print(os.listdir())
+print(os.path.abspath('ctrl-sum'))
 
 
 def gen_tags(source):
+    os.chdir(os.path.abspath('ctrl-sum'))
     tagger_model_dir = 'cnn_bert_tagger'
-    max_keywords = 5  # default for CNNDM is 30
+    max_keywords = '5'  # default for CNNDM is 30
     conf_threshold = '0.3'  # default for CNNDM is 0.25
     summary_size = '10'  # default for CNNDM is 10
     dataset_name = 'temp'
@@ -43,6 +46,7 @@ def gen_tags(source):
     #  clean up temp files for next prediction
     shutil.rmtree(os.path.join('datasets', dataset_name), ignore_errors=True)
     shutil.rmtree('data-bin', ignore_errors=True)
+    os.chdir('..')
     return tags
 
 

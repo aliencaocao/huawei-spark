@@ -1,7 +1,7 @@
 import requests
 
-url = "https://c6c8ba950ff3402a80eceae054f54dcc.apig.ap-southeast-1.huaweicloudapis.com/v1/infers/20fa221b-0179-4056-b2eb-9114a51f37dd"
-headers = {'Content-Type': 'application/json', 'X-Apig-Appcode': '3618f13971c84fe7b5c745b1b0d8a88879d54091bca5406a99508f251596cc71'}
+url = "https://01516f373f434921a874bf502a986a58.apig.ap-southeast-3.huaweicloudapis.com/v1/infers/2f77d2c9-7332-4cfd-a64a-1158631126a0"
+headers = {'Content-Type': 'application/json', 'X-Apig-Appcode': 'b50c2b3280ce4962a72610a4a4e0fc14f3b6b05932de4346b21e41ec5c32c4ac'}
 
 source = 'Delivery within 3-days  Cash on delivery or Transfer Office Chair 04 Material: Mesh Colour: Black，Red，Grey Size:See the image Free Delivery Free Installation Fast respond to your inquiry Registered business For Your Information Dimension may be approximately 2-3cm different.  Free delivery to lift level If lift not available Extra Charges for Labour charges will apply. → 2nd level (no lift) $20 → 3rd level (no lift) $30 → 4th level (no lift) $40 → Delivery to Jurong Island, Sentosa, and Changi Airport $30  Appointment Based, Please indicate delivery date and the timing is according to the seller schedule only. Condo and office no weekend delivery. Strictly no exchange,return or refund. Blk2 Toa Payoh Industrial Park. S(319054)'
 prompt = 'The delivery time is:'
