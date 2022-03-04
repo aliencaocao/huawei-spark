@@ -15,6 +15,15 @@ const App = () => {
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+  const handleNewLogin = (token) => {
+    updateToken(token)
+    const tokenData = JSON.parse(token.split(".")[0].replace(/\\/g, ""))
+    updateUsername(tokenData.username)
+    localStorage.setItem("ecoshop-token", token)
+    window.token = token
+
+    enqueueSnackbar("Welcome back " + tokenData.username + "!", {variant: "success", autoHideDuration: 2500})
+  }
 
   useEffect(async () => {
     if (token === null) {
@@ -90,7 +99,7 @@ const App = () => {
               </Fragment>
             ) :
               (
-                <Login/>
+                <Login handleNewLogin={handleNewLogin}/>
               )
             }
           </Fragment>
