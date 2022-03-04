@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import BulkListing from './Components/BulkListing';
 import Shorts from './Components/Shorts';
+import Login from './Components/Login'
 
 window.globalURL = "https://c2c098ec16264e4dbf33c1f9a0b88d42.apig.ap-southeast-3.huaweicloudapis.com"
 
@@ -41,6 +42,7 @@ const App = () => {
             //Might be a fake token since server does not have it, exit
             updateToken(null)
             window.token = null
+            localStorage.removeItem("ecoshop-token")
             enqueueSnackbar("There was an error while restoring your session. Please re-login", {
               variant: 'error',
               autoHideDuration: 2500
@@ -56,15 +58,15 @@ const App = () => {
           console.log(error)
         })
       }
-      updateLoadingGlobal(false)
-
     }
+    updateLoadingGlobal(false)
+
   }, [])
 
   return (
-    <div style={{ margin: 10, overflowX: "hidden" }}>
+    <div style={{ overflowX: "hidden", height: "100vh", padding: 10 }}>
       {loadingGlobal ? (
-        <div style={{overflow: "hidden", height: "97vh", display: "flex", alignItems: "center", justifyContent: "center"}}>
+        <div style={{ overflow: "hidden", height: "97vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <CircularProgress size="10ch" />
         </div>
       ) :
@@ -88,7 +90,7 @@ const App = () => {
               </Fragment>
             ) :
               (
-                <h1>Not Logged In</h1>
+                <Login/>
               )
             }
           </Fragment>
