@@ -14,6 +14,7 @@ RUN cp -a /etc/apt/sources.list /etc/apt/sources.list.bak && \
   pip install --trusted-host https://repo.huaweicloud.com -i https://repo.huaweicloud.com/repository/pypi/simple -U setuptools wheel && \
   python3.8 -m pip install --upgrade Pillow && \
   pip install torch torchvision torchaudio && \
+  pip install fairseq sklearn datasets==1.0.1 spacy==2.3.2 stanza>=1.0.1 && \
   pip install summarizers flask waitress
 
 #RUN curl -fSsl https://www.nvidia.com/content/DriverDownload-March2009/confirmation.php?url=/tesla/440.118.02/NVIDIA-Linux-x86_64-440.118.02.run&lang=us&type=Tesla

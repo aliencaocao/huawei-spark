@@ -147,16 +147,45 @@ def qna():
 @app.route('/tagger', methods=['POST'])
 def tagger():  # TODO
     """Generate tags for source"""
+    global tagger_model_dir
     print('Running Tagger')
+    import os
+    import shutil
+    import subprocess
+
     source = request.json
-    source = source['source']
-    return jsonify({'tags': 'None'})
+    source = source['source'].replace('\n', ' ').strip()
+
+    tagger_model_dir = 'cnn_bert_tagger'
+    max_keywords = 30  # default for CNNDM is 30, but to adjust
+    conf_threshold = 0.3  # default for CNNDM is 0.25
+    summary_size = 10  # default for CNNDM is 10
+    dataset_name = 'temp'
+
+    if not os.path.isdir(os.path.join('datasets', dataset_name)):
+        os.makedirs(os.path.join('datasets', dataset_name))
+
+    with open(os.path.join('datasets', dataset_name, 'test.source'), 'w+') as s, open(os.path.join('datasets', dataset_name, 'test.target'), 'w+') as t:
+        s.write(source)
+        t.write(source[0])  # target won't be used so just use first word as placeholder
+
+    subprocess.call(f'python3.8 ctrl-sum/scripts/preprocess.py {dataset_name} --mode pipeline --split test --num-workers 1')
+    subprocess.call(f'bash ctrl-sum/scripts/gpt2_encode.sh {dataset_name}')
+    subprocess.call(f'bash ctrl-sum/scripts/binarize_dataset.sh {dataset_name}')
+    subprocess.call(f'bash ctrl-sum/scripts/train_seqlabel.sh -g 0 -d {dataset_name} -p {tagger_model_dir}')
+    subprocess.call(f'python3.8 ctrl-sum/scripts/preprocess.py {dataset_name} --split test --mode process_tagger_prediction --tag-pred {tagger_model_dir}/test_predictions.txt --threshold {conf_threshold} --maximum-word {max_keywords} --summary-size {summary_size}')
+
+    with open(os.path.join('datasets', dataset_name, f'test.ts{conf_threshold}.mw{max_keywords},sumlen{summary_size}.default.predword'), 'r') as f:
+        tags = f.read()
+
+    shutil.rmtree(os.path.join('datasets', dataset_name), ignore_errors=True)  # clean up temp files for next prediction
+    return jsonify({'tags': tags})
 
 
 @app.route('/health', methods=['GET'])
 def health():
     """Sanity check"""
-    if ctrlsum(contents='hello my name is billy', query='', prompt='My name is:', num_beams=5, top_k=None, top_p=None, no_repeat_ngram_size=4, length_penalty=1.0, question_detection=True) == 'My name is: Billy.':
+    if ctrlsum(contents='hello my name is billy', query='', prompt='My name is:', num_beams=5, top_k=None, top_p=None, no_repeat_ngram_size=4, length_penalty=1.0, question_detection=True) == 'My name is: Billy.' and os.path.isdir(tagger_model_dir):
         return jsonify({'health': 'true'})
     return jsonify({'health': 'false'})
 
