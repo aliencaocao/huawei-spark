@@ -15,11 +15,11 @@ const App = () => {
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const handleNewLogin = (token) => {
+  const handleNewLogin = (token, rememberMe) => {
     updateToken(token)
     const tokenData = JSON.parse(token.split(".")[0])
     updateUsername(tokenData.username)
-    localStorage.setItem("ecoshop-token", token)
+    if (rememberMe) localStorage.setItem("ecoshop-token", token)
     window.token = token
 
     enqueueSnackbar("Welcome back " + tokenData.username + "!", {variant: "success", autoHideDuration: 2500})

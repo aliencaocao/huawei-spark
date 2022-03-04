@@ -1,4 +1,4 @@
-import { Button, TextField, InputAdornment } from '@mui/material'
+import { Button, TextField, InputAdornment, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 import { LoadingButton } from '@mui/lab/';
 import { Fragment, useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
@@ -34,7 +34,7 @@ const handleSubmit = async (e, enqueueSnackbar, updateLoginLoading, handleNewLog
         }).then((results) => {
             return results.json(); //return data in JSON (since its JSON data)
         }).then(async (data) => {
-            if (data.success === true) handleNewLogin(data.token)
+            if (data.success === true) handleNewLogin(data.token, e.target.rememberMe.checked)
             else {
 
                 if (data.error === "invalid-credentials") {
@@ -146,11 +146,16 @@ const Login = (props) => {
                                     ),
                                 }}
                             />
-                            <LoadingButton type="submit" variant="contained" loading={loginLoading} endIcon={<ArrowCircleRightOutlinedIcon/>}>Login</LoadingButton>
+
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox defaultChecked />} name="rememberMe" label="Remember Me" />
+                            </FormGroup>
+
+                            <LoadingButton style={{ marginTop: "1ch" }} type="submit" variant="contained" loading={loginLoading} endIcon={<ArrowCircleRightOutlinedIcon />}>Login</LoadingButton>
                         </form>
 
                         <span style={{ marginTop: "8ch", textAlign: "center" }}>Don't have an account?</span>
-                        <Button variant="outlined" style={{marginTop: "1ch"}} onClick={() => { setRegisterPage(true) }}>Register</Button>
+                        <Button variant="outlined" style={{ marginTop: "1ch" }} onClick={() => { setRegisterPage(true) }}>Register</Button>
 
                     </Fragment>
                 )}
