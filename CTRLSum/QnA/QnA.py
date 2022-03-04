@@ -132,8 +132,6 @@ ctrlsum = Summarizers(device='cuda')
 
 @app.route('/qna', methods=['POST'])
 def qna():
-    """QnA"""
-    print('Running QnA')
     contents = request.json
     source = contents['source']
     query = contents['query']
@@ -144,20 +142,14 @@ def qna():
     return jsonify({'answer': ans})
 
 
-@app.route('/tagger', methods=['POST'])
-def tagger():  # TODO
-    """Generate tags for source"""
-    print('Running Tagger')
-    source = request.json
-    source = source['source']
-    return jsonify({'tags': 'None'})
-
-
 @app.route('/health', methods=['GET'])
 def health():
     """Sanity check"""
-    if ctrlsum(contents='hello my name is billy', query='', prompt='My name is:', num_beams=5, top_k=None, top_p=None, no_repeat_ngram_size=4, length_penalty=1.0, question_detection=True) == 'My name is: Billy.':
-        return jsonify({'health': 'true'})
+    try:
+        if ctrlsum(contents='hello my name is billy', query='', prompt='My name is:', num_beams=5, top_k=None, top_p=None, no_repeat_ngram_size=4, length_penalty=1.0, question_detection=True) == 'My name is: Billy.':
+            return jsonify({'health': 'true'})
+    except:
+        pass
     return jsonify({'health': 'false'})
 
 

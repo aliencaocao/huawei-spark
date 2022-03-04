@@ -1,0 +1,43 @@
+{
+    "model_algorithm": "Text_Summarization",
+    "model_type": "Image",
+    "apis": [
+        {
+            "protocol": "https",
+            "url": "/tagger",
+            "method": "POST",
+            "request": {
+                "Content-type": "application/json",
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "source": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "source"
+                    ]
+                }
+            },
+            "response": {
+                "Content-type": "application/json",
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "tags": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "tags"
+                    ]
+                }
+            }
+        }
+    ],
+    "health": {
+        "url": "/health",
+        "timeout_seconds": "10"
+    }
+}

@@ -1,3 +1,3 @@
-[submodule "CTRLSum/ctrl-sum"]
-	path = CTRLSum/ctrl-sum
+[submodule "CTRLSum/tagger/ctrl-sum"]
+	path = CTRLSum/tagger/ctrl-sum
 	url = https://github.com/aliencaocao/ctrl-sum
