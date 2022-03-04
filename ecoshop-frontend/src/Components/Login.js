@@ -12,7 +12,7 @@ const handleSubmit = async (e, enqueueSnackbar, updateLoginLoading, handleNewLog
     const username = e.target.username.value
     const password = e.target.password.value
     let validationPassed = true
-    e.preventDefault()
+   
 
     if (!username) {
         setInputError("username")
@@ -106,7 +106,8 @@ const Login = (props) => {
                         <h1 style={{ alignSelf: "flex-start" }}>Sign In</h1>
                         <form
                             style={{ display: "flex", flexDirection: "column" }}
-                            onSubmit={(e) => {
+                            onSubmit={async (e) => {
+                                e.preventDefault()
                                 updateLoginLoading(true)
                                 clearInputError()
                                 handleSubmit(e, enqueueSnackbar, updateLoginLoading, props.handleNewLogin, setInputError)

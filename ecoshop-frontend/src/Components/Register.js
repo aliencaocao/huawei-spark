@@ -13,7 +13,7 @@ const handleSubmit = async (e, enqueueSnackbar, updateLoginLoading, handleNewLog
     const password = e.target.password.value
     const confirmPassword = e.target.confirmPassword.value
     let validationPassed = true
-    e.preventDefault()
+  
 
     if (!username) {
         setInputError("username")
@@ -98,7 +98,7 @@ const Register = (props) => {
             setPasswordErrorText("Please enter your account password")
 
         }
-        else if (type === "Cpassowrd") {
+        else if (type === "Cpassword") {
             setCPasswordError(true)
             setCPasswordErrorText("Please confirm your account password by typing it again.")
         }
@@ -111,6 +111,7 @@ const Register = (props) => {
         setUsernameErrorText("")
         setPasswordErrorText("")
         setCPasswordErrorText("")
+        return true
     }
 
     const checkPasswordMatch = async () => {
@@ -128,13 +129,16 @@ const Register = (props) => {
         }
     }
 
-    useEffect(checkPasswordMatch, [CpasswordValue, passwordValue, CpasswordError, passwordError])
+    useEffect(() => {console.log(passwordError)}, [passwordError])
+
+    useEffect(checkPasswordMatch, [CpasswordValue, passwordValue])
 
     return (
        <Fragment>
             <h1 style={{alignSelf: "flex-start"}}>Register</h1>
             <form style={{display: "flex", flexDirection: "column" }}
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
+                    e.preventDefault()
                     updateregisterLoading(true)
                     clearInputError()
                     handleSubmit(e, enqueueSnackbar, updateregisterLoading, props.handleNewLogin, setInputError, checkPasswordMatch)
