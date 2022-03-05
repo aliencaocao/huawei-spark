@@ -132,13 +132,16 @@ ctrlsum = Summarizers(device='cuda')
 
 @app.route('/qna', methods=['POST'])
 def qna():
-    contents = request.json
-    source = contents['source']
-    query = contents['query']
-    prompt = contents['prompt']
-    ans = ctrlsum(contents=source, query=query, prompt=prompt, num_beams=5,
-                  top_k=None, top_p=None, no_repeat_ngram_size=4,
-                  length_penalty=1.0, question_detection=True)
+    try:
+        contents = request.json
+        source = contents['source']
+        query = contents['query']
+        prompt = contents['prompt']
+        ans = ctrlsum(contents=source, query=query, prompt=prompt, num_beams=5,
+                      top_k=None, top_p=None, no_repeat_ngram_size=4,
+                      length_penalty=1.0, question_detection=True)
+    except Exception as e:
+        ans = f"ERROR: {e}"
     return jsonify({'answer': ans})
 
 
@@ -158,4 +161,4 @@ if __name__ == '__main__':
     import logging
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.DEBUG)
-    serve(app, host='0.0.0.0', port=8080)
+    serve(app, host='0.0.0.0', port=8080, expose_tracebacks=True, threads=8)
