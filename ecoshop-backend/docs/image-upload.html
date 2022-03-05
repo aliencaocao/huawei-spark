@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Upload</title>
+  </head>
+
+  <body>
+    <h2>Input the "Token" from the Image Upload API here</h2>
+    <input id="token" />
+    <p id="msg"></p>
+
+    <hr>
+
+    <form>
+      <input name="key" placeholder="public-img/..." value="" /><br>
+      <input name="AccessKeyId" placeholder="AccessKeyId" value="" /><br>
+      <input name="signature" placeholder="signature" value="" /><br>
+      <input name="policy" placeholder="policy" value="" /><br>
+      <input name="content-type" placeholder="content-type" value="" /><br>
+      <input name="acl" placeholder="actually no effect" value="public-read" /><br>
+      <input type="file" name="file" /><br>
+      <button type="submit">UPLOAD TO OBS</button>
+    </form>
+
+    <script>
+      document.querySelector("form").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        let formData = new FormData(document.querySelector("form"));
+
+        fetch("https://ecoshop.obs.ap-southeast-3.myhuaweicloud.com/", {
+          method: "post",
+          body: formData,
+        });
+
+        console.log("Check console Network Tab");
+      });
+
+      document.querySelector("#token").addEventListener("keyup", (e) => {
+        document.querySelector("#msg").innerText = "";
+        try {
+          let token = document.querySelector("#token").value;
+          token = token.split(":");
+          document.querySelector("input[name=AccessKeyId]").value = token[0];
+          document.querySelector("input[name=signature]").value = token[1];
+          document.querySelector("input[name=policy]").value = token[2];
+        }
+        catch (e) {
+          document.querySelector("msg").innerText = "enter a valid token";
+        }
+      });
+    </script>
+  </body>
+</html>

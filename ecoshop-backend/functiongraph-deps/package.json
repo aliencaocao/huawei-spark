@@ -3,6 +3,7 @@
     "argon2": "^0.28.5",
     "esdk-obs-nodejs": "^3.21.6",
     "mysql2": "^2.3.3",
-    "reallydangerous": "^2.1.0"
+    "reallydangerous": "^2.1.0",
+    "short-uuid": "^4.2.0"
   }
 }

@@ -1,0 +1,130 @@
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.1.6/shaka-player.compiled.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.1.6/shaka-player.ui.js"></script>
+  </head>
+
+  <body>
+
+    <div>
+      <div class='xl:flex-1 xl:max-w-fit'>
+        <div id='videoContainer' ref='videoContainer' tabindex='-1' class=''>
+          <video ref='video'></video>
+        </div>
+      </div>
+    </div>
+    
+    <style>
+      @import 'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.1.6/controls.css';
+    </style>
+    
+    <script>
+      async function run() {
+        function errorHandler(e) {
+          console.error('Shaka error');
+          console.error(e);
+        }
+    
+        shaka.polyfill.installAll();
+        if (!shaka.Player.isBrowserSupported()) {
+          alert('Please use another browser to play videos');
+          return;
+        }
+    
+        const videoContainer = document.querySelector("#videoContainer");
+        const video = document.querySelector("video");
+    
+        const player = new shaka.Player(video);
+
+        player.configure({
+          streaming: {
+            useNativeHlsOnSafari: false,
+          }
+        });
+
+        const ui = new shaka.ui.Overlay(
+          player,
+          videoContainer,
+          video
+        );
+        const controls = ui.getControls();
+    
+        let prevVol = 0;
+        const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+        videoContainer.addEventListener('keydown', e => {
+          switch (e.key) {
+            case 'f':
+              videoContainer.requestFullscreen();
+              break;
+            case ' ':
+            case 'k':
+              video[video.paused ? 'play' : 'pause']();
+              break;
+            case 'ArrowLeft':
+              video.currentTime -= 5;
+              break;
+            case 'j':
+              video.currentTime -= 10;
+              break;
+            case 'ArrowRight':
+              video.currentTime += 5;
+              break;
+            case 'l':
+              video.currentTime += 10;
+              break;
+            case 'ArrowUp':
+              video.volume += .1;
+              break;
+            case 'ArrowDown':
+              video.volume -= .1;
+              break;
+            case 'm':
+              if (!video.volume && !prevVol) video.volume = 1;
+              else if (video.volume) {
+                prevVol = video.volume;
+                video.volume = 0;
+              }
+              else video.volume = prevVol;
+              break;
+            case '<':
+              video.playbackRate = playbackRates[Math.max(
+                playbackRates.indexOf(video.playbackRate) - 1,
+                0
+              )];
+              break;
+            case '>':
+              video.playbackRate = playbackRates[Math.min(
+                playbackRates.indexOf(video.playbackRate) + 1,
+                playbackRates.length - 1
+              )];
+              break;
+            default:
+              return;
+          }
+          e.preventDefault();
+        });
+    
+        player.addEventListener('error', errorHandler);
+    
+        player.getNetworkingEngine().registerRequestFilter((type, req) => {
+          // if (
+          //   type != shaka.net.NetworkingEngine.RequestType.SEGMENT &&
+          //   type != shaka.net.NetworkingEngine.RequestType.MANIFEST
+          // ) return;
+          
+          console.log(req.headers);
+          // delete req.headers["Range"];
+          // delete req.headers["Access-Control-Request-Headers"];
+          // delete req.headers["Access-Control-Request-Method"];
+          console.log(req.headers);
+        });
+    
+        player.load(
+          `https://ecoshop-transcode.obs.ap-southeast-3.myhuaweicloud.com/output/fed6826e5691487d8a3d25dc4235bdf2/index.mpd`
+        ).catch(errorHandler);
+      }
+    
+      run();
+    </script>
+  </body>
+</html>
