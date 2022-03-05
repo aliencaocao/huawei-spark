@@ -106,24 +106,11 @@
     
         player.addEventListener('error', errorHandler);
     
-        player.getNetworkingEngine().registerRequestFilter((type, req) => {
-          // if (
-          //   type != shaka.net.NetworkingEngine.RequestType.SEGMENT &&
-          //   type != shaka.net.NetworkingEngine.RequestType.MANIFEST
-          // ) return;
-          
-          console.log(req.headers);
-          // delete req.headers["Range"];
-          // delete req.headers["Access-Control-Request-Headers"];
-          // delete req.headers["Access-Control-Request-Method"];
-          console.log(req.headers);
-        });
-    
         player.load(
-          `https://ecoshop-transcode.obs.ap-southeast-3.myhuaweicloud.com/output/fed6826e5691487d8a3d25dc4235bdf2/index.mpd`
+          `https://ecoshop-data.obs.ap-southeast-3.myhuaweicloud.com/mpc-video/718GpEGJhNXNVaXinEKiQS/${(await shaka.Player.probeSupport()).manifest.mpd ? 'index.mpd' : 'output.m3u8'}`
         ).catch(errorHandler);
       }
-    
+
       run();
     </script>
   </body>
