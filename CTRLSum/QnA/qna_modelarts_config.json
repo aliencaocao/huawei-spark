@@ -42,39 +42,6 @@
                     ]
                 }
             }
-        },
-        {
-            "protocol": "https",
-            "url": "/tagger",
-            "method": "POST",
-            "request": {
-                "Content-type": "application/json",
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "source": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "source"
-                    ]
-                }
-            },
-            "response": {
-                "Content-type": "application/json",
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "tags": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "tags"
-                    ]
-                }
-            }
         }
     ],
     "health": {
