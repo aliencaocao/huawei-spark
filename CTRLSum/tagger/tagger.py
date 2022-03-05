@@ -48,7 +48,6 @@ def gen_tags(source):  # TODO: avoid reloading model every time else will time o
         shutil.rmtree(os.path.join(tagger_model_dir, 'wandb'), ignore_errors=True)
         os.remove(os.path.join(tagger_model_dir, 'test_predictions.txt'))
         os.remove(os.path.join(tagger_model_dir, 'test_results.txt'))
-        os.remove(os.path.join(tagger_model_dir, 'eval.log'))
     except Exception as e:
         tags = f'ERROR {e}'
     return tags
