@@ -1,3 +1,4 @@
+import time
 import requests
 
 url = "https://01516f373f434921a874bf502a986a58.apig.ap-southeast-3.huaweicloudapis.com/v1/infers/2f77d2c9-7332-4cfd-a64a-1158631126a0"
@@ -9,7 +10,9 @@ query = 'How long is delivery?'
 
 payload = {'source': source, 'prompt': prompt, 'query': query}
 
+start = time.time()
 r = requests.post(f'{url}/qna', headers=headers, json=payload)
 # r = requests.get('http://192.168.1.9:8080/health')
-# r = requests.post(f'{url}/qna', json=payload)
+# r = requests.post(f'http://192.168.1.9:8080/qna', json=payload)
 print(r.text)
+print(f'Time taken: {time.time() - start}')

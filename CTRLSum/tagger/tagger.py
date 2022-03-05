@@ -12,41 +12,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import logging
 import shutil
 import subprocess
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-print(os.listdir())
-print(os.path.abspath('ctrl-sum'))
 
 
-def gen_tags(source):
-    os.chdir(os.path.abspath('ctrl-sum'))
-    tagger_model_dir = 'cnn_bert_tagger'
-    max_keywords = '5'  # default for CNNDM is 30
-    conf_threshold = '0.3'  # default for CNNDM is 0.25
-    summary_size = '10'  # default for CNNDM is 10
-    dataset_name = 'temp'
+def gen_tags(source):  # TODO: avoid reloading model every time else will time out
+    try:
+        tagger_model_dir = 'cnn_bert_tagger'
+        max_keywords = '5'  # default for CNNDM is 30
+        conf_threshold = '0.3'  # default for CNNDM is 0.25
+        summary_size = '10'  # default for CNNDM is 10
+        dataset_name = 'temp'
 
-    if not os.path.isdir(os.path.join('datasets', dataset_name)):
-        os.makedirs(os.path.join('datasets', dataset_name))
+        if not os.path.isdir(os.path.join('datasets', dataset_name)):
+            os.makedirs(os.path.join('datasets', dataset_name))
 
-    with open(os.path.join('datasets', dataset_name, 'test.source'), 'w+') as s, open(os.path.join('datasets', dataset_name, 'test.target'), 'w+') as t:
-        s.write(source)
-        t.write(source[0])  # target won't be used so just use first word as placeholder
+        with open(os.path.join('datasets', dataset_name, 'test.source'), 'w+') as s, open(os.path.join('datasets', dataset_name, 'test.target'), 'w+') as t:
+            s.write(source)
+            t.write(source[0])  # target won't be used so just use first word as placeholder
 
-    subprocess.run(['python3.8', 'scripts/preprocess.py', dataset_name, '--mode', 'pipeline', '--split', 'test', '--num-workers', '1'])
-    subprocess.run(['bash', 'scripts/train_seqlabel.sh', '-g', '0', '-d', dataset_name, '-p', tagger_model_dir])
-    subprocess.run(['python3.8', 'scripts/preprocess.py', dataset_name, '--split', 'test', '--mode', 'process_tagger_prediction', '--tag-pred', f'{tagger_model_dir}/test_predictions.txt', '--threshold', conf_threshold, '--maximum-word', max_keywords, '--summary-size', summary_size])
+        subprocess.run(['python3.8', 'scripts/preprocess.py', dataset_name, '--mode', 'pipeline', '--split', 'test', '--num-workers', '1'])
+        subprocess.run(['bash', 'scripts/train_seqlabel.sh', '-g', '0', '-p', tagger_model_dir, '-d', dataset_name])
+        subprocess.run(['python3.8', 'scripts/preprocess.py', dataset_name, '--split', 'test', '--mode', 'process_tagger_prediction', '--tag-pred', f'{tagger_model_dir}/test_predictions.txt', '--threshold', conf_threshold, '--maximum-word', max_keywords, '--summary-size', summary_size])
 
-    with open(os.path.join('datasets', dataset_name, f'test.ts{conf_threshold}.mw{max_keywords},sumlen{summary_size}.default.predword'), 'r') as f:
-        tags = ';'.join(str(f.read()).split())
+        with open(os.path.join('datasets', dataset_name, f'test.ts{conf_threshold}.mw{max_keywords},sumlen{summary_size}.default.predword'), 'r') as f:
+            tags = ';'.join(str(f.read()).split())
 
-    #  clean up temp files for next prediction
-    shutil.rmtree(os.path.join('datasets', dataset_name), ignore_errors=True)
-    shutil.rmtree('data-bin', ignore_errors=True)
-    os.chdir('..')
+        # clean up temp files
+        shutil.rmtree(os.path.join('datasets', dataset_name), ignore_errors=True)
+        shutil.rmtree('data-bin', ignore_errors=True)
+        shutil.rmtree(os.path.join(tagger_model_dir, 'wandb'), ignore_errors=True)
+        os.remove(os.path.join(tagger_model_dir, 'test_predictions.txt'))
+        os.remove(os.path.join(tagger_model_dir, 'test_results.txt'))
+    except Exception as e:
+        tags = f'ERROR {e}'
     return tags
 
 
@@ -59,14 +62,15 @@ def tagger():
 
 
 @app.route('/health', methods=['GET'])
-def health():
+def health():  # TODO: unique dataset name to avoid conflicts, health check disabled for now
     """Sanity check"""
-    try:
-        if gen_tags('the sky is blue') == 'sky':
-            return jsonify({'health': 'true'})
-    except:
-        pass
-    return jsonify({'health': 'false'})
+    # try:
+    #     if gen_tags('the sky is blue') == 'sky':
+    #         return jsonify({'health': 'true'})
+    # except:
+    #     pass
+    # return jsonify({'health': 'false'})
+    return jsonify({'health': 'true'})
 
 
 if __name__ == '__main__':
@@ -74,4 +78,5 @@ if __name__ == '__main__':
     import logging
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.DEBUG)
-    serve(app, host='0.0.0.0', port=8080)
+    os.chdir(os.path.abspath('ctrl-sum'))
+    serve(app, host='0.0.0.0', port=8080, expose_tracebacks=True, threads=8)
