@@ -12,7 +12,7 @@ const handleSubmit = async (e, enqueueSnackbar, updateLoginLoading, handleNewLog
     const username = e.target.username.value
     const password = e.target.password.value
     let validationPassed = true
-   
+
 
     if (!username) {
         setInputError("username")
@@ -97,8 +97,8 @@ const Login = (props) => {
     }, [])
 
     return (
-        <div className='login-page' style={{ height: "100%", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1ch", flexDirection: "column" }}>
-            <div style={{ width: '100%', display: "flex", flexDirection: "column", backgroundColor: "rgba(0, 0, 0, 0.8)", padding: "2.5ch", border: "1px transparent solid", borderRadius: "25px" }}>
+        <div className='login-page' style={{ height: "100%", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "2ch", flexDirection: "column" }}>
+            <div style={{ width: '100%', display: "flex", flexDirection: "column", backgroundColor: "rgba(0, 0, 0, 0.8)", padding: "2.5ch", border: "1px transparent solid", borderRadius: "25px", boxShadow: "7px 7px 6px 6px rgba(0, 0, 0, .5)" }}>
                 {registerPage ? (
                     <Register setRegisterPage={setRegisterPage} handleNewLogin={props.handleNewLogin} />) : (
                     <Fragment>
