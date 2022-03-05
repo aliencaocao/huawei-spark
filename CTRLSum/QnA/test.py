@@ -11,5 +11,5 @@ payload = {'source': source, 'prompt': prompt, 'query': query}
 
 r = requests.post(f'{url}/qna', headers=headers, json=payload)
 # r = requests.get('http://192.168.1.9:8080/health')
-# r = requests.post(f'{url}/qna', json=payload)
+# r = requests.post(f'http://192.168.1.9:8080/qna', json=payload)
 print(r.text)
