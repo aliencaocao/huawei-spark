@@ -1,3 +1,6 @@
 [submodule "CTRLSum/tagger/ctrl-sum"]
 	path = CTRLSum/tagger/ctrl-sum
 	url = https://github.com/aliencaocao/ctrl-sum
+[submodule "image-captioning/pororo"]
+	path = image-captioning/pororo
+	url = https://github.com/aliencaocao/pororo
