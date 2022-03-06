@@ -49,6 +49,7 @@ exports.initializer = async (context, callback) => {
 exports.handler = async (event, context) => {
   try {
     const body = JSON.parse((Buffer.from(event.body, 'base64')).toString());
+    const authData = JSON.parse(event.headers.authData);
 
     console.log(context);
     console.log(event);
@@ -57,7 +58,9 @@ exports.handler = async (event, context) => {
       return validationError;
     }
 
-    if (body["type"] == "video") {
+    let path = `user-image/${short.generate()}`;
+
+    if (body["type"] == "video") { // if user is uploading a video, it must be associated with an existing product
       if (body["product"] == undefined) return validationError;
 
       const [rows, fields] = await connection.execute('SELECT `owner` FROM `product` WHERE `id` = ? ', [body["product"]]);
@@ -65,7 +68,10 @@ exports.handler = async (event, context) => {
       console.log(rows);
 
       if (rows.length === 0) return notFoundError;
-      if (rows[0]["owner"] !== JSON.parse(event.headers.authData)["username"]) return permissionError;
+      if (rows[0]["owner"] !== authData["username"]) return permissionError;
+
+      // generate the video path, which contains the shortUUID and the product ID
+      path = `user-video/${short.generate()}.${body["product"]}`;
     }
 
     const obsClient = new ObsClient({
@@ -77,8 +83,6 @@ exports.handler = async (event, context) => {
       ssl_verify: false,
       long_conn_param: 0
     });
-
-    const path = `user-${ body["type"] == "video" ? "video" : "image" }/` + short.generate();
 
     const response = {
       "statusCode": 200,
