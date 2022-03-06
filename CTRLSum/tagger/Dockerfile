@@ -18,4 +18,4 @@ RUN cp -a /etc/apt/sources.list /etc/apt/sources.list.bak && \
 # Copy the application service code to the image.
 COPY . .
 
-CMD ["python3.8", "tagger.py"]
+CMD ["python3.8", "tagger-v2.py"]

@@ -1,0 +1,11 @@
+{
+  "query": "chair",
+  "fields": [
+    {
+      "type": "int",
+      "attr": "weight limit",
+      "value": 20,
+      "condition": "gt"
+    }
+  ]
+}
