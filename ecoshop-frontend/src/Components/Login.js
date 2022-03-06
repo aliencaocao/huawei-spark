@@ -6,6 +6,7 @@ import Register from './Register';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
+import ecoShopSVG from './../assets/ecoshop.svg';
 
 
 const handleSubmit = async (e, enqueueSnackbar, updateLoginLoading, handleNewLogin, setInputError) => {
@@ -97,15 +98,16 @@ const Login = (props) => {
     }, [])
 
     return (
-        <div className='login-page' style={{ height: "100%", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "2ch", flexDirection: "column" }}>
-            <div style={{ width: '100%', display: "flex", flexDirection: "column", backgroundColor: "rgba(0, 0, 0, 0.8)", padding: "2.5ch", border: "1px transparent solid", borderRadius: "25px", boxShadow: "7px 7px 6px 6px rgba(0, 0, 0, .5)" }}>
+        <div className='login-page fadeIn' style={{ height: "100%", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "2ch", flexDirection: "column" }}>
+            <div style={{ width: '100%', marginTop: "4ch", marginBottom: "4ch", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.8)", padding: "2.5ch", border: "1px transparent solid", borderRadius: "25px", boxShadow: "7px 7px 6px 6px rgba(0, 0, 0, .5)" }}>
+                <img src={ecoShopSVG} style={{ width: "30%", marginTop: "2ch", marginBottom: "-2ch" }} />
                 {registerPage ? (
                     <Register setRegisterPage={setRegisterPage} handleNewLogin={props.handleNewLogin} />) : (
                     <Fragment>
 
                         <h1 style={{ alignSelf: "flex-start" }}>Sign In</h1>
                         <form
-                            style={{ display: "flex", flexDirection: "column" }}
+                            style={{ display: "flex", flexDirection: "column", width: "100%" }}
                             onSubmit={async (e) => {
                                 e.preventDefault()
                                 updateLoginLoading(true)
@@ -157,7 +159,6 @@ const Login = (props) => {
 
                         <span style={{ marginTop: "8ch", textAlign: "center" }}>Don't have an account?</span>
                         <Button variant="outlined" style={{ marginTop: "1ch" }} onClick={() => { setRegisterPage(true) }}>Register</Button>
-
                     </Fragment>
                 )}
             </div>
