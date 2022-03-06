@@ -1,6 +1,6 @@
 import { Button, TextField, InputAdornment, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 import { LoadingButton } from '@mui/lab/';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment,  useState } from 'react';
 import { useSnackbar } from 'notistack';
 import Register from './Register';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
@@ -93,9 +93,6 @@ const Login = (props) => {
         setUsernameErrorText("")
         setPasswordErrorText("")
     }
-
-    useEffect(async () => {
-    }, [])
 
     return (
         <div className='login-page fadeIn' style={{ height: "100%", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "2ch", flexDirection: "column" }}>

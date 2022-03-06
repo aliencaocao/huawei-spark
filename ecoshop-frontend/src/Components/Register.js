@@ -129,7 +129,7 @@ const Register = (props) => {
         }
     }
 
-    useEffect(checkPasswordMatch, [CpasswordValue, passwordValue])
+    useEffect(() => {checkPasswordMatch()}, [CpasswordValue, passwordValue])
 
     return (
        <Fragment>
