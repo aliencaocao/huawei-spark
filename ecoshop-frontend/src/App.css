@@ -15,12 +15,106 @@
     background-size: cover;
     display: block;
     width: 100%;
-    height: 100%;
+    height: 105%;
     z-index: -1;
-    position: absolute;
+    position: fixed;
     -webkit-filter: blur(3px);
     -moz-filter: blur(3px);
     -o-filter: blur(3px);
     -ms-filter: blur(3px);
     filter: blur(3px);
+
+}
+
+.fadeIn {
+    animation-duration: .38s;
+    animation-timing-function: ease-out;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-name: fade-in-animation;
+}
+
+.listing-styles {
+    overflow: hidden;
+    border-radius: 8px !important;
+}
+
+.listing-info-style {
+    margin: 10px;
+}
+
+.listing-title-style {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 98%;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    font-size: 1.55ch;
+}
+
+.listing-price-style {
+    color: #64b5f6;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+.listing-type-style {
+    margin-top: 2px;
+    margin-bottom: 0px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+}
+
+.listing-quantity-style {
+    margin-top: 10px;
+    margin-bottom: 0px;
+    font-weight: 400;
+}
+
+.type-style {
+    margin-right: 0.5ch;
+}
+
+.listing-bookmark-style {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.listing-bookmark-number-style {
+    margin-left: 5px;
+}
+
+.listing-owner-style {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.listing-owner-name-style {
+    margin-left: 1ch;
+
+}
+
+.pull-text-style {
+    width: 100vw;
+    text-align: center;
+    margin-top: 10vh;
+    font-size: 2ch;
+    display: flex;
+    justify-content: center;
+    color: #2196f3;
+}
+
+@keyframes fade-in-animation {
+    0% {
+        opacity: 0
+    }
+
+    100% {
+        opacity: 1
+    }
 }

@@ -129,14 +129,12 @@ const Register = (props) => {
         }
     }
 
-    useEffect(() => {console.log(passwordError)}, [passwordError])
-
     useEffect(checkPasswordMatch, [CpasswordValue, passwordValue])
 
     return (
        <Fragment>
             <h1 style={{alignSelf: "flex-start"}}>Register</h1>
-            <form style={{display: "flex", flexDirection: "column" }}
+            <form style={{display: "flex", flexDirection: "column", width: "100%" }}
                 onSubmit={async (e) => {
                     e.preventDefault()
                     updateregisterLoading(true)

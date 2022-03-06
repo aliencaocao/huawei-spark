@@ -1,0 +1,15 @@
+{
+    "query": "chair",
+    "response": {
+        "attributes": [
+            {
+                "attr_name": "brand",
+                "frequency": 1
+            },
+            {
+                "attr_name": "weight limit",
+                "frequency": 1
+            }
+        ]
+    }
+}
