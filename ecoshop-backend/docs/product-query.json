@@ -7,5 +7,30 @@
       "value": 20,
       "condition": "gt"
     }
-  ]
+  ],
+  "response": {
+    "success": true,
+    "listings": [
+        {
+            "id": 2,
+            "name": "small chair gaming secretlab",
+            "price": 150,
+            "type": 1,
+            "quantity": 1,
+            "owner": "tkai",
+            "obs_image": "https://",
+            "bookmarks": 0
+        },
+        {
+            "id": 1,
+            "name": "big chair",
+            "price": 120,
+            "type": 1,
+            "quantity": 1,
+            "owner": "howingyip",
+            "obs_image": "aaaa",
+            "bookmarks": 0
+        }
+    ]
+}
 }

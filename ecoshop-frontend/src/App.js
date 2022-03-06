@@ -1,5 +1,5 @@
 import './App.css';
-import { Grow, CircularProgress, BottomNavigation, BottomNavigationAction, Paper, Grid, Divider, Avatar, AppBar, InputAdornment, TextField } from '@mui/material'
+import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction, Paper, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton } from '@mui/material'
 import { Fragment, useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import HomeIcon from '@mui/icons-material/Home';
@@ -9,7 +9,15 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BulkListing from './Components/BulkListing';
 import Shorts from './Components/Shorts';
 import Login from './Components/Login';
+import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
+import ChatIcon from '@mui/icons-material/Chat';
 import officerChair from './assets/officechair.png';
+import PullToRefresh from 'react-simple-pull-to-refresh';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import HandymanIcon from '@mui/icons-material/Handyman';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ecoShopIcon from './assets/ecoshop.svg';
@@ -18,12 +26,22 @@ import { blue } from '@mui/material/colors';
 
 window.globalURL = "https://c2c098ec16264e4dbf33c1f9a0b88d42.apig.ap-southeast-3.huaweicloudapis.com"
 
+const listLoadingSkeleton = []
+for (let i = 0; i < 6; i++) {
+  listLoadingSkeleton.push(
+    <Grid item xs={6} sm={6} md={4} lg={3}>
+      <Skeleton animation="wave" variant="rectangular" height="30vh" />
+    </Grid>)
+}
+
 const App = () => {
   const [page, updatePage] = useState("home")
   const [token, updateToken] = useState(null)
   const [username, updateUsername] = useState("")
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
   const [itemListRender, updateItemListRender] = useState([])
+  const [listLoading, setListLoading] = useState(false)
+  const [searchMode, setSearchMode] = useState(false)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleNewLogin = (token, rememberMe) => {
@@ -45,6 +63,7 @@ const App = () => {
   }
 
   const loadItemList = async () => {
+    setListLoading(true)
     await fetch(window.globalURL + "/product/query", {
       method: 'post',
       headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
@@ -53,7 +72,6 @@ const App = () => {
       return results.json(); //return data in JSON (since its JSON data)
     }).then(async (data) => {
       if (data.success === true) {
-        console.log(data)
         let itemList = []
         for (let i = 0; i < data.listings.length; i++) {
           const current = data.listings[i]
@@ -64,8 +82,8 @@ const App = () => {
                 <div className='listing-info-style'>
                   <h5 className='listing-title-style'>{current.name}</h5>
                   <h4 className='listing-price-style'>${current.price}</h4>
-                  <h5 className='listing-type-style'><b>Type:</b> {current.type}</h5>
                   <h5 className='listing-quantity-style'><b>Amount:</b> {current.quantity}</h5>
+                  <h5 className='listing-type-style'>{current.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon /><span>Repair Service</span></Fragment>)}</h5>
 
                   <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>{current.bookmarks}</span></span>
                   <Divider />
@@ -101,6 +119,7 @@ const App = () => {
         autoHideDuration: 2500
       });
     })
+    setListLoading(false)
   }
 
   useEffect(async () => {
@@ -166,29 +185,60 @@ const App = () => {
                 {page === "home" && (
                   <Fragment>
                     <AppBar>
-                      <div style={{ margin: "1ch", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <img src={ecoShopIcon} style={{ height: "6ch" }} />
-                        <TextField variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search 2nd Hand Items' size="small"
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <SearchIcon />
-                              </InputAdornment>
-                            ),
-                          }}>
+                      <div style={{ height: "5ch", margin: "1ch", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        {!searchMode && (
+                          <img src={ecoShopIcon} style={{ height: "6ch" }} />
+                        )}
+                        <TextField onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search' size="small"
+                          InputProps={
+                            searchMode ? {
+                              startAdornment: (
+                                <InputAdornment position="start" onClick={() => { setSearchMode(false); console.log('click') }}>
+                                  <ArrowBackIcon />
+                                  <Divider orientation="vertical"/>
+                                </InputAdornment>
+                              ),
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <SearchIcon />
+                                </InputAdornment>
+                              )
+                            }
+                              :
+                              {
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <SearchIcon />
+                                  </InputAdornment>
+                                ),
+                              }}>
                         </TextField>
                       </div>
                     </AppBar>
-                    <Grow in={true}>
-                      <div style={{ height: "fit-content", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", paddingBottom: "10vh", marginTop: "6ch" }}>
-                        <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}><h2>Explore Categories</h2></Divider>
-                        <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}><h2>Your Picks</h2></Divider>
-                        <Grid container spacing={2}>
-                          {itemListRender}
-                        </Grid>
+                    <PullToRefresh onRefresh={loadItemList} pullDownThreshold={120} maxPullDownDistance={145} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
+                      <Grow in={true}>
+                        <div style={{ height: "fit-content", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", paddingBottom: "10vh", marginTop: "6ch" }}>
+                          <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}><h2>Your Videos</h2></Divider>
+                          <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}><h2>Your Picks</h2></Divider>
 
-                      </div>
-                    </Grow>
+
+                          {listLoading ? (
+                            <Grid container spacing={2}>
+                              {listLoadingSkeleton}
+                            </Grid>
+                          )
+                            : (
+                              <Fade in={true}>
+                                <Grid container spacing={2}>
+                                  {itemListRender}
+                                </Grid>
+                              </Fade>
+                            )}
+
+
+                        </div>
+                      </Grow>
+                    </PullToRefresh>
                   </Fragment>
                 )}
                 {page === "bulk" && (
@@ -211,6 +261,18 @@ const App = () => {
                       icon={<VideocamIcon />}
                     />
                     <BottomNavigationAction
+                      label="Sell"
+                      value="sell"
+                      showLabel
+                      style={{ color: "#4caf50", fontWeight: "bold" }}
+                      icon={<AddCircleTwoToneIcon style={{ fontSize: "4ch" }} />}
+                    />
+                    <BottomNavigationAction
+                      label="Chats"
+                      value="chats"
+                      icon={<ChatIcon />}
+                    />
+                    <BottomNavigationAction
                       label={username}
                       value="profile"
                       icon={<AccountCircleIcon />}
@@ -225,9 +287,10 @@ const App = () => {
             }
 
           </Fragment>
-        )}
+        )
+      }
 
-    </div>
+    </div >
   );
 }
 

@@ -60,15 +60,21 @@
 }
 
 .listing-type-style {
+    margin-top: 2px;
+    margin-bottom: 0px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+}
+
+.listing-quantity-style {
     margin-top: 10px;
     margin-bottom: 0px;
     font-weight: 400;
 }
 
-.listing-quantity-style {
-    margin-top: 2px;
-    margin-bottom: 0px;
-    font-weight: 400;
+.type-style {
+    margin-right: 0.5ch;
 }
 
 .listing-bookmark-style {
@@ -91,6 +97,16 @@
 .listing-owner-name-style {
     margin-left: 1ch;
 
+}
+
+.pull-text-style {
+    width: 100vw;
+    text-align: center;
+    margin-top: 10vh;
+    font-size: 2ch;
+    display: flex;
+    justify-content: center;
+    color: #2196f3;
 }
 
 @keyframes fade-in-animation {
