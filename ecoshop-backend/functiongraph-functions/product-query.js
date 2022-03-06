@@ -1,8 +1,4 @@
-const RD = require("reallydangerous");
 const mysql = require("mysql2/promise");
-const childProcess = require("child_process");
-const ObsClient = require("esdk-obs-nodejs");
-const short = require("short-uuid");
 
 let connection = null;
 
@@ -29,9 +25,6 @@ exports.initializer = async (context, callback) => {
 exports.handler = async (event, context) => {
   try {
     const body = JSON.parse((Buffer.from(event.body, 'base64')).toString());
-
-    console.log(context);
-    console.log(event);
 
     let output = [];
 
@@ -120,6 +113,7 @@ exports.handler = async (event, context) => {
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
       "body": JSON.stringify({
+        success: true,
         listings: output,
       }),
     };
@@ -132,6 +126,7 @@ exports.handler = async (event, context) => {
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
       "body": JSON.stringify({
+        success: false,
         error: e.toString(),
       }),
     };

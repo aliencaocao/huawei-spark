@@ -23,6 +23,7 @@ const App = () => {
   const [token, updateToken] = useState(null)
   const [username, updateUsername] = useState("")
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
+  const [itemListRender, updateItemListRender] = useState([])
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleNewLogin = (token, rememberMe) => {
@@ -33,6 +34,7 @@ const App = () => {
     window.token = token
 
     enqueueSnackbar("Welcome back " + tokenData.username + "!", { variant: "success", autoHideDuration: 1500 })
+    loadItemList()
   }
 
   const handleLogout = () => {
@@ -40,6 +42,65 @@ const App = () => {
     updateUsername("")
     window.token = null
     localStorage.removeItem("ecoshop-token")
+  }
+
+  const loadItemList = async () => {
+    await fetch(window.globalURL + "/product/query", {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
+      body: JSON.stringify({})
+    }).then((results) => {
+      return results.json(); //return data in JSON (since its JSON data)
+    }).then(async (data) => {
+      if (data.success === true) {
+        console.log(data)
+        let itemList = []
+        for (let i = 0; i < data.listings.length; i++) {
+          const current = data.listings[i]
+          const itemComponent = (
+            <Grid item xs={6} sm={6} md={4} lg={3} key={current.name + "-" + current.owner}>
+              <Paper className='listing-styles' elevation={12}>
+                <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
+                <div className='listing-info-style'>
+                  <h5 className='listing-title-style'>{current.name}</h5>
+                  <h4 className='listing-price-style'>${current.price}</h4>
+                  <h5 className='listing-type-style'><b>Type:</b> {current.type}</h5>
+                  <h5 className='listing-quantity-style'><b>Amount:</b> {current.quantity}</h5>
+
+                  <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>{current.bookmarks}</span></span>
+                  <Divider />
+                  <span className='listing-owner-style'>
+                    <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
+                      <AccountCircleIcon />
+                    </Avatar>
+                    <span className='listing-owner-name-style'>
+                      {current.owner}
+                    </span>
+                  </span>
+                </div>
+              </Paper>
+            </Grid>
+          )
+          itemList.push(itemComponent)
+
+        }
+        updateItemListRender(itemList)
+      }
+      else {
+        enqueueSnackbar("Oops. Unknown error", {
+          variant: 'error',
+          autoHideDuration: 2500
+        })
+        console.log(data)
+      }
+
+    }).catch((error) => {
+      console.log(error)
+      enqueueSnackbar("There was an issue connecting to the server", {
+        variant: 'error',
+        autoHideDuration: 2500
+      });
+    })
   }
 
   useEffect(async () => {
@@ -58,6 +119,7 @@ const App = () => {
           if (data.success === true) {
             const tokenData = JSON.parse(localStorageToken.split(".")[0])
 
+            loadItemList()
             updateUsername(tokenData.username)
             enqueueSnackbar("Welcome back " + tokenData.username + "!", {
               variant: 'success',
@@ -122,160 +184,7 @@ const App = () => {
                         <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}><h2>Explore Categories</h2></Divider>
                         <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}><h2>Your Picks</h2></Divider>
                         <Grid container spacing={2}>
-                          <Grid item xs={6} sm={6} md={4} lg={3}>
-                            <Paper className='listing-styles' elevation={12}>
-                              <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
-                              <div className='listing-info-style'>
-                                <h5 className='listing-title-style'>A very nice red office chair which is brand new!</h5>
-                                <h4 className='listing-price-style'>$999</h4>
-                                <h5 className='listing-type-style'><b>Type:</b> Office Chair</h5>
-                                <h5 className='listing-quantity-style'><b>Amount:</b> 1</h5>
-
-                                <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>32</span></span>
-                                <Divider />
-                                <span className='listing-owner-style'>
-                                  <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
-                                    <AccountCircleIcon />
-                                  </Avatar>
-                                  <span className='listing-owner-name-style'>
-                                    tkai
-                                  </span>
-                                </span>
-                              </div>
-                            </Paper>
-                          </Grid>
-                          <Grid item xs={6} sm={6} md={4} lg={3}>
-                            <Paper className='listing-styles' elevation={12}>
-                              <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
-                              <div className='listing-info-style'>
-                                <h5 className='listing-title-style'>A very nice red office chair</h5>
-                                <h4 className='listing-price-style'>$999</h4>
-                                <h5 className='listing-type-style'><b>Type:</b> Office Chair</h5>
-                                <h5 className='listing-quantity-style'><b>Amount:</b> 1</h5>
-
-                                <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>32</span></span>
-                                <Divider />
-                                <span className='listing-owner-style'>
-                                  <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
-                                    <AccountCircleIcon />
-                                  </Avatar>
-                                  <span className='listing-owner-name-style'>
-                                    tkai
-                                  </span>
-                                </span>
-                              </div>
-                            </Paper>
-                          </Grid>
-                          <Grid item xs={6} sm={6} md={4} lg={3}>
-                            <Paper className='listing-styles' elevation={12}>
-                              <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
-                              <div className='listing-info-style'>
-                                <h5 className='listing-title-style'>A very nice red office chair</h5>
-                                <h4 className='listing-price-style'>$999</h4>
-                                <h5 className='listing-type-style'><b>Type:</b> Office Chair</h5>
-                                <h5 className='listing-quantity-style'><b>Amount:</b> 1</h5>
-
-                                <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>32</span></span>
-                                <Divider />
-                                <span className='listing-owner-style'>
-                                  <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
-                                    <AccountCircleIcon />
-                                  </Avatar>
-                                  <span className='listing-owner-name-style'>
-                                    tkai
-                                  </span>
-                                </span>
-                              </div>
-                            </Paper>
-                          </Grid>
-                          <Grid item xs={6} sm={6} md={4} lg={3}>
-                            <Paper className='listing-styles' elevation={12}>
-                              <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
-                              <div className='listing-info-style'>
-                                <h5 className='listing-title-style'>A very nice red office chair</h5>
-                                <h4 className='listing-price-style'>$999</h4>
-                                <h5 className='listing-type-style'><b>Type:</b> Office Chair</h5>
-                                <h5 className='listing-quantity-style'><b>Amount:</b> 1</h5>
-
-                                <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>32</span></span>
-                                <Divider />
-                                <span className='listing-owner-style'>
-                                  <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
-                                    <AccountCircleIcon />
-                                  </Avatar>
-                                  <span className='listing-owner-name-style'>
-                                    tkai
-                                  </span>
-                                </span>
-                              </div>
-                            </Paper>
-                          </Grid>
-                          <Grid item xs={6} sm={6} md={4} lg={3}>
-                            <Paper className='listing-styles' elevation={12}>
-                              <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
-                              <div className='listing-info-style'>
-                                <h5 className='listing-title-style'>A very nice red office chair</h5>
-                                <h4 className='listing-price-style'>$999</h4>
-                                <h5 className='listing-type-style'><b>Type:</b> Office Chair</h5>
-                                <h5 className='listing-quantity-style'><b>Amount:</b> 1</h5>
-
-                                <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>32</span></span>
-                                <Divider />
-                                <span className='listing-owner-style'>
-                                  <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
-                                    <AccountCircleIcon />
-                                  </Avatar>
-                                  <span className='listing-owner-name-style'>
-                                    tkai
-                                  </span>
-                                </span>
-                              </div>
-                            </Paper>
-                          </Grid>
-                          <Grid item xs={6} sm={6} md={4} lg={3}>
-                            <Paper className='listing-styles' elevation={12}>
-                              <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
-                              <div className='listing-info-style'>
-                                <h5 className='listing-title-style'>A very nice red office chair</h5>
-                                <h4 className='listing-price-style'>$999</h4>
-                                <h5 className='listing-type-style'><b>Type:</b> Office Chair</h5>
-                                <h5 className='listing-quantity-style'><b>Amount:</b> 1</h5>
-
-                                <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>32</span></span>
-                                <Divider />
-                                <span className='listing-owner-style'>
-                                  <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
-                                    <AccountCircleIcon />
-                                  </Avatar>
-                                  <span className='listing-owner-name-style'>
-                                    tkai
-                                  </span>
-                                </span>
-                              </div>
-                            </Paper>
-                          </Grid>
-                          <Grid item xs={6} sm={6} md={4} lg={3}>
-                            <Paper className='listing-styles' elevation={12}>
-                              <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
-                              <div className='listing-info-style'>
-                                <h5 className='listing-title-style'>A very nice red office chair</h5>
-                                <h4 className='listing-price-style'>$999</h4>
-                                <h5 className='listing-type-style'><b>Type:</b> Office Chair</h5>
-                                <h5 className='listing-quantity-style'><b>Amount:</b> 1</h5>
-
-                                <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>32</span></span>
-                                <Divider />
-                                <span className='listing-owner-style'>
-                                  <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
-                                    <AccountCircleIcon />
-                                  </Avatar>
-                                  <span className='listing-owner-name-style'>
-                                    tkai
-                                  </span>
-                                </span>
-                              </div>
-                            </Paper>
-                          </Grid>
+                          {itemListRender}
                         </Grid>
 
                       </div>

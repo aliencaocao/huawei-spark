@@ -99,7 +99,7 @@ const Login = (props) => {
 
     return (
         <div className='login-page fadeIn' style={{ height: "100%", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "2ch", flexDirection: "column" }}>
-            <div style={{ width: '100%', marginTop: "4ch", marginBottom: "4ch", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.8)", padding: "2.5ch", border: "1px transparent solid", borderRadius: "25px", boxShadow: "7px 7px 6px 6px rgba(0, 0, 0, .5)" }}>
+            <div style={{ width: '100%', marginTop: "4ch", marginBottom: "4ch", display: "flex", flexDirection: "column",  alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.8)", padding: "2.5ch", border: "1px transparent solid", borderRadius: "25px", boxShadow: "7px 7px 6px 6px rgba(0, 0, 0, .5)" }}>
                 <img src={ecoShopSVG} style={{ width: "30%", marginTop: "2ch", marginBottom: "-2ch" }} />
                 {registerPage ? (
                     <Register setRegisterPage={setRegisterPage} handleNewLogin={props.handleNewLogin} />) : (
@@ -107,7 +107,7 @@ const Login = (props) => {
 
                         <h1 style={{ alignSelf: "flex-start" }}>Sign In</h1>
                         <form
-                            style={{ display: "flex", flexDirection: "column", width: "100%" }}
+                            style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center" }}
                             onSubmit={async (e) => {
                                 e.preventDefault()
                                 updateLoginLoading(true)
