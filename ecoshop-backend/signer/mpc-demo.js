@@ -2,8 +2,8 @@ var signer = require('./signer');
 var https = require("https");
 var sig = new signer.Signer();
 //Set the AK/SK to sign and authenticate the request.
-sig.Key = "A8S7pYJqL29pD9ofSa7P";
-sig.Secret = "j1FdXTZGKz4IEKBXc2x3I6wJ2gBf4CwGpi43r3so";
+sig.Key = "";
+sig.Secret = "";
 
 //The following example shows how to set the request URL and parameters to query a VPC list.
 //Specify a request method, such as GET, PUT, POST, DELETE, HEAD, and PATCH.

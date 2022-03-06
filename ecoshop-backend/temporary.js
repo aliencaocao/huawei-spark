@@ -16,21 +16,15 @@ exports.handler = async (event, context) => {
       'statusCode': 200,
       'body': JSON.stringify({
         status: 'allow',
-        context: { authData }, // Remember to map "authData" in API Gateway
-      }),
-    };
+        context: { authData } // Remember to map "authData" in API Gateway
+      })
+    }
   }
   catch (e) {
     console.error(e)
     return {
       'statusCode': 200,
-      'body': JSON.stringify({
-        status: 'deny',
-        context: {
-          code: "1001",
-          message: "incorrect-login",
-        },
-      }),
-    };
+      'body': JSON.stringify({ status: 'deny', error: "invalid-token" })
+    }
   }
 };

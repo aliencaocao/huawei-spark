@@ -29,7 +29,7 @@ exports.initializer = async (context, callback) => {
 
   try {
     signer = new RD.Signer(context.getUserData("secret"), context.getUserData("salt")), // MUST DECLARE ENCRYPTED VARIABLE
-    connection = await mysql.createConnection(JSON.parse(context.getUserData("gaussDBconnect"))) // MUST CONNECT IN VPC FOR DATABASE USAGE
+      connection = await mysql.createConnection(JSON.parse(context.getUserData("gaussDBconnect"))) // MUST CONNECT IN VPC FOR DATABASE USAGE
 
     callback(null, '');
   } catch (e) {
@@ -40,7 +40,6 @@ exports.initializer = async (context, callback) => {
 exports.handler = async (event, context) => {
 
   try {
-
     const body = JSON.parse((Buffer.from(event.body, 'base64')).toString()) 
   
     if (!("username" in body) || !("password" in body)) return validationError
