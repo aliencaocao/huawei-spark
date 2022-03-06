@@ -8,7 +8,7 @@ let connection = null;
 
 exports.initializer = async (context, callback) => {
   try {
-    signer = new RD.Signer(context.getUserData("secret"), context.getUserData("salt")), // MUST DECLARE ENCRYPTED VARIABLE AND SALT
+    // signer = new RD.Signer(context.getUserData("secret"), context.getUserData("salt")), // MUST DECLARE ENCRYPTED VARIABLE AND SALT
     connection = await mysql.createConnection(JSON.parse(context.getUserData("gaussDBconnect"))) // MUST CONNECT IN VPC FOR DATABASE USAGE
 
     callback(null, '');
@@ -19,7 +19,7 @@ exports.initializer = async (context, callback) => {
 
 exports.handler = async (event, context) => {
   try {
-    const tokenData = JSON.parse(signer.unsign(event.headers["authorization"] ? event.headers["authorization"] : "")); // only for functions which require authentication.
+    // const tokenData = JSON.parse(signer.unsign(event.headers["authorization"] ? event.headers["authorization"] : "")); // only for functions which require authentication.
 
     // function logic goes here...
 
