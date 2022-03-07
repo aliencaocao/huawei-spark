@@ -41,7 +41,7 @@ let fieldsObj = {}
 const searchQuery = debounce(async (query, setListLoading, updateItemList, enqueueSnackbar, updateFilterList) => {
   setListLoading(true)
   let body = {}
-  if (query !== "") body.query = query
+  if (query !== "") { body.query = query
   await Promise.all([
     fetch(window.globalURL + "/product/query", {
       method: 'POST',
@@ -109,6 +109,37 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
       });
       console.log(error)
     })])
+  }
+  else {
+    await fetch(window.globalURL + "/product/query", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', "Authorization": window.token },
+      body: JSON.stringify(body)
+    }).then((results) => {
+      return results.json(); //return data in JSON (since its JSON data)
+    }).then(async (data) => {
+      if (data.success === true) {
+        updateItemList(data)
+      }
+      else {
+        enqueueSnackbar("Oops. Unknown error", {
+          variant: 'error',
+          autoHideDuration: 2500
+        })
+        console.log(data)
+      }
+
+    }).catch((error) => {
+      enqueueSnackbar("There was an issue connecting to the server", {
+        variant: 'error',
+        autoHideDuration: 2500
+      });
+      console.log(error)
+    })
+    attributesList = []
+    fieldsObj = {}
+    updateFilterList([])
+  }
   setListLoading(false)
 }, 300)
 
@@ -328,7 +359,7 @@ const App = () => {
                         <div style={{ height: "fit-content", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", paddingBottom: "10vh", marginTop: "6ch" }}>
                           {searchMode && (
                             <Paper elevation={12} style={{ width: "100%", padding: "2ch", marginTop: "1ch" }}>
-                              <span style={{ fontSize: "2ch", fontWeight: "bold" }}>Filters {listLoading && (<CircularProgress size="2ch" />)}</span>
+                              <span style={{ fontSize: "2ch", fontWeight: "bold" }}>Filters {listLoading && (<CircularProgress size="2ch" style={{marginLeft: "1ch"}} />)}</span>
                               {!listLoading && (
                                 <form
                                   style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center" }}
