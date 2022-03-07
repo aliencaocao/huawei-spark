@@ -1,6 +1,8 @@
 import './App.css';
-import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction, Button, Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton } from '@mui/material'
+import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction,  Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem } from '@mui/material'
+import { LoadingButton } from '@mui/lab/';
 import { Fragment, useEffect, useState } from 'react';
+import useStateRef from 'react-usestateref'
 import { useSnackbar } from 'notistack';
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
@@ -18,6 +20,7 @@ import HandymanIcon from '@mui/icons-material/Handyman';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -36,39 +39,61 @@ for (let i = 0; i < 6; i++) {
     </Grid>)
 }
 let attributesList = []
-let fieldsObj = {}
+let attributeData = {}
 
-const searchQuery = debounce(async (query, setListLoading, updateItemList, enqueueSnackbar, updateFilterList) => {
+
+const debouncedNumberCheck = debounce((e, current, setNumbersValuesList, numberValuesListRef, updateFilterList) => {
+  const number = Number(e.target.value)
+  if (e.target.value !== "" && !isNaN(number)) {
+    numberValuesListRef.current[current.attr_name] = true
+    setNumbersValuesList(numberValuesListRef.current)
+    renderFilterList(attributeData, numberValuesListRef, setNumbersValuesList, updateFilterList)
+  }
+  else if (numberValuesListRef.current[current.attr_name]) {
+    numberValuesListRef.current[current.attr_name] = false
+    setNumbersValuesList(numberValuesListRef.current)
+    renderFilterList(attributeData, numberValuesListRef, setNumbersValuesList, updateFilterList)
+    // Whenever an item in a list of components changes, you have to RE-CREATE THE ENTIRE LIST for a change to occur
+    // react will then look through the list and determine what needs to be re-rendered
+  }
+}, 100)
+
+const renderFilterList = (data, numberValuesListRef, setNumbersValuesList, updateFilterList) => {
+  let queryAttributeList = []
+  for (let i = 0; i < data.attributes.length; i++) {
+    const current = data.attributes[i]
+    const queryAttribute = (
+      <div key={current.attr_name + "-attribute"} style={{ display: "flex", alignItems: "center", marginTop: "1ch", textTransform: "capitalize" }}>
+        <Checkbox name={"check-" + current.attr_name} />
+        <TextField fullWidth onChange={(e) => {
+          debouncedNumberCheck(e, current, setNumbersValuesList, numberValuesListRef, updateFilterList)
+        }} name={"value-" + current.attr_name} label={current.attr_name} style={{ marginRight: "1ch" }} size="small" />
+        {numberValuesListRef.current[current.attr_name] && (
+          <Select
+            name={"equality-" + current.attr_name}
+            label="Age"
+            key={"equality-" + current.attr_name}
+            defaultValue="gt"
+            size='small'
+          >
+            <MenuItem value="gt">Greater Than</MenuItem>
+            <MenuItem value="eq">Equal</MenuItem>
+            <MenuItem value="lt">Less Than</MenuItem>
+          </Select>
+        )}
+      </div>)
+    queryAttributeList.push(queryAttribute)
+  }
+  updateFilterList(queryAttributeList)
+}
+
+const searchQuery = debounce(async (query, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading) => {
   setListLoading(true)
   let body = {}
-  if (query !== "") { body.query = query
-  await Promise.all([
-    fetch(window.globalURL + "/product/query", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', "Authorization": window.token },
-      body: JSON.stringify(body)
-    }).then((results) => {
-      return results.json(); //return data in JSON (since its JSON data)
-    }).then(async (data) => {
-      if (data.success === true) {
-        updateItemList(data)
-      }
-      else {
-        enqueueSnackbar("Oops. Unknown error", {
-          variant: 'error',
-          autoHideDuration: 2500
-        })
-        console.log(data)
-      }
+  if (query !== "") {
+    setFilterLoading(true)
+    body.query = query
 
-    }).catch((error) => {
-      enqueueSnackbar("There was an issue connecting to the server", {
-        variant: 'error',
-        autoHideDuration: 2500
-      });
-      console.log(error)
-    })
-    ,
     fetch(window.globalURL + "/product/attributes/query", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', "Authorization": window.token },
@@ -78,21 +103,17 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
     }).then(async (data) => {
       if (data.success === true) {
         attributesList = []
-        fieldsObj = {}
-        let queryAttributeList = []
+        let tempNumbersValuesList = {}
         for (let i = 0; i < data.attributes.length; i++) {
           const current = data.attributes[i]
-          const queryAttribute = (
-            <div key={current.attr_name + "-attribute"} style={{ display: "flex", alignItems: "center", marginTop: "1ch", textTransform: "capitalize" }}>
-              <Checkbox name={"check-" + current.attr_name} />
-              <span style={{ marginRight: "1ch", whiteSpace: "nowrap" }}>{current.attr_name}: </span>
-              <TextField name={"value-" + current.attr_name} size="small" placeholder="Enter value" />
-            </div>)
-          queryAttributeList.push(queryAttribute)
+          tempNumbersValuesList[current.attr_name] = false
           attributesList.push(current.attr_name)
         }
-        updateFilterList(queryAttributeList)
-
+        setNumbersValuesList(tempNumbersValuesList)
+        attributeData = data
+        renderFilterList(data, numberValuesListRef, setNumbersValuesList, updateFilterList)
+        if (data.attributes.length === 0) updateFilterList([])
+        setFilterLoading(false)
       }
       else {
         enqueueSnackbar("Oops. Unknown error", {
@@ -100,6 +121,7 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
           autoHideDuration: 2500
         })
         console.log(data)
+        setFilterLoading(false)
       }
 
     }).catch((error) => {
@@ -108,38 +130,37 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
         autoHideDuration: 2500
       });
       console.log(error)
-    })])
-  }
-  else {
-    await fetch(window.globalURL + "/product/query", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', "Authorization": window.token },
-      body: JSON.stringify(body)
-    }).then((results) => {
-      return results.json(); //return data in JSON (since its JSON data)
-    }).then(async (data) => {
-      if (data.success === true) {
-        updateItemList(data)
-      }
-      else {
-        enqueueSnackbar("Oops. Unknown error", {
-          variant: 'error',
-          autoHideDuration: 2500
-        })
-        console.log(data)
-      }
-
-    }).catch((error) => {
-      enqueueSnackbar("There was an issue connecting to the server", {
-        variant: 'error',
-        autoHideDuration: 2500
-      });
-      console.log(error)
+      setFilterLoading(false)
     })
-    attributesList = []
-    fieldsObj = {}
-    updateFilterList([])
   }
+  await fetch(window.globalURL + "/product/query", {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', "Authorization": window.token },
+    body: JSON.stringify(body)
+  }).then((results) => {
+    return results.json(); //return data in JSON (since its JSON data)
+  }).then(async (data) => {
+    if (data.success === true) {
+      updateItemList(data)
+    }
+    else {
+      enqueueSnackbar("Oops. Unknown error", {
+        variant: 'error',
+        autoHideDuration: 2500
+      })
+      console.log(data)
+    }
+
+  }).catch((error) => {
+    enqueueSnackbar("There was an issue connecting to the server", {
+      variant: 'error',
+      autoHideDuration: 2500
+    });
+    console.log(error)
+  })
+
+  attributesList = []
+
   setListLoading(false)
 }, 300)
 
@@ -152,8 +173,10 @@ const App = () => {
   const [itemListRender, updateItemListRender] = useState([])
   const [filterList, updateFilterList] = useState([])
   const [listLoading, setListLoading] = useState(false)
+  const [filterloading, setFilterLoading] = useState(false)
   const [searchMode, setSearchMode] = useState(false)
   const [searchValue, setSearchValue] = useState("")
+  const [numberValuesList, setNumbersValuesList, numberValuesListRef] = useStateRef({})
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleNewLogin = (token, rememberMe) => {
@@ -175,15 +198,28 @@ const App = () => {
   }
 
   const handleFilterSubmit = async (e) => {
-    console.log(e)
+    let fieldsObj = []
     for (let i = 0; i < attributesList.length; i++) {
       const currentCheckbox = e.target["check-" + attributesList[i]]
-      console.log(currentCheckbox.checked)
       if (currentCheckbox.checked) {
-        const currentValue = e.target["value-" + attributesList[i]]
-        console.log(currentValue)
+        let fields = {}
+        const currentValue = e.target["value-" + attributesList[i]].value
+        fields.attr = attributesList[i]
+        if (numberValuesList[attributesList[i]]) {
+          // current attribute is a number attribute
+          fields.value = Number(currentValue)
+          fields.type = "int"
+          const currentEquality = e.target["equality-" + attributesList[i]].value
+          fields.condition = currentEquality
+        }
+        else {
+          fields.value = currentValue
+          fields.type = "str"
+        }
+        fieldsObj.push(fields)
       }
     }
+    if (fieldsObj.length > 0) loadItemList(searchValue, fieldsObj)
   }
 
   const updateItemList = async (data) => {
@@ -193,7 +229,7 @@ const App = () => {
       const itemComponent = (
         <Grid item xs={6} sm={6} md={4} lg={3} key={current.name + "-" + current.owner}>
           <Paper className='listing-styles' elevation={12}>
-            <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
+            <img src={current.obs_image} style={{ width: "100%", maxHeight: "15ch" }} />
             <div className='listing-info-style'>
               <h5 className='listing-title-style'>{current.name}</h5>
               <h4 className='listing-price-style'>${current.price}</h4>
@@ -220,12 +256,15 @@ const App = () => {
     updateItemListRender(itemList)
   }
 
-  const loadItemList = async () => {
+  const loadItemList = async (query = false, fields = false) => {
     setListLoading(true)
+    let body = {}
+    if (fields) body.fields = fields
+    if (query) body.query = query
     await fetch(window.globalURL + "/product/query", {
       method: 'post',
       headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
-      body: JSON.stringify({})
+      body: JSON.stringify(body)
     }).then((results) => {
       return results.json(); //return data in JSON (since its JSON data)
     }).then(async (data) => {
@@ -320,7 +359,7 @@ const App = () => {
                     <AppBar>
                       <div style={{ height: "5ch", margin: "1ch", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <img className={(searchMode ? 'shrink-animation-style' : 'grow-animation-style') + ' icon-style'} src={ecoShopIcon} />
-                        <TextField value={searchValue} onChange={(e) => { searchQuery(e.target.value, setListLoading, updateItemList, enqueueSnackbar, updateFilterList); setSearchValue(e.target.value) }} onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search' size="small"
+                        <TextField value={searchValue} onChange={(e) => { searchQuery(e.target.value, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading); setSearchValue(e.target.value) }} onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search' size="small"
                           InputProps={
                             searchMode ? {
                               startAdornment: (
@@ -329,6 +368,7 @@ const App = () => {
                                   if (searchValue !== "") {
                                     loadItemList()
                                     setSearchValue("")
+                                    updateFilterList([])
                                   }
                                 }
                                 }>
@@ -356,11 +396,11 @@ const App = () => {
                     </AppBar>
                     <PullToRefresh isPullable={!searchMode} onRefresh={loadItemList} pullDownThreshold={120} maxPullDownDistance={145} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
                       <Grow in={true}>
-                        <div style={{ height: "fit-content", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", paddingBottom: "10vh", marginTop: "6ch" }}>
+                        <div style={{ height: "fit-content", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
                           {searchMode && (
                             <Paper elevation={12} style={{ width: "100%", padding: "2ch", marginTop: "1ch" }}>
-                              <span style={{ fontSize: "2ch", fontWeight: "bold" }}>Filters {listLoading && (<CircularProgress size="2ch" style={{marginLeft: "1ch"}} />)}</span>
-                              {!listLoading && (
+                              <span style={{ fontSize: "2ch", fontWeight: "bold", display: "flex", alignContent: "center" }}>Filters <FilterListIcon style={{ marginLeft: "4px" }} /> {filterloading && (<CircularProgress size="2ch" style={{ marginLeft: "1ch" }} />)}</span>
+                              {!filterloading && (
                                 <form
                                   style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center" }}
                                   onSubmit={async (e) => {
@@ -369,7 +409,9 @@ const App = () => {
                                   }}
                                 >
                                   {filterList}
-                                  <Button type="submit">Submit</Button>
+                                  <div style={{ marginTop: "3ch", alignSelf: "center" }}>
+                                    {filterList.length > 0 ? (<LoadingButton loading={listLoading} type="submit" variant='outlined'>Apply Filters</LoadingButton>) : <span style={{ display: "flex", alignItems: "center" }}>No Filters Available  <SentimentDissatisfiedIcon style={{ marginLeft: "4px", color: "#2196f3" }} /></span>}
+                                  </div>
                                 </form>
                               )}
                             </Paper>
@@ -385,7 +427,7 @@ const App = () => {
                           )
                             : (
                               <Fade in={true}>
-                                <Grid container spacing={2} style={{ width: "100%" }}>
+                                <Grid container spacing={2} style={{ width: "100%", marginBottom: "20vh" }}>
                                   {itemListRender.length === 0 ? (
                                     <Grid item columns={12} style={{ width: "100%" }}>
                                       <Paper style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2ch" }} elevation={12}>
