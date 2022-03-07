@@ -75,6 +75,7 @@ const renderFilterList = (data, numberValuesListRef, setNumbersValuesList, updat
             key={"equality-" + current.attr_name}
             defaultValue="gt"
             variant='filled'
+            size='small'
           >
             <MenuItem value="gt">Greater Than</MenuItem>
             <MenuItem value="eq">Equal</MenuItem>
@@ -229,7 +230,7 @@ const App = () => {
       const itemComponent = (
         <Grid item xs={6} sm={6} md={4} lg={3} key={current.name + "-" + current.owner}>
           <Paper className='listing-styles' elevation={12}>
-            <img src={officerChair} style={{ width: "100%", maxHeight: "15ch" }} />
+            <img src={current.obs_image} style={{ width: "100%", maxHeight: "15ch" }} />
             <div className='listing-info-style'>
               <h5 className='listing-title-style'>{current.name}</h5>
               <h4 className='listing-price-style'>${current.price}</h4>
