@@ -1,42 +1,25 @@
 import os
-import requests
-import base64
+import sys
+sys.path.append('..')
 import json
-import pickle
-import time
+import base64
+import urllib3
+import requests
+import obtain_token
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-if not (os.path.isfile('../token.pickle') and time.time() - os.path.getmtime('../token.pickle') < 86000):  # a day - 400 seconds buffer
-    print('Requesting token...')
-    token_url = 'https://iam.myhuaweicloud.com/v3/auth/tokens'
-    headers = {'Content-Type': 'application/json'}
-    with open('../creds.json', 'r') as f:
-        payload = json.load(f)
-    response = requests.post(token_url, headers=headers, json=payload, verify=False)
-    if response.status_code == 201:
-        print('Token request successful!')
-        print(response.text)
-        token = response.headers['X-Subject-Token']
-        with open('../token.pickle', 'wb') as f:
-            pickle.dump(token, f)
-    else:
-        print(response.text)
-        raise Exception('Token request failed!')
-else:
-    with open('../token.pickle', 'rb') as f:
-        token = pickle.load(f)
-
+token = obtain_token.get_token(region='ap-1')  # only avail in AP-1
 
 url = "https://image.ap-southeast-1.myhuaweicloud.com/v2/017ae3a1064e417fb0c520416f56fb26/image/tagging"
 headers = {'Content-Type': 'application/json', 'X-Auth-Token': token}
 
-image_path = r'office.jpg'
+image_path = 'office.jpg'
 with open(image_path, "rb") as f:
     image_base64 = base64.b64encode(f.read()).decode("utf-8")
 payload = {"image": image_base64, 'language': 'en'}  # Set either the URL or the image.
 
 print('POSTing request to the server')
 response = requests.post(url, headers=headers, json=payload, verify=False)
-print(response.text)
 
 # Parsing
 if response.status_code == 200:
