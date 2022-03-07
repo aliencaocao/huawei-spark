@@ -54,7 +54,19 @@ exports.handler = async (event, context) => {
           "object": path.replace("user-video", "mpc-video"),
         },
         "output_filenames": ["output"],
-        "trans_template_id": [7000512] // DASH + HLS
+        "trans_template_id": [7000512], // DASH + HLS
+        "thumbnail": {
+          // "out": {
+          //   "bucket": "ecoshop-data",
+          //   "location": "ap-southeast-3",
+          //   "object": "user-video/",
+          // },
+          "params": {
+            "type": "DOTS",
+            "dots": [4],
+            "output_filename": "thumbnail.jpg",
+          },
+        },
       });
 
       var opt = sig.Sign(r);
@@ -81,7 +93,7 @@ exports.handler = async (event, context) => {
       let productId = path.split(".")[1];
       const [rows, fields] = await connection.execute(
         "INSERT INTO `social_video` (`obs_location`, `impressions`) VALUES (?, ?)",
-        [path, 0],
+        [path.split("/")[1], 0],
       );
       await connection.execute(
         "INSERT INTO `social_video_product` (`video`, `product`) VALUES (?, ?)",

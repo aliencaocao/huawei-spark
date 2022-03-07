@@ -55,27 +55,31 @@ exports.handler = async (event, context) => {
       else { // query by text and filters
         let substitutions = [body["query"]];
         let conditions = "";
+        let firstField = true;
 
         for (const searchField of body["fields"]) {
+          if (!firstField) conditions += "OR ";
+          else firstField = false;
+
           if (searchField["type"] == "int") {
-            conditions += "AND `product_attr`.`attr_name` = ? ";
+            conditions += "(`product_attr`.`attr_name` = ? ";
 
             if (searchField["condition"] == "gt") {
-              conditions += "AND `product_attr`.`attr_int` > ? ";
+              conditions += "AND `product_attr`.`attr_int` > ?) ";
             }
             else if (searchField["condition"] == "lt") {
-              conditions += "AND `product_attr`.`attr_int` < ? ";
+              conditions += "AND `product_attr`.`attr_int` < ?) ";
             }
             else {
-              conditions += "AND `product_attr`.`attr_int` = ? ";
+              conditions += "AND `product_attr`.`attr_int` = ?) ";
             }
 
             substitutions.push(searchField["attr"]);
             substitutions.push(searchField["value"]);
           }
           else if (searchField["type"] == "str") {
-            conditions += "AND `product_attr`.`attr_name` = ? ";
-            conditions += "AND `product_attr`.`attr_text` LIKE ? ";
+            conditions += "(`product_attr`.`attr_name` = ? ";
+            conditions += "AND `product_attr`.`attr_text` LIKE ?) ";
 
             substitutions.push(searchField["attr"]);
             substitutions.push(searchField["value"] + "%");
@@ -87,6 +91,7 @@ exports.handler = async (event, context) => {
           "INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` " +
           "LEFT OUTER JOIN `user_product_bookmark` ON `user_product_bookmark`.`product` = `product`.`id` " +
           "WHERE MATCH(`name`, `tags`) AGAINST(? IN BOOLEAN MODE) " +
+            "AND " +
             conditions +
             "AND `product_image`.`order` = 1 " +
           "GROUP BY `id` ORDER BY `id` DESC LIMIT 21 ");
@@ -98,6 +103,7 @@ exports.handler = async (event, context) => {
           "INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` " +
           "LEFT OUTER JOIN `user_product_bookmark` ON `user_product_bookmark`.`product` = `product`.`id` " +
           "WHERE MATCH(`name`, `tags`) AGAINST(? IN BOOLEAN MODE) " +
+            "AND " +
             conditions +
             "AND `product_image`.`order` = 1 " +
           "GROUP BY `id` ORDER BY `id` DESC LIMIT 21 ",
