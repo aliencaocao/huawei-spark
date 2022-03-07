@@ -12,7 +12,7 @@ url = 'https://moderation.ap-southeast-3.myhuaweicloud.com/v2/017ae3a1064e417fb0
 headers = {'Content-Type': 'application/json', 'X-Auth-Token': token}
 
 text = 'fuck your mother you are gay'
-payload = {"items": [{'text': text}], 'categories': ['porn', 'abuse', 'contraband', 'flood']}  # 'terrorism' for unknown reason says IAM user not authorized but porn works
+payload = {"items": [{'text': text}], 'categories': ['porn', 'abuse', 'contraband', 'flood']}
 
 print('POSTing request to the server')
 response = requests.post(url, headers=headers, json=payload, verify=False)
