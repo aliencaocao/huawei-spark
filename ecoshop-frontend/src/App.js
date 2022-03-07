@@ -65,7 +65,7 @@ const renderFilterList = (data, numberValuesListRef, setNumbersValuesList, updat
     const queryAttribute = (
       <div key={current.attr_name + "-attribute"} style={{ display: "flex", alignItems: "center", marginTop: "1ch", textTransform: "capitalize" }}>
         <Checkbox name={"check-" + current.attr_name} />
-        <TextField onChange={(e) => {
+        <TextField fullWidth onChange={(e) => {
           debouncedNumberCheck(e, current, setNumbersValuesList, numberValuesListRef, updateFilterList)
         }} name={"value-" + current.attr_name} label={current.attr_name} style={{ marginRight: "1ch" }} size="small" />
         {numberValuesListRef.current[current.attr_name] && (
@@ -74,7 +74,6 @@ const renderFilterList = (data, numberValuesListRef, setNumbersValuesList, updat
             label="Age"
             key={"equality-" + current.attr_name}
             defaultValue="gt"
-            variant='filled'
             size='small'
           >
             <MenuItem value="gt">Greater Than</MenuItem>
