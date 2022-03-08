@@ -1,5 +1,5 @@
 import './App.css';
-import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction,  Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem } from '@mui/material'
+import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction, Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem } from '@mui/material'
 import { LoadingButton } from '@mui/lab/';
 import { Fragment, useEffect, useState } from 'react';
 import useStateRef from 'react-usestateref'
@@ -13,7 +13,7 @@ import Shorts from './Components/Shorts';
 import Login from './Components/Login';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import ChatIcon from '@mui/icons-material/Chat';
-import officerChair from './assets/officechair.png';
+import VideoList from './Components/VideoList';
 import PullToRefresh from 'react-simple-pull-to-refresh';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import HandymanIcon from '@mui/icons-material/Handyman';
@@ -22,7 +22,6 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ecoShopIcon from './assets/ecoshop.svg';
 import { debounce } from 'lodash';
@@ -87,7 +86,7 @@ const renderFilterList = (data, numberValuesListRef, setNumbersValuesList, updat
   updateFilterList(queryAttributeList)
 }
 
-const searchQuery = debounce(async (query, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading) => {
+const searchQuery = debounce(async (query, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading, loadVideoList) => {
   setListLoading(true)
   let body = {}
   if (query !== "") {
@@ -133,6 +132,7 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
       setFilterLoading(false)
     })
   }
+  loadVideoList(query)
   await fetch(window.globalURL + "/product/query", {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', "Authorization": window.token },
@@ -173,6 +173,8 @@ const App = () => {
   const [itemListRender, updateItemListRender] = useState([])
   const [filterList, updateFilterList] = useState([])
   const [listLoading, setListLoading] = useState(false)
+  const [videoData, setVideoData] = useState([])
+  const [videoListLoading, setVideoListLoading] = useState(false)
   const [filterloading, setFilterLoading] = useState(false)
   const [searchMode, setSearchMode] = useState(false)
   const [searchValue, setSearchValue] = useState("")
@@ -188,6 +190,7 @@ const App = () => {
 
     enqueueSnackbar("Welcome back " + tokenData.username + "!", { variant: "success", autoHideDuration: 1500 })
     loadItemList()
+    loadVideoList()
   }
 
   const handleLogout = () => {
@@ -229,7 +232,7 @@ const App = () => {
       const itemComponent = (
         <Grid item xs={6} sm={6} md={4} lg={3} key={current.name + "-" + current.owner}>
           <Paper className='listing-styles' elevation={12}>
-            <img src={current.obs_image} style={{ width: "100%", maxHeight: "15ch" }} />
+            <img src={current.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
             <div className='listing-info-style'>
               <h5 className='listing-title-style'>{current.name}</h5>
               <h4 className='listing-price-style'>${current.price}</h4>
@@ -289,6 +292,38 @@ const App = () => {
     setListLoading(false)
   }
 
+  const loadVideoList = async (query = false) => {
+    setVideoListLoading(true)
+    let body = {}
+    if (query) body.query = query
+    await fetch(window.globalURL + "/video/query", {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
+      body: JSON.stringify(body)
+    }).then((results) => {
+      return results.json(); //return data in JSON (since its JSON data)
+    }).then(async (data) => {
+      if (data.success === true) {
+        setVideoData(data.listings)
+      }
+      else {
+        enqueueSnackbar("Oops. Unknown error", {
+          variant: 'error',
+          autoHideDuration: 2500
+        })
+        console.log(data)
+      }
+
+    }).catch((error) => {
+      console.log(error)
+      enqueueSnackbar("There was an issue connecting to the server", {
+        variant: 'error',
+        autoHideDuration: 2500
+      });
+    })
+    setVideoListLoading(false)
+  }
+
   useEffect(() => {
 
     const startup = async () => {
@@ -308,6 +343,7 @@ const App = () => {
               const tokenData = JSON.parse(localStorageToken.split(".")[0])
 
               loadItemList()
+              loadVideoList()
               updateUsername(tokenData.username)
               enqueueSnackbar("Welcome back " + tokenData.username + "!", {
                 variant: 'success',
@@ -359,7 +395,7 @@ const App = () => {
                     <AppBar>
                       <div style={{ height: "5ch", margin: "1ch", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <img className={(searchMode ? 'shrink-animation-style' : 'grow-animation-style') + ' icon-style'} src={ecoShopIcon} />
-                        <TextField value={searchValue} onChange={(e) => { searchQuery(e.target.value, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading); setSearchValue(e.target.value) }} onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search' size="small"
+                        <TextField value={searchValue} onChange={(e) => { searchQuery(e.target.value, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading, loadVideoList); setSearchValue(e.target.value) }} onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search Videos/Items/Products' size="small"
                           InputProps={
                             searchMode ? {
                               startAdornment: (
@@ -367,6 +403,7 @@ const App = () => {
                                   setSearchMode(false);
                                   if (searchValue !== "") {
                                     loadItemList()
+                                    loadVideoList()
                                     setSearchValue("")
                                     updateFilterList([])
                                   }
@@ -394,7 +431,10 @@ const App = () => {
 
                       </div>
                     </AppBar>
-                    <PullToRefresh isPullable={!searchMode} onRefresh={loadItemList} pullDownThreshold={120} maxPullDownDistance={145} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
+                    <PullToRefresh isPullable={!searchMode} onRefresh={async () => {
+                      await Promise.all([loadItemList(), loadVideoList()])
+                      return true
+                    }} pullDownThreshold={90} maxPullDownDistance={115} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
                       <Grow in={true}>
                         <div style={{ height: "fit-content", width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
                           {searchMode && (
@@ -416,10 +456,9 @@ const App = () => {
                               )}
                             </Paper>
                           )}
-                          <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h2>Your Videos</h2>)}</Divider>
+                          <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h3>Your Videos</h3>)}</Divider>
+                          <VideoList data={videoData} loading={videoListLoading} />
                           <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Item/Services Results For: <b>{searchValue}</b></h5>) : (<h2>Your Picks</h2>)}</Divider>
-
-
                           {listLoading ? (
                             <Grid container spacing={2}>
                               {listLoadingSkeleton}
@@ -432,7 +471,7 @@ const App = () => {
                                     <Grid item columns={12} style={{ width: "100%" }}>
                                       <Paper style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2ch" }} elevation={12}>
                                         <SentimentDissatisfiedIcon style={{ fontSize: "5ch", color: "#2196f3" }} />
-                                        <h3>No Results Were Found</h3>
+                                        <h3>No Products/Services Were Found</h3>
                                         <span>Perhaps try typing a different search query?</span>
                                       </Paper>
                                     </Grid>
