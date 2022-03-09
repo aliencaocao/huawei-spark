@@ -69,7 +69,7 @@ config = AutoConfig.from_pretrained(
     cache_dir=cache_dir,
     local_files_only=offline_mode)
 tokenizer = AutoTokenizer.from_pretrained(
-    tokenizer_name,  # if tokenizer_name else tagger_model_dir,  # TODO: to test, can remove if runs
+    tokenizer_name,
     cache_dir=cache_dir,
     use_fast=True,
     local_files_only=offline_mode)
@@ -105,8 +105,8 @@ def gen_tags(source):
     ds_id += 1
     dataset_name = f'temp{ds_id}'
     data_dir = os.path.join('datasets', dataset_name)
-    max_keywords = '5'  # default for CNNDM is 30
-    conf_threshold = '0.3'  # default for CNNDM is 0.25
+    max_keywords = '30'  # default for CNNDM is 30
+    conf_threshold = '0.25'  # default for CNNDM is 0.25
     summary_size = '10'  # default for CNNDM is 10
     if not os.path.isdir(data_dir):
         os.makedirs(data_dir)
@@ -129,7 +129,6 @@ def gen_tags(source):
     preds_list, preds_prob_list = align_predictions(predictions, label_ids)
     if trainer.is_world_master():
         test_examples = load_dataset('json', data_files=os.path.join(data_dir, f'{split}.seqlabel.jsonl'), cache_dir=os.path.join(data_dir, 'hf_cache'))
-
         if 'train' in test_examples:
             test_examples = test_examples['train']
         with open(os.path.join(tagger_model_dir, f"{split}_predictions.txt"), "w") as f:  # tagger_model_dir will act as output dir
@@ -161,15 +160,15 @@ def tagger():
 
 
 @app.route('/health', methods=['GET'])
-def health():  # TODO: disabled for now due to issues on modelarts
+def health():  # TODO: to test
     """Sanity check"""
-    # try:
-    #     if gen_tags('the sky is blue') == 'sky':
-    #         return jsonify({'health': 'true'})
-    # except:
-    #     pass
-    # return jsonify({'health': 'false'})
-    return jsonify({'health': 'true'})
+    try:
+        if gen_tags('the sky is blue') == 'sky':
+            return jsonify({'health': 'true'})
+    except:
+        pass
+    return jsonify({'health': 'false'})
+    # return jsonify({'health': 'true'})
 
 
 if __name__ == '__main__':
