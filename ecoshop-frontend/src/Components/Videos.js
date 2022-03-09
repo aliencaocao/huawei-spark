@@ -12,13 +12,11 @@ const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 let videoData = []
 let currentVideoIndexPlaying = 0
 let currentSliderIndex = 0
+let playWhenReady = false;
 let player = null;
-const container = window !== undefined ? () => window.document.body : undefined;
 
 const Videos = (props) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const [openDrawer, setopenDrawer] = useState(false)
-    const [slideIndex, setIndex] = useState(0)
     const [currentData, setCurrentData] = useState({})
     const [loading, setLoading] = useState(true)
     let videoPlayerRef = {}
@@ -122,16 +120,6 @@ const Videos = (props) => {
         currentPlayerRef.play()
     }
 
-    const handleVideoEnded = async () => {
-        setIndex(slideIndex + 1)
-        await player.destroy()
-        currentSliderIndex = slideIndex + 1
-        if (currentVideoIndexPlaying === videoData.length - 1) currentVideoIndexPlaying = 0
-        else currentVideoIndexPlaying += 1
-
-        playVideo(videoData[currentVideoIndexPlaying].obs_location)
-    }
-
     useEffect(() => {
         const startup = async () => {
             await fetch(window.globalURL + "/video/query", {
@@ -186,30 +174,38 @@ const Videos = (props) => {
         else currentVideoIndexPlaying += 1
 
         setCurrentData(videoData[currentVideoIndexPlaying])
-        playVideo(videoData[currentVideoIndexPlaying].obs_location)
+        if (!videoPlayerRef[currentSliderIndex]) playWhenReady = true
+        else playVideo(videoData[currentVideoIndexPlaying].obs_location)
+    }
+
+    const handleVideoEnded = async () => {
+        console.log("video ended")
+        handleChangeIndex(props.currentSliderIndexRef.current + 1)
     }
 
     function slideRenderer(params) {
         const { index, key } = params;
 
+        console.log(index)
         switch (mod(index, 1)) {
             case 0:
                 return (
-                    <Fragment key={"video-" + index}>
-                        <div key={"video-" + index} ref={(element) => {
-                            if (element) videoContainerRef[index] = element
-                        }} style={{ width: "100%", height: "94vh" }} >
-                            <div style={{ overflow: "hidden", position: "absolute", right: "1%", bottom: "8%", zIndex: 3 }}>
-                                <div style={{ display: "flex", fontSize: "2ch", flexDirection: "column", alignItems: "center" }}><ThumbUpOutlinedIcon style={{ marginRight: "1ch" }} /> {currentData.likes}</div>
-                                <div style={{ display: "flex", marginTop: "1ch", fontSize: "2ch", flexDirection: "column", alignItems: "center" }}><ThumbDownOffAltOutlinedIcon style={{ marginRight: "1ch" }} /> {currentData.dislikes}</div>
-                            </div>
-                            <video ref={(element) => {
-                                if (element) videoPlayerRef[index] = element
-                            }} style={{ width: "100%", height: "100%" }} />
-
+                    <div key={"video-" + index} ref={(element) => {
+                        if (element) videoContainerRef[index] = element
+                        if (playWhenReady) {
+                            playVideo(videoData[currentVideoIndexPlaying].obs_location)
+                            playWhenReady = false
+                        } 
+                    }} style={{ width: "100%", height: "94vh" }} >
+                        <div style={{ overflow: "hidden", position: "absolute", right: "1%", bottom: "8%", zIndex: 3 }}>
+                            <div style={{ display: "flex", fontSize: "2ch", flexDirection: "column", alignItems: "center" }}><ThumbUpOutlinedIcon style={{ marginRight: "1ch" }} /> {currentData.likes}</div>
+                            <div style={{ display: "flex", marginTop: "1ch", fontSize: "2ch", flexDirection: "column", alignItems: "center" }}><ThumbDownOffAltOutlinedIcon style={{ marginRight: "1ch" }} /> {currentData.dislikes}</div>
                         </div>
+                        <video ref={(element) => {
+                            if (element) videoPlayerRef[index] = element
+                        }} style={{ width: "100%", height: "100%" }} />
 
-                    </Fragment>
+                    </div>
                 );
 
             default:
@@ -224,7 +220,7 @@ const Videos = (props) => {
                     <CircularProgress size="10ch" />
                 </div>
             )}
-            <VirtualizeSwipeableViews index={props.currentSliderIndex} slideRenderer={slideRenderer} onChangeIndex={handleChangeIndex} style={{ height: "95vh", width: "100vw", zIndex: 1 }} />
+            <VirtualizeSwipeableViews overscanSlideAfter={3} index={props.currentSliderIndex} slideRenderer={slideRenderer} onChangeIndex={handleChangeIndex} style={{ height: "95vh", width: "100vw", zIndex: 1 }} />
 
         </div>
     );
