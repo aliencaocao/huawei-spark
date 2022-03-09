@@ -19,13 +19,13 @@ const VideoList = (props) => {
     return (
         <div style={{ overflowX: "auto", overflowY: "hidden", display: "flex", width: "100%" }}>
             {props.loading ? (
-                <div style={{ display: "flex" }}>
+                <div key={"loading-video"} style={{ display: "flex" }}>
                     {listLoadingSkeleton}
                 </div>
             ) : (
                 props.data && props.data.length > 0 ? (
                     props.data.map((current) =>
-                        <Paper key={current.name + "-video"} className='listing-styles' elevation={12} style={{ width: "45vw", marginLeft: "1ch" }}>
+                        <Paper key={current.name + "-video"} className='listing-styles' elevation={12} style={{ width: "45vw", marginLeft: "1ch" }} onClick={() => { props.handleVideoClick(current.obs_location) }}>
                             <div>
                                 <img src={`https://ecoshop-data.obs.ap-southeast-3.myhuaweicloud.com/mpc-video/${current.obs_location}/thumbnail.jpg`} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
                             </div>
@@ -48,7 +48,7 @@ const VideoList = (props) => {
                         </Paper>
                     )
                 ) : (
-                    <div style={{width: "100%", padding: "16px"}}>
+                    <div key={"empty-video"} style={{ width: "100%", padding: "16px" }}>
                         <Paper style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2ch" }} elevation={12}>
                             <VideocamOffIcon style={{ fontSize: "5ch", color: "#2196f3" }} />
                             <h3>No Videos Were Found</h3>

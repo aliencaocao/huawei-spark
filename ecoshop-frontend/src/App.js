@@ -8,7 +8,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import BulkListing from './Components/BulkListing';
 import Shorts from './Components/Shorts';
 import Login from './Components/Login';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
@@ -24,6 +23,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ecoShopIcon from './assets/ecoshop.svg';
+import Videos from './Components/Videos';
 import { debounce } from 'lodash';
 import { blue } from '@mui/material/colors';
 
@@ -167,8 +167,10 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
 
 const App = () => {
   const [page, updatePage] = useState("home")
+  const [videoIDRender, setvideoIDRender] = useState("")
   const [token, updateToken] = useState(null)
   const [username, updateUsername] = useState("")
+  const [currentSliderIndex, updateCurrentSliderIndex] = useState(0)
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
   const [itemListRender, updateItemListRender] = useState([])
   const [filterList, updateFilterList] = useState([])
@@ -377,6 +379,11 @@ const App = () => {
     startup()
   }, [])
 
+  const handleVideoClick = async (id) => {
+    updatePage("videos")
+    setvideoIDRender(id)
+  }
+
 
   return (
     <div style={{ overflowX: "hidden", overflowY: "auto", height: "100vh", width: "100vw" }}>
@@ -457,7 +464,7 @@ const App = () => {
                             </Paper>
                           )}
                           <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h3>Your Videos</h3>)}</Divider>
-                          <VideoList data={videoData} loading={videoListLoading} />
+                          <VideoList data={videoData} handleVideoClick={handleVideoClick} loading={videoListLoading} />
                           <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Item/Services Results For: <b>{searchValue}</b></h5>) : (<h2>Your Picks</h2>)}</Divider>
                           {listLoading ? (
                             <Grid container spacing={2}>
@@ -490,8 +497,8 @@ const App = () => {
                     </PullToRefresh>
                   </Fragment>
                 )}
-                {page === "bulk" && (
-                  <BulkListing />
+                {page === "videos" && (
+                  <Videos renderID={videoIDRender} setvideoIDRender={setvideoIDRender} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />
                 )}
                 {page === "shorts" && (
                   <Shorts />
@@ -542,10 +549,4 @@ const App = () => {
     </div >
   );
 }
-
-/*
-                    <Button variant="contained" style={{ marginRight: 5 }} onClick={() => { updatePage("bulk") }}>Bulk Listing</Button>
-                    <Button variant="contained" onClick={() => { updatePage("shorts") }}>EcoShop Shorts</Button>
-                    <Button variant="contained" onClick={() => { handleLogout() }}>Log Out</Button>
-                    */
 export default App;

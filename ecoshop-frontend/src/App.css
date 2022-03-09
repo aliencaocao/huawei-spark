@@ -1,3 +1,5 @@
+@import 'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.1.6/controls.css';
+
 .MuiDrawer-paperAnchorBottom {
     border: 2ch transparent;
     border-top-left-radius: 2ch;
@@ -99,6 +101,9 @@
 
 }
 
+.css-17j2vre {
+    z-index: 0 !important;
+}
 .pull-text-style {
     width: 100vw;
     text-align: center;
