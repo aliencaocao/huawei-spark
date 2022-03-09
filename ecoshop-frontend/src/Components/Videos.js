@@ -190,13 +190,13 @@ const Videos = (props) => {
         switch (mod(index, 1)) {
             case 0:
                 return (
-                    <div key={"video-" + index} ref={(element) => {
+                    <div className="video-container-style" key={"video-" + index} ref={(element) => {
                         if (element) videoContainerRef[index] = element
                         if (playWhenReady) {
                             playVideo(videoData[currentVideoIndexPlaying].obs_location)
                             playWhenReady = false
                         } 
-                    }} style={{ width: "100%", height: "94vh" }} >
+                    }}  >
                         <div style={{ overflow: "hidden", position: "absolute", right: "1%", bottom: "8%", zIndex: 3 }}>
                             <div style={{ display: "flex", fontSize: "2ch", flexDirection: "column", alignItems: "center" }}><ThumbUpOutlinedIcon style={{ marginRight: "1ch" }} /> {currentData.likes}</div>
                             <div style={{ display: "flex", marginTop: "1ch", fontSize: "2ch", flexDirection: "column", alignItems: "center" }}><ThumbDownOffAltOutlinedIcon style={{ marginRight: "1ch" }} /> {currentData.dislikes}</div>

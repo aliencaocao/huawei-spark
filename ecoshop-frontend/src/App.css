@@ -11,6 +11,11 @@
     padding-bottom: 2ch !important;
 }
 
+.video-container-style {
+    width: 100% !important;
+    height: calc(100vh - 8ch) !important;
+}
+
 .login-page::before {
     content: "";
     background-image: url("./assets/home.webp");
