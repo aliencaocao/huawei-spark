@@ -2,4 +2,4 @@
 # sudo docker build . -t swr.ap-southeast-3.myhuaweicloud.com/ecoshop/ctrlsum_tagger_img:latest
 # sudo docker push swr.ap-southeast-3.myhuaweicloud.com/ecoshop/ctrlsum_tagger_img:latest
 sudo docker build . -t swr.ap-southeast-1.myhuaweicloud.com/ecoshop/ctrlsum_tagger_img:latest
-sudo docker push swr.ap-southeast-1.myhuaweicloud.com/ecoshop/ctrlsum_tagger_img:latestdd
+sudo docker push swr.ap-southeast-1.myhuaweicloud.com/ecoshop/ctrlsum_tagger_img:latest
