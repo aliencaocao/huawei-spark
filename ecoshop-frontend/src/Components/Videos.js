@@ -9,7 +9,7 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
 import SwipeDownIcon from '@mui/icons-material/SwipeDown';
-import { blue } from '@mui/material/colors';
+import { blue, grey } from '@mui/material/colors';
 import ShareIcon from '@mui/icons-material/Share';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -229,7 +229,9 @@ const Videos = (props) => {
 
                                 <div style={{ overflow: "hidden", position: "absolute", left: "3%", bottom: "4%", zIndex: 3, display: "flex", flexDirection: "column" }}>
                                     <div style={{ fontWeight: 450, display: "flex", alignItems: 'center' }}>
-                                        <span style={{ display: 'inline-block', maxWidth: "70vw", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", marginRight: "5px" }}>{currentData.name}</span> <span style={{marginRight: "5px"}}>•</span> <span style={{ color: blue[300] }}> ${currentData.price}</span>
+                                        <span style={{ display: 'inline-block', maxWidth: "70vw", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", marginRight: "5px" }}>{currentData.name}</span> 
+                                        <span style={{marginRight: "5px"}}>•</span> 
+                                        <span style={{ color: blue[300] }}> ${currentData.price}</span>
                                     </div>
                                     <div style={{ display: "flex", alignItems: "center", marginTop: "3px" }}>
                                         <Avatar style={{ height: "3ch", width: "3ch", marginRight: "1ch", backgroundColor: blue[500] }}>
@@ -314,6 +316,8 @@ const Videos = (props) => {
                             </span>
                         </span>
                     </div>
+
+                    <div className='puller-style'> </div>
                 </div>
             </SwipeableDrawer>
             <VirtualizeSwipeableViews overscanSlideAfter={3} index={props.currentSliderIndex} slideRenderer={slideRenderer} onChangeIndex={handleChangeIndex} style={{ height: "95vh", width: "100vw", zIndex: 1 }} />

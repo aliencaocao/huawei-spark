@@ -60,6 +60,15 @@
     font-size: 1.55ch;
 }
 
+.puller-style {
+    width: 8vw;
+    height: 6px;
+    left: calc(50vw - 4vw);
+    background-color: #bdbdbd;
+    position: absolute;
+    bottom: 5;
+}
+
 .listing-price-style {
     color: #64b5f6;
     margin-top: 10px;
