@@ -1,5 +1,5 @@
+// Creates MPC encoding tasks when videos are uploaded to user-video/, and updates database entry to include video
 // FUNCTION SHOULD ONLY BE TRIGGERED BY OBS EVENT. NOT FOR PUBLIC USE.
-// Creates MPC encoding tasks when videos are uploaded to user-video/, and updates database entry to include video.
 
 const mysql = require("mysql2/promise");
 const signer = require('./signer'); // https://support.huaweicloud.com/intl/en-us/devg-apisign/api-sign-sdk-nodejs.html#section1
@@ -56,11 +56,6 @@ exports.handler = async (event, context) => {
         "output_filenames": ["output"],
         "trans_template_id": [7000512], // DASH + HLS
         "thumbnail": {
-          // "out": {
-          //   "bucket": "ecoshop-data",
-          //   "location": "ap-southeast-3",
-          //   "object": "user-video/",
-          // },
           "params": {
             "type": "DOTS",
             "dots": [4],

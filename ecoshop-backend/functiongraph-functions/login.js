@@ -1,3 +1,5 @@
+// Issues tokens when users login with their username and password.
+
 const RD = require("reallydangerous");
 const mysql = require("mysql2/promise");
 const argon2 = require("argon2");
@@ -5,6 +7,7 @@ const argon2 = require("argon2");
 let signer = null;
 let connection = null;
 
+// Declare potential errors
 const invalidCredentialsResponse = {
   "statusCode": 200,
   "headers": { "Content-Type": "application/json" },
@@ -26,7 +29,6 @@ const validationError = {
 }
 
 exports.initializer = async (context, callback) => {
-
   try {
     signer = new RD.Signer(context.getUserData("secret"), context.getUserData("salt")), // MUST DECLARE ENCRYPTED VARIABLE
     connection = await mysql.createConnection(JSON.parse(context.getUserData("gaussDBconnect"))) // MUST CONNECT IN VPC FOR DATABASE USAGE
@@ -42,7 +44,7 @@ exports.handler = async (event, context) => {
   try {
     const body = JSON.parse((Buffer.from(event.body, 'base64')).toString()) 
   
-    if (!("username" in body) || !("password" in body)) return validationError
+    if (!("username" in body) || !("password" in body)) return validationError;
 
     const [rows, fields] = await connection.execute('SELECT `pass` FROM `user` WHERE `user` = ? ', [body.username]);
     if (rows.length === 0) return invalidCredentialsResponse // user was not found
@@ -56,12 +58,12 @@ exports.handler = async (event, context) => {
           success: true,
           token: signer.sign(JSON.stringify({ username: body.username }))
         }),
-      }
+      };
     }
-    else return invalidCredentialsResponse
+    else return invalidCredentialsResponse;
   }
   catch (e) {
-    const errorBody = {
+    return {
       "statusCode": 200,
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
@@ -70,7 +72,5 @@ exports.handler = async (event, context) => {
         error: e.toString()
       }),
     };
-
-    return errorBody;
   }
 };

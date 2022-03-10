@@ -1,8 +1,10 @@
+// Serves as the authorization backend for API Gateway Custom Authorizer
+
 const RD = require('reallydangerous');
 
 exports.handler = async (event, context) => {
   if (!("authorization" in event.headers)) {
-    console.log("authorization not inside");
+    console.log("authorization missing");
     return {
       'statusCode': 200,
       'body': JSON.stringify({ status: 'deny', error: "authorization-header-missing" })
@@ -16,7 +18,7 @@ exports.handler = async (event, context) => {
       'statusCode': 200,
       'body': JSON.stringify({
         status: 'allow',
-        context: { authData }, // Remember to map "authData" in API Gateway
+        context: { authData }, // maps to "authData" in API Gateway
       }),
     };
   }

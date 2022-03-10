@@ -1,3 +1,6 @@
+// Returns list of products using flexible and extensive filtering options
+// Authorization Required - API Gateway Custom Authorizer required.
+
 const mysql = require("mysql2/promise");
 
 let connection = null;
@@ -18,7 +21,7 @@ exports.initializer = async (context, callback) => {
 
     callback(null, "");
   } catch (e) {
-    callback("error", e);
+    callback(e.toString(), e);
   }
 };
 
@@ -86,18 +89,6 @@ exports.handler = async (event, context) => {
           }
         }
 
-        console.log("SELECT `id`, `name`, `price`, `type`, `quantity`, `owner`, `attr_name`, `attr_text`, `attr_int`, `obs_image`, COUNT(`user_product_bookmark`.`user`) AS `bookmarks` FROM `product` " +
-          "INNER JOIN `product_attr` ON `product`.`id` = `product_attr`.`product` " +
-          "INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` " +
-          "LEFT OUTER JOIN `user_product_bookmark` ON `user_product_bookmark`.`product` = `product`.`id` " +
-          "WHERE MATCH(`name`, `tags`) AGAINST(? IN BOOLEAN MODE) " +
-            "AND " +
-            conditions +
-            "AND `product_image`.`order` = 1 " +
-          "GROUP BY `id` ORDER BY `id` DESC LIMIT 21 ");
-
-        console.log(substitutions);
-
         const [rows, fields] = await connection.execute("SELECT `id`, `name`, `price`, `type`, `quantity`, `owner`, `attr_name`, `attr_text`, `attr_int`, `obs_image`, COUNT(`user_product_bookmark`.`user`) AS `bookmarks` FROM `product` " +
           "INNER JOIN `product_attr` ON `product`.`id` = `product_attr`.`product` " +
           "INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` " +
@@ -127,7 +118,7 @@ exports.handler = async (event, context) => {
     return response;
   }
   catch (e) {
-    const errorBody = {
+    return {
       "statusCode": 200,
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
@@ -136,7 +127,5 @@ exports.handler = async (event, context) => {
         error: e.toString(),
       }),
     };
-
-    return errorBody;
   }
 };

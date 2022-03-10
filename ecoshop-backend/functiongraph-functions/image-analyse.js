@@ -1,3 +1,6 @@
+// Calls Huawei Cloud Image Moderation and Image Tagging APIs on images uploaded by users
+// Authorization Required - API Gateway Custom Authorizer required.
+
 const fetch = require("node-fetch");
 const RD = require("reallydangerous");
 const mysql = require("mysql2/promise");
@@ -14,7 +17,7 @@ exports.initializer = async (context, callback) => {
 
     callback(null, '');
   } catch (e) {
-    callback("error", e);
+    callback(e.toString(), e);
   }
 };
 
@@ -39,16 +42,13 @@ exports.handler = async (event, context) => {
     return response;
   }
   catch (e) {
-    const errorBody = {
+    return {
       "statusCode": 200,
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
       "body": JSON.stringify({
         error: e.toString(),
-        // tempSignature: signer.sign("cool"),
       }),
     };
-
-    return errorBody;
   }
 };

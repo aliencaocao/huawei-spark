@@ -1,7 +1,11 @@
+// Returns a list of user-uploaded videos based on a query
+// Authorization Required - API Gateway Custom Authorizer required.
+
 const mysql = require("mysql2/promise");
 
 let connection = null;
 
+// Declare potential errors
 const validationError = {
   "statusCode": 200,
   "headers": { "Content-Type": "application/json" },
@@ -18,7 +22,7 @@ exports.initializer = async (context, callback) => {
 
     callback(null, "");
   } catch (e) {
-    callback("error", e);
+    callback(e.toString(), e);
   }
 };
 
@@ -67,7 +71,7 @@ exports.handler = async (event, context) => {
     return response;
   }
   catch (e) {
-    const errorBody = {
+    return {
       "statusCode": 200,
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
@@ -76,7 +80,5 @@ exports.handler = async (event, context) => {
         error: e.toString(),
       }),
     };
-
-    return errorBody;
   }
 };

@@ -1,3 +1,6 @@
+// Returns a pre-signed URL which clients should use to upload images or videos via PUT
+// Authorization Required - API Gateway Custom Authorizer required.
+
 const RD = require("reallydangerous");
 const mysql = require("mysql2/promise");
 const childProcess = require("child_process");
@@ -6,6 +9,7 @@ const short = require("short-uuid");
 
 let connection = null;
 
+// Declare potential errors
 const validationError = {
   "statusCode": 200,
   "headers": { "Content-Type": "application/json" },
@@ -51,9 +55,6 @@ exports.handler = async (event, context) => {
     const body = JSON.parse((Buffer.from(event.body, 'base64')).toString());
     const authData = JSON.parse(event.headers.authData);
 
-    console.log(context);
-    console.log(event);
-
     if (!("type" in body)) {
       return validationError;
     }
@@ -65,8 +66,6 @@ exports.handler = async (event, context) => {
 
       const [rows, fields] = await connection.execute('SELECT `owner` FROM `product` WHERE `id` = ? ', [body["product"]]);
 
-      console.log(rows);
-
       if (rows.length === 0) return notFoundError;
       if (rows[0]["owner"] !== authData["username"]) return permissionError;
 
@@ -77,7 +76,7 @@ exports.handler = async (event, context) => {
     const obsClient = new ObsClient({
       access_key_id: context.getAccessKey(),
       secret_access_key: context.getSecretKey(),
-      server: "obs.ap-southeast-3.myhuaweicloud.com",
+      server: "obs.ap-southeast-1.myhuaweicloud.com",
       max_retry_count: 1,
       timeout: 20,
       ssl_verify: false,
@@ -102,7 +101,7 @@ exports.handler = async (event, context) => {
     return response;
   }
   catch (e) {
-    const errorBody = {
+    return {
       "statusCode": 200,
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
@@ -110,7 +109,5 @@ exports.handler = async (event, context) => {
         error: e.toString(),
       }),
     };
-
-    return errorBody;
   }
 };

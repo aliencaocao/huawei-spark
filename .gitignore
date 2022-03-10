@@ -3,3 +3,4 @@ node_modules/
 functiongraph-download/
 creds*.json
 token*.pickle
+database-active.sql
