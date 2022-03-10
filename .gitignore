@@ -4,3 +4,4 @@ functiongraph-download/
 creds*.json
 token*.pickle
 database-active.sql
+*.onnx
