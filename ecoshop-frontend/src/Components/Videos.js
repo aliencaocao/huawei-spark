@@ -229,7 +229,7 @@ const Videos = (props) => {
 
                                 <div style={{ overflow: "hidden", position: "absolute", left: "3%", bottom: "4%", zIndex: 3, display: "flex", flexDirection: "column" }}>
                                     <div style={{ fontWeight: 450, display: "flex", alignItems: 'center' }}>
-                                        <span style={{ display: 'inline-block', width: "70vw", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{currentData.name}</span> <span style={{marginRight: "5px"}}>•</span> <span style={{ color: blue[300] }}> ${currentData.price}</span>
+                                        <span style={{ display: 'inline-block', maxWidth: "70vw", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", marginRight: "5px" }}>{currentData.name}</span> <span style={{marginRight: "5px"}}>•</span> <span style={{ color: blue[300] }}> ${currentData.price}</span>
                                     </div>
                                     <div style={{ display: "flex", alignItems: "center", marginTop: "3px" }}>
                                         <Avatar style={{ height: "3ch", width: "3ch", marginRight: "1ch", backgroundColor: blue[500] }}>
