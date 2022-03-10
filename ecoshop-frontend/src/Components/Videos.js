@@ -1,4 +1,4 @@
-import { CircularProgress, SwipeableDrawer, Paper } from '@mui/material'
+import { CircularProgress, SwipeableDrawer, IconButton, Avatar, Paper, Divider } from '@mui/material'
 import SwipeableViews from 'react-swipeable-views';
 import { virtualize } from 'react-swipeable-views-utils';
 import { useEffect, useState, Fragment } from 'react';
@@ -6,7 +6,14 @@ import { useSnackbar } from 'notistack';
 import shaka from 'shaka-player/dist/shaka-player.ui'
 import { mod } from 'react-swipeable-views-core';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
+import SwipeDownIcon from '@mui/icons-material/SwipeDown';
+import { blue } from '@mui/material/colors';
+import ShareIcon from '@mui/icons-material/Share';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import HandymanIcon from '@mui/icons-material/Handyman';
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 let videoData = []
@@ -15,9 +22,12 @@ let currentSliderIndex = 0
 let playWhenReady = false;
 let player = null;
 
+const container = window !== undefined ? () => window.document.body : undefined;
+
 const Videos = (props) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [currentData, setCurrentData] = useState({})
+    const [openDrawer, setopenDrawer] = useState(false)
     const [loading, setLoading] = useState(true)
     let videoPlayerRef = {}
     let videoContainerRef = {}
@@ -130,6 +140,7 @@ const Videos = (props) => {
                 return results.json(); //return data in JSON (since its JSON data)
             }).then(async (data) => {
                 if (data.success === true) {
+                    console.log(data.listings)
                     videoData = data.listings
                     if (videoData.length > 0) {
                         if (props.videoIDRender !== "") {
@@ -179,35 +190,80 @@ const Videos = (props) => {
     }
 
     const handleVideoEnded = async () => {
-        console.log("video ended")
         handleChangeIndex(props.currentSliderIndexRef.current + 1)
     }
 
     function slideRenderer(params) {
         const { index, key } = params;
-
-        console.log(index)
         switch (mod(index, 1)) {
             case 0:
                 return (
-                    <div className="video-container-style" style={{position: "absolute"}} key={"video-" + index}>
-                        
-                        <div style={{ overflow: "hidden", position: "absolute", right: "1%", bottom: "8%", zIndex: 3 }}>
-                            <div style={{ display: "flex", fontSize: "2ch", flexDirection: "column", alignItems: "center" }}><ThumbUpOutlinedIcon style={{ marginRight: "1ch" }} /> {currentData.likes}</div>
-                            <div style={{ display: "flex", marginTop: "1ch", fontSize: "2ch", flexDirection: "column", alignItems: "center" }}><ThumbDownOffAltOutlinedIcon style={{ marginRight: "1ch" }} /> {currentData.dislikes}</div>
+                    <div className="video-container-style" style={{ position: "absolute" }} key={"video-" + index}>
+
+                        {!loading && (
+                            <Fragment>
+                                <div style={{ overflow: "hidden", position: "absolute", right: "2%", bottom: "11%", zIndex: 3 }}>
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                        <IconButton style={{ display: "flex", flexDirection: "column" }}>
+                                            <ThumbUpOutlinedIcon style={{ fontSize: "2.4ch" }} />
+                                            <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
+                                        </IconButton>
+
+                                    </div>
+                                    <div style={{ display: "flex", marginTop: "2px", flexDirection: "column", alignItems: "center" }}>
+                                        <IconButton style={{ display: "flex", flexDirection: "column" }}>
+                                            <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
+                                            <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
+                                        </IconButton>
+
+
+                                    </div>
+                                    <div style={{ display: "flex", marginTop: "2px", flexDirection: "column", alignItems: "center" }}>
+                                        <IconButton style={{ display: "flex", flexDirection: "column" }}>
+                                            <ShareIcon style={{ fontSize: "2.5ch" }} />
+                                            <span style={{ fontWeight: "bold", fontSize: "1.1ch", marginTop: "1px" }}>Share</span>
+                                        </IconButton>
+
+                                    </div>
+                                </div>
+
+                                <div style={{ overflow: "hidden", position: "absolute", left: "3%", bottom: "4%", zIndex: 3, display: "flex", flexDirection: "column" }}>
+                                    <div style={{ fontWeight: 450, display: "flex", alignItems: 'center' }}>
+                                        <span style={{ display: 'inline-block', width: "70vw", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{currentData.name}</span> <span style={{marginRight: "5px"}}>•</span> <span style={{ color: blue[300] }}> ${currentData.price}</span>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", marginTop: "3px" }}>
+                                        <Avatar style={{ height: "3ch", width: "3ch", marginRight: "1ch", backgroundColor: blue[500] }}>
+                                            <AccountCircleIcon />
+                                        </Avatar>
+                                        {currentData.owner}
+                                    </div>
+                                </div>
+
+
+                                <div style={{ overflow: "hidden", position: "absolute", left: "3%", bottom: "2%", zIndex: 3, display: "flex", alignItems: "center" }}>
+
+                                </div>
+
+                                <div style={{ overflow: "hidden", position: "absolute", width: "100%", top: "1%", zIndex: 3, textAlign: "center" }}>
+                                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Swipe For Product/Service Info <SwipeDownIcon style={{ marginLeft: "5px" }} /></span>
+                                </div>
+
+
+                            </Fragment>
+                        )}
+
+                        <div className="video-container-style" ref={(element) => {
+                            if (element) videoContainerRef[index] = element
+                            if (playWhenReady) {
+                                playVideo(videoData[currentVideoIndexPlaying].obs_location)
+                                playWhenReady = false
+                            }
+                        }} >
+                            <video ref={(element) => {
+                                if (element) videoPlayerRef[index] = element
+                            }} style={{ width: "100%", height: "98%" }} />
                         </div>
-                        <div className="video-container-style"  ref={(element) => {
-                        if (element) videoContainerRef[index] = element
-                        if (playWhenReady) {
-                            playVideo(videoData[currentVideoIndexPlaying].obs_location)
-                            playWhenReady = false
-                        } 
-                    }} >
-                           <video ref={(element) => {
-                            if (element) videoPlayerRef[index] = element
-                        }} style={{ width: "100%", height: "100%" }} /> 
-                        </div>
-                        
+
 
                     </div>
                 );
@@ -218,12 +274,48 @@ const Videos = (props) => {
     }
 
     return (
-        <div style={{ overflow: "hidden", display: "flex", width: "100%", height: "100%" }}>
+        <div className='fadeIn' style={{ overflow: "hidden", display: "flex", width: "100%", height: "100%" }}>
             {loading && (
                 <div style={{ overflow: "hidden", position: "absolute", left: "40%", top: "42%", zIndex: 2 }}>
                     <CircularProgress size="10ch" />
                 </div>
             )}
+            <SwipeableDrawer
+                className='video-drawer'
+                container={container}
+                anchor="top"
+                open={openDrawer}
+                onClose={() => { setopenDrawer(false) }}
+                onOpen={() => { setopenDrawer(true) }}
+                swipeAreaWidth={100}
+                disableSwipeToOpen={false}
+                ModalProps={{
+                    keepMounted: true,
+                }}
+                disableBackdropTransition={true}
+                PaperProps={{ style: { borderRadius: "25px", borderTopRightRadius: "0px", borderTopLeftRadius: "0px" } }}
+            >
+                <div style={{ margin: "2ch" }} >
+                    <img src={currentData.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
+                    <div className='listing-info-style'>
+                        <h5 className='listing-title-style'>{currentData.name}</h5>
+                        <h4 className='listing-price-style'>${currentData.price}</h4>
+                        <h5 className='listing-quantity-style'><b>Amount:</b> {currentData.quantity}</h5>
+                        <h5 className='listing-type-style'>{currentData.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon /><span>Repair Service</span></Fragment>)}</h5>
+
+                        <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>{currentData.bookmarks}</span></span>
+                        <Divider />
+                        <span className='listing-owner-style'>
+                            <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
+                                <AccountCircleIcon />
+                            </Avatar>
+                            <span className='listing-owner-name-style'>
+                                {currentData.owner}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </SwipeableDrawer>
             <VirtualizeSwipeableViews overscanSlideAfter={3} index={props.currentSliderIndex} slideRenderer={slideRenderer} onChangeIndex={handleChangeIndex} style={{ height: "95vh", width: "100vw", zIndex: 1 }} />
 
         </div>

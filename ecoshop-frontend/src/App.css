@@ -43,7 +43,7 @@
 
 .listing-styles {
     overflow: hidden;
-    border-radius: 8px !important; 
+    border-radius: 8px !important;
 }
 
 .listing-info-style {
@@ -109,6 +109,7 @@
 .css-17j2vre {
     z-index: 0 !important;
 }
+
 .pull-text-style {
     width: 100vw;
     text-align: center;
@@ -144,11 +145,11 @@
 
 @keyframes shrink-animation {
     0% {
-        height: 6ch 
+        height: 6ch
     }
 
     100% {
-        height: 0ch 
+        height: 0ch
     }
 }
 
