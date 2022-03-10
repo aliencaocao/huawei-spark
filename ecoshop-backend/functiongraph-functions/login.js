@@ -1,4 +1,4 @@
-// Issues tokens when users login with their username and password.
+// Issues tokens when users login with their username and password
 
 const RD = require("reallydangerous");
 const mysql = require("mysql2/promise");
