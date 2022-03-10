@@ -161,14 +161,17 @@ def tagger():
 
 @app.route('/health', methods=['GET'])
 def health():  # TODO: to test
-    """Sanity check"""
-    try:
-        if gen_tags('the sky is blue') == 'sky':
-            return jsonify({'health': 'true'})
-    except:
-        pass
-    return jsonify({'health': 'false'})
-    # return jsonify({'health': 'true'})
+    """
+    Official API endpoint exposed to ModelArts
+    This is a dummy one because ModelArts seem to use real-time monitoring and thus calls this endpoint hundreds of times in a minute, The server will be overloaded by this health check. Another custom endpoint is used for health check instead.
+    """
+    # try:
+    #     if gen_tags('the sky is blue') == 'sky':
+    #         return jsonify({'health': 'true'})
+    # except:
+    #     pass
+    # return jsonify({'health': 'false'})
+    return jsonify({'health': 'true'})
 
 
 if __name__ == '__main__':
