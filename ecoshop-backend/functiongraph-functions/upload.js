@@ -3,7 +3,6 @@
 
 const RD = require("reallydangerous");
 const mysql = require("mysql2/promise");
-const childProcess = require("child_process");
 const ObsClient = require("esdk-obs-nodejs");
 const short = require("short-uuid");
 
@@ -76,7 +75,7 @@ exports.handler = async (event, context) => {
     const obsClient = new ObsClient({
       access_key_id: context.getAccessKey(),
       secret_access_key: context.getSecretKey(),
-      server: "obs.ap-southeast-1.myhuaweicloud.com",
+      server: "obs.ap-southeast-3.myhuaweicloud.com",
       max_retry_count: 1,
       timeout: 20,
       ssl_verify: false,
@@ -91,7 +90,7 @@ exports.handler = async (event, context) => {
         uploadPath: path,
         uploadParams: obsClient.createSignedUrlSync({
           Method: 'PUT',
-          Bucket: 'ecoshop-data',
+          Bucket: 'ecoshop-content',
           Key: path,
           Headers: { 'Content-Type': body["type"] == "video" ? "video/*" : "image/*" },
         }),
