@@ -66,7 +66,7 @@ exports.handler = async (event, context) => {
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
       "body": JSON.stringify({
-           success:false,
+        success: false,
         error: e.toString(),
       }),
     };

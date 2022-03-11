@@ -36,7 +36,7 @@ exports.handler = async (event, context) => {
       // Get access key and secret key for request signing
       let sig = new huaweiSigner.Signer();
       sig.Key = context.getAccessKey();
-      sig.Secret = context.getSecretKey();console.log(sig.Key, sig.Secret)
+      sig.Secret = context.getSecretKey();
 
       // Create MPC request
       let mpcReqSigner = new huaweiSigner.HttpRequest("POST", MPC_URL);

@@ -1,0 +1,426 @@
+Image Moderation & Tagging
+
+curl https://550bf209274345648b958a0b003b655c.apig.ap-southeast-1.huaweicloudapis.com/image/analyse -H "authorization: {\"username\":\"tkai\"}.dOk_hQFwWlV53Jl9yE75mrPnMRk" -d '{"image":"..."}'
+
+{"success":false,"error":"explicit-content"}
+
+curl https://550bf209274345648b958a0b003b655c.apig.ap-southeast-1.huaweicloudapis.com/image/analyse -H "authorization: {\"username\":\"tkai\"}.dOk_hQFwWlV53Jl9yE75mrPnMRk" -d '{"image":"b5jbRGPbdDSRNMpVnSeBgW"}'
+
+{
+  "success":true,
+  "result":{
+    "result":{
+      "tags":[
+        {
+          "confidence":"98.09",
+          "i18n_tag":{
+            "en":"Table",
+            "zh":"餐桌"
+          },
+          "i18n_type":{
+            "en":"Home category",
+            "zh":"家居类"
+          },
+          "instances":[
+            
+          ],
+          "tag":"Table",
+          "type":"Home category"
+        },
+        {
+          "confidence":"92.61",
+          "i18n_tag":{
+            "en":"Chair",
+            "zh":"椅子"
+          },
+          "i18n_type":{
+            "en":"Home category",
+            "zh":"家居类"
+          },
+          "instances":[
+            {
+              "bounding_box":{
+                "height":345.91895470252405,
+                "top_left_x":499.37821784386267,
+                "top_left_y":1230.2412942739634,
+                "width":189.066222851093
+              },
+              "confidence":"76.56"
+            },
+            {
+              "bounding_box":{
+                "height":305.59293306790863,
+                "top_left_x":90.59229682042049,
+                "top_left_y":1242.1724524864783,
+                "width":161.7494034400353
+              },
+              "confidence":"67.13"
+            },
+            {
+              "bounding_box":{
+                "height":310.74032123272235,
+                "top_left_x":274.57623114952673,
+                "top_left_y":1237.1628805307241,
+                "width":169.14326447706955
+              },
+              "confidence":"43.86"
+            },
+            {
+              "bounding_box":{
+                "height":286.3345689039964,
+                "top_left_x":632.547397173368,
+                "top_left_y":1236.3335536076472,
+                "width":112.84853832538312
+              },
+              "confidence":"40.78"
+            },
+            {
+              "bounding_box":{
+                "height":280.69341806265027,
+                "top_left_x":393.53428092369666,
+                "top_left_y":1238.1563450739934,
+                "width":110.70612393892729
+              },
+              "confidence":"40.18"
+            }
+          ],
+          "tag":"Chair",
+          "type":"Home category"
+        },
+        {
+          "confidence":"87.21",
+          "i18n_tag":{
+            "en":"Person",
+            "zh":"人"
+          },
+          "i18n_type":{
+            "en":"People",
+            "zh":" 人"
+          },
+          "instances":[
+            
+          ],
+          "tag":"Person",
+          "type":"People"
+        },
+        {
+          "confidence":"85.00",
+          "i18n_tag":{
+            "en":"Office building",
+            "zh":"办公楼"
+          },
+          "i18n_type":{
+            "en":"Manual scenario",
+            "zh":"人工场景"
+          },
+          "instances":[
+            {
+              "bounding_box":{
+                "height":1129.8730967595027,
+                "top_left_x":32.737446711613586,
+                "top_left_y":710.1269032404973,
+                "width":1132.2817682119517
+              },
+              "confidence":"55.97"
+            }
+          ],
+          "tag":"Office building",
+          "type":"Manual scenario"
+        },
+        {
+          "confidence":"73.80",
+          "i18n_tag":{
+            "en":"Whiteboard",
+            "zh":"白板"
+          },
+          "i18n_type":{
+            "en":"Learning/office category",
+            "zh":"学习办公类"
+          },
+          "instances":[
+            
+          ],
+          "tag":"Whiteboard",
+          "type":"Learning/office category"
+        },
+        {
+          "confidence":"73.38",
+          "i18n_tag":{
+            "en":"Window",
+            "zh":"窗口"
+          },
+          "i18n_type":{
+            "en":"Manual scenario",
+            "zh":"人工场景"
+          },
+          "instances":[
+            
+          ],
+          "tag":"Window",
+          "type":"Manual scenario"
+        },
+        {
+          "confidence":"72.31",
+          "i18n_tag":{
+            "en":"Office",
+            "zh":"办公室"
+          },
+          "i18n_type":{
+            "en":"Manual scenario",
+            "zh":"人工场景"
+          },
+          "instances":[
+            
+          ],
+          "tag":"Office",
+          "type":"Manual scenario"
+        },
+        {
+          "confidence":"63.93",
+          "i18n_tag":{
+            "en":"Bench",
+            "zh":"长凳"
+          },
+          "i18n_type":{
+            "en":"Home category",
+            "zh":"家居类"
+          },
+          "instances":[
+            
+          ],
+          "tag":"Bench",
+          "type":"Home category"
+        },
+        {
+          "confidence":"60.63",
+          "i18n_tag":{
+            "en":"Door",
+            "zh":"门"
+          },
+          "i18n_type":{
+            "en":"Home category",
+            "zh":"家居类"
+          },
+          "instances":[
+            
+          ],
+          "tag":"Door",
+          "type":"Home category"
+        }
+      ]
+    }
+  }
+}
+
+curl https://550bf209274345648b958a0b003b655c.apig.ap-southeast-1.huaweicloudapis.com/image/analyse -H "authorization: {\"username\":\"tkai\"}.dOk_hQFwWlV53Jl9yE75mrPnMRk" -d '{"image":"ifwNBBZJsxSDTWympRndzA"}'
+
+{
+  "success":true,
+  "result":{
+    "tags":[
+      {
+        "confidence":"97.98",
+        "i18n_tag":{
+          "en":"Table",
+          "zh":"餐桌"
+        },
+        "i18n_type":{
+          "en":"Home category",
+          "zh":"家居类"
+        },
+        "instances":[
+          {
+            "bounding_box":{
+              "height":681.1304573645958,
+              "top_left_x":3072.1038159590503,
+              "top_left_y":1629.3543645418606,
+              "width":675.3821895305927
+            },
+            "confidence":"64.37"
+          }
+        ],
+        "tag":"Table",
+        "type":"Home category"
+      },
+      {
+        "confidence":"86.62",
+        "i18n_tag":{
+          "en":"Sofa",
+          "zh":"沙发"
+        },
+        "i18n_type":{
+          "en":"Home category",
+          "zh":"家居类"
+        },
+        "instances":[
+          
+        ],
+        "tag":"Sofa",
+        "type":"Home category"
+      },
+      {
+        "confidence":"86.58",
+        "i18n_tag":{
+          "en":"Chair",
+          "zh":"椅子"
+        },
+        "i18n_type":{
+          "en":"Home category",
+          "zh":"家居类"
+        },
+        "instances":[
+          {
+            "bounding_box":{
+              "height":825.9622262807993,
+              "top_left_x":1333.6310709439792,
+              "top_left_y":1586.45255954449,
+              "width":1090.5874148148757
+            },
+            "confidence":"82.32"
+          },
+          {
+            "bounding_box":{
+              "height":705.5229245699369,
+              "top_left_x":2.3304329285254846,
+              "top_left_y":1617.1678821857158,
+              "width":961.5172250087444
+            },
+            "confidence":"78.54"
+          },
+          {
+            "bounding_box":{
+              "height":506.19410661550666,
+              "top_left_x":1208.5736800707302,
+              "top_left_y":1426.733304977417,
+              "width":561.3417293842023
+            },
+            "confidence":"67.62"
+          },
+          {
+            "bounding_box":{
+              "height":821.7839091374324,
+              "top_left_x":1066.50834439351,
+              "top_left_y":1466.5880294212927,
+              "width":663.193798321944
+            },
+            "confidence":"47.10"
+          }
+        ],
+        "tag":"Chair",
+        "type":"Home category"
+      },
+      {
+        "confidence":"74.74",
+        "i18n_tag":{
+          "en":"Window",
+          "zh":"窗口"
+        },
+        "i18n_type":{
+          "en":"Manual scenario",
+          "zh":"人工场景"
+        },
+        "instances":[
+          
+        ],
+        "tag":"Window",
+        "type":"Manual scenario"
+      },
+      {
+        "confidence":"73.19",
+        "i18n_tag":{
+          "en":"Pillow",
+          "zh":"枕头"
+        },
+        "i18n_type":{
+          "en":"Home category",
+          "zh":"家居类"
+        },
+        "instances":[
+          
+        ],
+        "tag":"Pillow",
+        "type":"Home category"
+      },
+      {
+        "confidence":"70.35",
+        "i18n_tag":{
+          "en":"Person",
+          "zh":"人"
+        },
+        "i18n_type":{
+          "en":"People",
+          "zh":"人"
+        },
+        "instances":[
+          
+        ],
+        "tag":"Person",
+        "type":"People"
+      },
+      {
+        "confidence":"66.70",
+        "i18n_tag":{
+          "en":"Window curtains",
+          "zh":"窗帘"
+        },
+        "i18n_type":{
+          "en":"Home category",
+          "zh":"家居类"
+        },
+        "instances":[
+          
+        ],
+        "tag":"Window curtains",
+        "type":"Home category"
+      },
+      {
+        "confidence":"66.69",
+        "i18n_tag":{
+          "en":"Cabinetry",
+          "zh":"橱柜"
+        },
+        "i18n_type":{
+          "en":"Home category",
+          "zh":"家居类"
+        },
+        "instances":[
+          
+        ],
+        "tag":"Cabinetry",
+        "type":"Home category"
+      },
+      {
+        "confidence":"64.60",
+        "i18n_tag":{
+          "en":"Potted plant",
+          "zh":"盆栽"
+        },
+        "i18n_type":{
+          "en":"Flowering",
+          "zh":"花"
+        },
+        "instances":[
+          
+        ],
+        "tag":"Potted plant",
+        "type":"Flowering"
+      },
+      {
+        "confidence":"64.16",
+        "i18n_tag":{
+          "en":"Bed",
+          "zh":"床"
+        },
+        "i18n_type":{
+          "en":"Home category",
+          "zh":"家居类"
+        },
+        "instances":[
+          
+        ],
+        "tag":"Bed",
+        "type":"Home category"
+      }
+    ]
+  }
+}
