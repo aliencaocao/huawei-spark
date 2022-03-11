@@ -1,15 +1,4 @@
-# coding=utf-8
-
-# Copyright (c) 2020, salesforce.com, inc. Modified 2022, Billy Cao
-# All rights reserved.
-# SPDX-License-Identifier: BSD-3-Clause
-# For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
-""" This code is based on
-https://github.com/huggingface/transformers/blob/master/examples/token-classification/run_ner.py
-
-For use with ctrl-sum-stripped.zip, NOT the original ctrl-sum!
-"""
-
+# For use with ctrl-sum-stripped-v2.zip, NOT the original ctrl-sum!
 import os
 import sys
 import time

@@ -10,12 +10,12 @@ RUN cp -a /etc/apt/sources.list /etc/apt/sources.list.bak && \
   curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
   python3.8 get-pip.py && \
   pip install --trusted-host https://repo.huaweicloud.com -i https://repo.huaweicloud.com/repository/pypi/simple -U setuptools wheel && \
-  python3.8 -m pip install --upgrade Pillow && \
-  pip install torch torchvision torchaudio && \
-  pip install pandas sklearn datasets transformers==3.1.0 spacy==2.3.7 stanza && \
+  pip install transformers transformers[onnx] && \
+  pip uninstall -y onnxruntime && \
+  pip install onnxruntime-gpu && \
   pip install flask waitress
 
 # Copy the application service code to the image.
 COPY . .
 
-CMD ["python3.8", "tagger-v2.py"]
+CMD ["python3.8", "tagger-v3.py"]

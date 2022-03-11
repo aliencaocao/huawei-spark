@@ -12,14 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+import time
+import logging
 import torch
 from transformers import AutoModelForSeq2SeqLM, PreTrainedTokenizerFast
 from flask import Flask, request, jsonify
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", datefmt="%m/%d/%Y %H:%M:%S", level=logging.DEBUG)
+
 
 class Summarizers:
     def __init__(self, device="cpu"):
-        print('Initializing CTRL-Sum...')
+        start = time.time()
+        logger.info('Initializing CTRL-Sum...')
         self.device = device
         self.model = AutoModelForSeq2SeqLM.from_pretrained('ctrlsum-cnndm').to(self.device)
         self.tokenizer = PreTrainedTokenizerFast.from_pretrained('ctrlsum-cnndm')
@@ -39,7 +45,7 @@ class Summarizers:
                       "Who's ",
                       "Where ",
                       "How "]
-        print('CTRL-Sum initialized.')
+        logger.info(f'CTRL-Sum initialized in {time.time() - start} sec')
 
     @torch.no_grad()
     def __call__(self,
@@ -137,28 +143,31 @@ def qna():
         source = contents['source']
         query = contents['query']
         prompt = contents['prompt']
+    except Exception as e:
+        return jsonify({'success': 'false', 'error': f'Malformed input: {e}'})
+    try:
         ans = ctrlsum(contents=source, query=query, prompt=prompt, num_beams=5,
                       top_k=None, top_p=None, no_repeat_ngram_size=4,
                       length_penalty=1.0, question_detection=True)
     except Exception as e:
-        ans = f"ERROR: {e}"
-    return jsonify({'answer': ans})
+        return jsonify({'success': 'false', 'error': str(e)})
+
+    return jsonify({'success': 'true', 'answer': ans})
 
 
 @app.route('/health', methods=['GET'])
 def health():
-    """Sanity check"""
+    """Sanity check, exposed to ModelArts"""
     try:
         if ctrlsum(contents='hello my name is billy', query='', prompt='My name is:', num_beams=5, top_k=None, top_p=None, no_repeat_ngram_size=4, length_penalty=1.0, question_detection=True) == 'My name is: Billy.':
             return jsonify({'health': 'true'})
-    except:
-        pass
+    except Exception as e:
+        logger.error(f'Health check failed with error {e}')
     return jsonify({'health': 'false'})
 
 
 if __name__ == '__main__':
     from waitress import serve
-    import logging
-    logger = logging.getLogger('waitress')
-    logger.setLevel(logging.DEBUG)
+    server_logger = logging.getLogger('waitress')
+    server_logger.setLevel(logging.DEBUG)
     serve(app, host='0.0.0.0', port=8080, expose_tracebacks=True, threads=8)
