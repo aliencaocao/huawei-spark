@@ -19,14 +19,14 @@ from flask import Flask, request, jsonify
 from onnxruntime import InferenceSession
 
 cache_dir = 'cache/'
-threshold = 0.2  # default for CNNDM is 0.25
+threshold = 0.25  # default for CNNDM is 0.25
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", datefmt="%m/%d/%Y %H:%M:%S", level=logging.DEBUG)
 
 start = time.time()
 logger.info('Loading model...')
-session = InferenceSession("onnx_model/model.onnx", providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])  # ranked in priority, 'TensorrtExecutionProvider',
+session = InferenceSession("onnx_model/model.onnx", providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])  # ranked in priority
 logger.info('Loading tokenizer...')
 tokenizer = BertTokenizerFast.from_pretrained('bert-large-cased', cache_dir=cache_dir, use_fast=True, local_files_only=offline_mode)
 logger.info(f'Model and tokenizer loaded in {time.time() - start} sec')
@@ -67,7 +67,7 @@ def gen_tags(inputs) -> list:
     preds_prob_list = [logits[0][j][1] for j in range(seq_len)]
     tags = [inputs['input_ids'][0][i] for i in range(len(preds_prob_list)) if preds_prob_list[i] > threshold]
     tags = [tokenizer.decode(tag, skip_special_tokens=True) for tag in tags]
-    tags = [tag for tag in tags if len(tag) > 1 and tag.isalpha()]  # filter out non-alphabat and 1-alphabat tags
+    tags = [tag for tag in tags if len(tag) > 1 and tag.isalpha()]  # filter out non-alphabet and 1-alphabet tags
     return tags
 
 
@@ -92,24 +92,7 @@ def tagger():  # TODO: for longer than 512, enable batching, change gen tags acc
 
 @app.route('/health', methods=['GET'])
 def health():
-    """
-    Official API endpoint exposed to ModelArts.
-    This is a dummy one because ModelArts seem to use real-time monitoring and thus calls this endpoint hundreds of times in a minute.
-    The server will be overloaded by this health check. Another custom endpoint (/status) is used for health check instead.
-    """
-    try:
-        inputs = preprocess('Hello World')
-        tags = gen_tags(inputs)
-        if tags == 'Hello;World':
-            return jsonify({'health': 'true'})
-    except Exception as e:
-        logger.error(f'Health check failed with error {e}')
-    return jsonify({'health': 'false'})
-
-
-@app.route('/status', methods=['GET'])
-def status():
-    """ Custom endpoint for health check (not exposed to ModelArts) """
+    """Sanity check, exposed to ModelArts"""
     try:
         inputs = preprocess('Hello World')
         tags = gen_tags(inputs)
@@ -125,4 +108,5 @@ if __name__ == '__main__':
     import logging
     server_logger = logging.getLogger('waitress')
     server_logger.setLevel(logging.DEBUG)
-    serve(app, host='0.0.0.0', port=8080, expose_tracebacks=True, threads=8)
+    serve(app, host='0.0.0.0', port=8080, expose_tracebacks=False, threads=8)
+a=1  # for force docker rebuild
