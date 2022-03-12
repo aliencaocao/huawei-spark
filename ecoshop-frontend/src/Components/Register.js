@@ -201,7 +201,7 @@ const Register = (props) => {
                 <LoadingButton type="submit" variant="contained" loading={registerLoading} endIcon={<ArrowCircleRightOutlinedIcon/>}>Register</LoadingButton>
             </form>
 
-            <span style={{ marginTop: "8ch", textAlign: "center" }}>Already have an account?</span>
+            <span style={{ marginTop: "2.5ch", textAlign: "center" }}>Already have an account?</span>
             <Button variant="outlined" style={{ marginTop: "1ch" }} onClick={() => { props.setRegisterPage(false) }}>Return to Login Page</Button>
             </Fragment>
     );

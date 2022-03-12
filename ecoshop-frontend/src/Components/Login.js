@@ -148,13 +148,13 @@ const Login = (props) => {
                             />
 
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox defaultChecked />} name="rememberMe" label="Remember Me" />
+                                <FormControlLabel control={<Checkbox defaultChecked />} name="rememberMe" label="Remember me" />
                             </FormGroup>
 
                             <LoadingButton style={{ marginTop: "1ch" }} type="submit" variant="contained" loading={loginLoading} endIcon={<ArrowCircleRightOutlinedIcon />}>Login</LoadingButton>
                         </form>
 
-                        <span style={{ marginTop: "8ch", textAlign: "center" }}>Don't have an account?</span>
+                        <span style={{ marginTop: "2.5ch", textAlign: "center" }}>Don't have an account?</span>
                         <Button variant="outlined" style={{ marginTop: "1ch" }} onClick={() => { setRegisterPage(true) }}>Register</Button>
                     </Fragment>
                 )}

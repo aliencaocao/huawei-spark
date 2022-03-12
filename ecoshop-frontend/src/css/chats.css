@@ -1,0 +1,26 @@
+main {
+  padding: 15px 23px 0;
+}
+
+.filter-chats-input {
+  margin-bottom: 8px;
+}
+
+.chat-tab-panel.chat-tab-panel {
+  padding: 0;
+}
+
+.chat-row.chat-row {
+  width: 100%;
+  /* padding: 7px 0; */
+}
+.chat-row > .MuiListItem-root {
+  padding: 7px 0;
+}
+
+.message-preview {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
