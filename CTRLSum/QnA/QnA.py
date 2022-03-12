@@ -11,11 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+
+# Disable internet access below
+offline_mode = True  # set to True for ModelArts deployment
+if offline_mode:
+    os.environ['TRANSFORMERS_OFFLINE'] = '1'
+    os.environ['HF_DATASETS_OFFLINE'] = 'TRUE'
+    os.environ['HF_UPDATE_DOWNLOAD_COUNTS'] = 'FALSE'
+
+import sys
 import json
 import time
 import logging
 import torch
-from transformers import AutoModelForSeq2SeqLM, PreTrainedTokenizerFast
+from transformers import AutoModelForSeq2SeqLM, BartTokenizerFast
 from flask import Flask, request, jsonify
 
 logger = logging.getLogger(__name__)
@@ -24,11 +34,9 @@ logging.basicConfig(stream=sys.stdout, format="%(asctime)s - %(levelname)s - %(n
 
 class Summarizers:
     def __init__(self, device="cpu"):
-        start = time.time()
-        logger.info('Initializing CTRL-Sum...')
         self.device = device
-        self.model = AutoModelForSeq2SeqLM.from_pretrained('ctrlsum-cnndm').to(self.device)
-        self.tokenizer = PreTrainedTokenizerFast.from_pretrained('ctrlsum-cnndm')
+        self.model = AutoModelForSeq2SeqLM.from_pretrained('ctrlsum-cnndm', local_files_only=offline_mode).to(self.device)
+        self.tokenizer = BartTokenizerFast.from_pretrained('ctrlsum-cnndm', use_fast=True, local_files_only=offline_mode)
         self._5w1h = ["what ",
                       "what's "
                       "when ",
@@ -45,7 +53,6 @@ class Summarizers:
                       "Who's ",
                       "Where ",
                       "How "]
-        logger.info(f'CTRL-Sum initialized in {time.time() - start} sec')
 
     @torch.no_grad()
     def __call__(self,
@@ -129,11 +136,21 @@ class Summarizers:
         for token in self.tokenizer.special_tokens_map.values():
             summary = summary.replace(token, "")
 
+        summary = summary.split('Q: ')[0].split('A: ')[0]  # remove rare cases where CTRLSum gives repeated prompt as output
+
         return summary.strip()
 
 
-app = Flask(__name__)
+start = time.time()
+logger.info('Initializing CTRL-Sum...')
 ctrlsum = Summarizers(device='cuda')
+try:
+    ctrlsum(contents='hello my name is billy', query='', prompt='My name is:', num_beams=5, top_k=None, top_p=None, no_repeat_ngram_size=4, length_penalty=1.0, question_detection=True)  # call the model once first to warm up and load lazy-loaded data into memory
+except:
+    pass
+logger.info(f'CTRL-Sum initialized in {time.time() - start} sec')
+
+app = Flask(__name__)
 
 
 @app.route('/qna', methods=['POST'])
@@ -170,4 +187,4 @@ if __name__ == '__main__':
     from waitress import serve
     server_logger = logging.getLogger('waitress')
     server_logger.setLevel(logging.DEBUG)
-    serve(app, host='0.0.0.0', port=8080, expose_tracebacks=True, threads=8)
+    serve(app, host='0.0.0.0', port=8080, expose_tracebacks=False, threads=8)

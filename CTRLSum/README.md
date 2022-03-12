@@ -30,7 +30,16 @@ Body:
 
 ```json
 {
+    "success": "true",
     "answer": "string"
+}
+```
+
+If error occurred, the `success` field will be `false` and the `answer` field will be replaced by `error` which contains the detailed error message.
+```json
+{
+    "success": "false",
+    "error": "error message"
 }
 ```
 
@@ -80,7 +89,16 @@ Generate tags from text using CTRLSum
 
 ```json
 {
+    "success": "true",
     "tags": "tags separated by ;, tags are strictly single-word (may include hyphens)"
+}
+```
+
+If error occurred, the `success` field will be `false` and the `tags` field will be replaced by `error` which contains the detailed error message.
+```json
+{
+    "success": "false",
+    "error": "error message"
 }
 ```
 
