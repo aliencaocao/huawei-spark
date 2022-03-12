@@ -124,7 +124,7 @@ const Videos = (props) => {
         currentPlayerRef.addEventListener('ended', handleVideoEnded)
 
         player.load(
-            `https://ecoshop-data.obs.ap-southeast-3.myhuaweicloud.com/mpc-video/${video_id}/${(await shaka.Player.probeSupport()).manifest.mpd ? 'index.mpd' : 'output.m3u8'}`
+            `https://ecoshop-content.obs.ap-southeast-3.myhuaweicloud.com/mpc-video/${video_id}/${(await shaka.Player.probeSupport()).manifest.mpd ? 'index.mpd' : 'output.m3u8'}`
         ).catch(errorHandler);
 
         currentPlayerRef.play()
@@ -140,7 +140,6 @@ const Videos = (props) => {
                 return results.json(); //return data in JSON (since its JSON data)
             }).then(async (data) => {
                 if (data.success === true) {
-                    console.log(data.listings)
                     videoData = data.listings
                     if (videoData.length > 0) {
                         if (props.videoIDRender !== "") {
@@ -198,7 +197,7 @@ const Videos = (props) => {
         switch (mod(index, 1)) {
             case 0:
                 return (
-                    <div className="video-container-style" style={{ position: "absolute" }} key={"video-" + index}>
+                    <div className="video-container-style" style={{ position: "absolute", overflow: "hidden" }} key={"video-" + index}>
 
                         {!loading && (
                             <Fragment>

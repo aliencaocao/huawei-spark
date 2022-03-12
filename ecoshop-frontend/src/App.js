@@ -29,7 +29,7 @@ import { debounce } from 'lodash';
 import { blue } from '@mui/material/colors';
 
 
-window.globalURL = "https://c2c098ec16264e4dbf33c1f9a0b88d42.apig.ap-southeast-3.huaweicloudapis.com"
+window.globalURL = "https://550bf209274345648b958a0b003b655c.apig.ap-southeast-1.huaweicloudapis.com"
 
 const listLoadingSkeleton = []
 for (let i = 0; i < 6; i++) {
@@ -396,7 +396,7 @@ const App = () => {
         (
           <Fragment>
             {token ? (
-              <div className='fadeIn' style={{ height: "100%", width: "100%" }}>
+              <div className='fadeIn' style={{ height: "100%", overflow: "hidden", width: "100%" }}>
 
                 {page === "home" && (
                   <Fragment>
@@ -444,7 +444,7 @@ const App = () => {
                       return true
                     }} pullDownThreshold={90} maxPullDownDistance={115} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
                       <Grow in={true}>
-                        <div style={{ width: "100%", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
+                        <div style={{ width: "100%", overflow: "hidden", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
                           {searchMode && (
                             <Paper elevation={12} style={{ width: "100%", padding: "2ch", marginTop: "1ch" }}>
                               <span style={{ fontSize: "2ch", fontWeight: "bold", display: "flex", alignContent: "center" }}>Filters <FilterListIcon style={{ marginLeft: "4px" }} /> {filterloading && (<CircularProgress size="2ch" style={{ marginLeft: "1ch" }} />)}</span>
@@ -499,7 +499,7 @@ const App = () => {
                   </Fragment>
                 )}
                 {page === "videos" && (
-                  <Videos currentSliderIndexRef={currentSliderIndexRef} renderID={videoIDRender} setvideoIDRender={setvideoIDRender} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />
+                  <Videos currentSliderIndexRef={currentSliderIndexRef} videoIDRender={videoIDRender} setvideoIDRender={setvideoIDRender} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />
                 )}
                 {page === "shorts" && (
                   <Shorts />
@@ -508,7 +508,7 @@ const App = () => {
                   <Chats />
                 )}
 
-                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={12}>
+                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, paddingBottom: "1ch" }} elevation={12}>
                   <BottomNavigation sx={{ backgroundColor: "transparent" }} value={page} onChange={(e, newValue) => { updatePage(newValue) }}>
                     <BottomNavigationAction
                       label="Home"
