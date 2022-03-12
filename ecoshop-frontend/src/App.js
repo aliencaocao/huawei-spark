@@ -498,7 +498,7 @@ const App = () => {
                   </Fragment>
                 )}
                 {page === "videos" && (
-                  <Videos currentSliderIndexRef={currentSliderIndexRef} renderID={videoIDRender} setvideoIDRender={setvideoIDRender} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />
+                  <Videos currentSliderIndexRef={currentSliderIndexRef} videoIDRender={videoIDRender} setvideoIDRender={setvideoIDRender} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />
                 )}
                 {page === "shorts" && (
                   <Shorts />

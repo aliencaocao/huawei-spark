@@ -140,7 +140,6 @@ const Videos = (props) => {
                 return results.json(); //return data in JSON (since its JSON data)
             }).then(async (data) => {
                 if (data.success === true) {
-                    console.log(data.listings)
                     videoData = data.listings
                     if (videoData.length > 0) {
                         if (props.videoIDRender !== "") {
