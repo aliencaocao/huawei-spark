@@ -124,7 +124,7 @@ const Videos = (props) => {
         currentPlayerRef.addEventListener('ended', handleVideoEnded)
 
         player.load(
-            `https://ecoshop-data.obs.ap-southeast-3.myhuaweicloud.com/mpc-video/${video_id}/${(await shaka.Player.probeSupport()).manifest.mpd ? 'index.mpd' : 'output.m3u8'}`
+            `https://ecoshop-content.obs.ap-southeast-3.myhuaweicloud.com/mpc-video/${video_id}/${(await shaka.Player.probeSupport()).manifest.mpd ? 'index.mpd' : 'output.m3u8'}`
         ).catch(errorHandler);
 
         currentPlayerRef.play()

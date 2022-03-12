@@ -28,7 +28,7 @@ import { debounce } from 'lodash';
 import { blue } from '@mui/material/colors';
 
 
-window.globalURL = "https://c2c098ec16264e4dbf33c1f9a0b88d42.apig.ap-southeast-3.huaweicloudapis.com"
+window.globalURL = "https://550bf209274345648b958a0b003b655c.apig.ap-southeast-1.huaweicloudapis.com"
 
 const listLoadingSkeleton = []
 for (let i = 0; i < 6; i++) {
