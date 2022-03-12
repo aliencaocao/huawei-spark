@@ -197,7 +197,7 @@ const Videos = (props) => {
         switch (mod(index, 1)) {
             case 0:
                 return (
-                    <div className="video-container-style" style={{ position: "absolute" }} key={"video-" + index}>
+                    <div className="video-container-style" style={{ position: "absolute", overflow: "hidden" }} key={"video-" + index}>
 
                         {!loading && (
                             <Fragment>
