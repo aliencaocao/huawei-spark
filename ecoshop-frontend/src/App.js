@@ -10,7 +10,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Shorts from './Components/Shorts';
 import Login from './Components/Login';
-import Chats from './Components/Chats';
+import ChatList from './Components/chats/ChatList';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import ChatIcon from '@mui/icons-material/Chat';
 import VideoList from './Components/VideoList';
@@ -167,9 +167,9 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
 
 
 const App = () => {
-  const [page, updatePage] = useState("home")
+  // const [page, updatePage] = useState("home")
+  const [page, updatePage] = useState("chats")
   const [videoIDRender, setvideoIDRender] = useState("")
-  // const [token, updateToken] = useState(null)
   const [token, updateToken] = useState(null)
   const [username, updateUsername] = useState("")
   const [currentSliderIndex, updateCurrentSliderIndex, currentSliderIndexRef] = useStateRef(0)
@@ -506,7 +506,7 @@ const App = () => {
                   <Shorts />
                 )}
                 {page === "chats" && (
-                  <Chats />
+                  <ChatList />
                 )}
 
                 <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={12}>
