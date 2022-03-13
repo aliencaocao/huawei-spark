@@ -47,6 +47,7 @@ const startup = async () => {
                 socket.username = tokenData.username
                 if (tokenData.username in socketList) socketList[tokenData.username].push(socket)
                 else socketList[tokenData.username] = [socket]
+                socket.isAuthed = true
             }
             else {
                 if (!(tokenData.username in socketList)) {
