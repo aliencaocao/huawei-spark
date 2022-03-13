@@ -1,7 +1,8 @@
-import { CircularProgress, SwipeableDrawer, IconButton, Avatar, Paper, Divider } from '@mui/material'
+import { CircularProgress, SwipeableDrawer, IconButton, Avatar, Divider } from '@mui/material'
 import SwipeableViews from 'react-swipeable-views';
 import { virtualize } from 'react-swipeable-views-utils';
 import { useEffect, useState, Fragment } from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSnackbar } from 'notistack';
 import shaka from 'shaka-player/dist/shaka-player.ui'
 import { mod } from 'react-swipeable-views-core';
@@ -26,6 +27,8 @@ let player = null;
 const container = window !== undefined ? () => window.document.body : undefined;
 
 const Videos = (props) => {
+    const navigate = useNavigate()
+    const location = useLocation()
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [currentData, setCurrentData] = useState({})
     const [openDrawer, setopenDrawer] = useState(false)
@@ -142,17 +145,29 @@ const Videos = (props) => {
             }).then(async (data) => {
                 if (data.success === true) {
                     videoData = data.listings
+                    console.log(videoData)
                     if (videoData.length > 0) {
-                        if (props.videoIDRender !== "") {
+                        let found = false
+
+                        if (location.pathname !== "/videos") {
+                            const videoID = parseInt(location.pathname.split("/")[2])
+                            
                             for (let i = 0; i < videoData.length; i++) {
-                                if (videoData[i].obs_location === props.videoIDRender) {
+                                if (videoData[i].id === videoID) {
                                     currentVideoIndexPlaying = i
-                                    props.setvideoIDRender("")
+                                    found = true
                                     break
                                 }
                             }
+                            if (!found)  enqueueSnackbar("Oops. The video with ID '" + videoID + "' was not found.", {
+                                variant: 'error',
+                                autoHideDuration: 2500
+                            })
                         }
+
+                      
                         currentSliderIndex = props.currentSliderIndex
+                        if (!found) navigate("/videos/" + data.listings[currentVideoIndexPlaying].id)
                         setCurrentData(data.listings[currentVideoIndexPlaying])
                         playVideo(data.listings[currentVideoIndexPlaying].obs_location)
                     }
@@ -185,6 +200,7 @@ const Videos = (props) => {
         else currentVideoIndexPlaying += 1
 
         setCurrentData(videoData[currentVideoIndexPlaying])
+        navigate("/videos/" + videoData[currentVideoIndexPlaying].id)
         if (!videoPlayerRef[currentSliderIndex]) playWhenReady = true
         else playVideo(videoData[currentVideoIndexPlaying].obs_location)
     }
@@ -234,7 +250,13 @@ const Videos = (props) => {
 
                                     </div>
                                     <div style={{ display: "flex", marginTop: "2px", flexDirection: "column", alignItems: "center" }}>
-                                        <IconButton style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
+                                        <IconButton onClick={async () => {
+                                            await navigator.clipboard.writeText(window.location.href);
+                                            enqueueSnackbar("Copied Video Link to Clipboard", {
+                                                variant: 'success',
+                                                autoHideDuration: 1500
+                                            });
+                                        }} style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
                                             <ShareIcon style={{ fontSize: "2.5ch" }} />
                                             <span style={{ fontWeight: "bold", fontSize: "1.1ch", marginTop: "1px" }}>Share</span>
                                         </IconButton>
