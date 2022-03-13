@@ -29,12 +29,14 @@ const startup = async () => {
         socket.send(JSON.stringify({ type: "welcome", success: true, data: "connection-established" }));
 
         socket.on("message", async (msg) => {
+            console.log(msg)
             let data = {}
             try {
                 data = JSON.parse(msg)
             }
             catch (e) {
                 socket.send(JSON.stringify({ type: "auth", success: false, data: "invalid-json" }));
+                return socket.terminate()
             }
 
 
