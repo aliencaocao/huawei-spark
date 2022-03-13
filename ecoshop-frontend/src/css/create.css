@@ -20,3 +20,15 @@ background: linear-gradient(to right, #ffffff, #abbaab); /* W3C, IE 10+/ Edge, F
 -webkit-text-fill-color: transparent;
 -moz-text-fill-color: transparent;
 }
+
+.dropzone-class {
+    background-color: #121212 !important;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15));
+    border-radius: 20px !important;
+    border-color: transparent !important;
+    box-shadow: 0px 7px 8px -4px rgb(0 0 0 / 20%), 0px 12px 17px 2px rgb(0 0 0 / 14%), 0px 5px 22px 4px rgb(0 0 0 / 12%);
+    margin-bottom: 2ch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

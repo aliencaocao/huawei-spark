@@ -326,8 +326,8 @@ const Videos = (props) => {
                 container={container}
                 anchor="top"
                 open={openDrawer}
-                onClose={() => { setopenDrawer(false) }}
-                onOpen={() => { setopenDrawer(true) }}
+                onClose={() => { setopenDrawer(false); videoPlayerRef[currentSliderIndex].play() }}
+                onOpen={() => { setopenDrawer(true); videoPlayerRef[currentSliderIndex].pause() }}
                 swipeAreaWidth={100}
                 disableSwipeToOpen={false}
                 ModalProps={{

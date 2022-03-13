@@ -392,7 +392,7 @@ const App = () => {
   useEffect(() => {
     const currentPage = location.pathname.split("/")[1]
     if (page !== currentPage) {
-      if (page === "videos") currentPlayer.destroy()
+      if (page === "videos" && currentPlayer) currentPlayer.destroy()
       updatePage(currentPage)
     }
 
