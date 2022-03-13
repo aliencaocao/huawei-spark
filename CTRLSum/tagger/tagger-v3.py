@@ -26,7 +26,7 @@ logging.basicConfig(stream=sys.stdout, format="%(asctime)s - %(levelname)s - %(n
 
 start = time.time()
 logger.info('Loading model...')
-session = InferenceSession("onnx_model/model.onnx", providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])  # ranked in priority
+session = InferenceSession("onnx_model/model.onnx", providers=['TensorrtExecutionProvider', 'CUDAExecutionProvider'])  # ranked in priority 'CPUExecutionProvider'
 logger.info('Loading tokenizer...')
 tokenizer = BertTokenizerFast.from_pretrained('bert-large-cased', cache_dir=cache_dir, use_fast=True, local_files_only=offline_mode)
 logger.info(f'Model and tokenizer loaded in {time.time() - start} sec')
@@ -71,6 +71,15 @@ def gen_tags(inputs) -> list:
     return tags
 
 
+logger.info('Warming up...')  # call the model once first to warm up and load lazy-loaded data into memory
+try:
+    inputs = preprocess('Hello World')
+    tags = gen_tags(inputs)
+except:
+    pass
+logger.info('Warm up done.')
+
+
 @app.route('/tagger', methods=['POST'])
 def tagger():  # TODO: for longer than 512, enable batching, change gen tags accordingly
     try:
@@ -96,7 +105,7 @@ def health():
     try:
         inputs = preprocess('Hello World')
         tags = gen_tags(inputs)
-        if tags == 'Hello;World':
+        if tags == ['Hello', 'World']:
             return jsonify({'health': 'true'})
     except Exception as e:
         logger.error(f'Health check failed with error {e}')
@@ -109,4 +118,3 @@ if __name__ == '__main__':
     server_logger = logging.getLogger('waitress')
     server_logger.setLevel(logging.DEBUG)
     serve(app, host='0.0.0.0', port=8080, expose_tracebacks=False, threads=8)
-a=1  # for force docker rebuild
