@@ -34,12 +34,12 @@ const startup = async () => {
                 data = JSON.parse(msg)
             }
             catch (e) {
-                socket.send(JSON.stringify({ type: "auth", success: false, data: "invalid-json" }));
+                socket.send(JSON.stringify({ type: "auth", success: false, error: "invalid-json" }));
             }
 
 
             if (data.token === undefined) {
-                socket.send(JSON.stringify({ type: "auth", success: false, data: "missing-auth" }));
+                socket.send(JSON.stringify({ type: "auth", success: false, error: "missing-auth" }));
                 return socket.terminate()
             }
             let tokenData = {}
@@ -47,7 +47,7 @@ const startup = async () => {
                 tokenData = JSON.parse(signer.unsign(data.token.replace(/\\/g, ""))); // check token validity
             }
             catch (e) {
-                socket.send(JSON.stringify({ type: "auth", success: false, data: "invalid-token" }));
+                socket.send(JSON.stringify({ type: "auth", success: false, error: "invalid-token" }));
                 return socket.terminate()
             }
 
@@ -60,7 +60,7 @@ const startup = async () => {
             }
             else {
                 if (!(tokenData.username in socketList)) {
-                    socket.send(JSON.stringify({ type: "auth", success: false, data: "missing-init" }));
+                    socket.send(JSON.stringify({ type: "auth", success: false, error: "missing-init" }));
                 }
                 if (data.action === "load-msgs") {
                     const [rows, fields] = await connection.execute('SELECT `sender`, `recipient`, `content`, `sent`, `obs_image`, `answer_bot` FROM `chat_message` WHERE `chat_id` = ? AND (`recipient` = ? OR `sender` = ?) ORDER BY `id` DESC LIMIT 50 ', [data.chatID, tokenData.username, tokenData.username]);
