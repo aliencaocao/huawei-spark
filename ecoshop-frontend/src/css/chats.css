@@ -18,6 +18,14 @@ main {
   padding: 7px 0;
 }
 
+.chat-log {
+  width: 100%;
+}
+
+.chat-log-toolbar.chat-log-toolbar {
+  padding: 2px 16px 0 10px;
+}
+
 .message-preview {
   width: 100%;
   overflow: hidden;

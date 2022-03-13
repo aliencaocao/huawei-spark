@@ -138,7 +138,7 @@ class Summarizers:
             summary = summary.replace(token, "")
 
         summary = summary.split('Q: ')[0].split('A: ')[0]  # remove rare cases where CTRLSum gives repeated prompt as output
-
+        summary = summary.encode('ascii', 'replace').decode().replace('?', '')  # remove non-ascii characters, faster than using regex or ord()
         return summary.strip()
 
 

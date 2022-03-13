@@ -44,7 +44,7 @@ def preprocess(source: str) -> dict:
     Returns:
         (dict): tokenized input contents, attention mask and token type ids in a dict
     """
-    inputs = tokenizer(source, return_tensors="np")
+    inputs = tokenizer(source, return_tensors="np", max_length=512, truncation=True)  # already have a word counter at client side, this is just to ensure in edge cases that client side word counter did not work, the model still runs (and because such edge cases are usually just caused by a few tokens, not much information should be lost if we truncate them)
     inputs = {k: v.astype(np.int64) for k, v in inputs.items()}
     return inputs
 
@@ -81,7 +81,7 @@ logger.info('Warm up done.')
 
 
 @app.route('/tagger', methods=['POST'])
-def tagger():  # TODO: for longer than 512, enable batching, change gen tags accordingly
+def tagger():
     try:
         source = request.json
         source = source['source'].replace('\n', ' ').strip()
