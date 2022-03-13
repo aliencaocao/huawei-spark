@@ -167,10 +167,10 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
 
 
 const App = () => {
-  const [page, updatePage] = useState("chats")
+  const [page, updatePage] = useState("home")
   const [videoIDRender, setvideoIDRender] = useState("")
   // const [token, updateToken] = useState(null)
-  const [token, updateToken] = useState("{\"username\":\"tkai\"}.dOk_hQFwWlV53Jl9yE75mrPnMRk")
+  const [token, updateToken] = useState(null)
   const [username, updateUsername] = useState("")
   const [currentSliderIndex, updateCurrentSliderIndex, currentSliderIndexRef] = useStateRef(0)
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
@@ -333,6 +333,7 @@ const App = () => {
     const startup = async () => {
       if (token === null) {
         const localStorageToken = localStorage.getItem("ecoshop-token")
+
         if (localStorageToken !== null) {
           updateToken(localStorageToken)
           window.token = localStorageToken
@@ -508,7 +509,7 @@ const App = () => {
                   <Chats />
                 )}
 
-                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, paddingBottom: "1ch" }} elevation={12}>
+                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={12}>
                   <BottomNavigation sx={{ backgroundColor: "transparent" }} value={page} onChange={(e, newValue) => { updatePage(newValue) }}>
                     <BottomNavigationAction
                       label="Home"

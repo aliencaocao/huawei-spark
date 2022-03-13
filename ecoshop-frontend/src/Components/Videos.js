@@ -9,10 +9,11 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
 import SwipeDownIcon from '@mui/icons-material/SwipeDown';
-import { blue, grey } from '@mui/material/colors';
+import { blue, grey, green, red } from '@mui/material/colors';
 import ShareIcon from '@mui/icons-material/Share';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import HandymanIcon from '@mui/icons-material/Handyman';
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
@@ -141,6 +142,7 @@ const Videos = (props) => {
             }).then(async (data) => {
                 if (data.success === true) {
                     videoData = data.listings
+                    console.log(data.listings)
                     if (videoData.length > 0) {
                         if (props.videoIDRender !== "") {
                             for (let i = 0; i < videoData.length; i++) {
@@ -203,22 +205,37 @@ const Videos = (props) => {
                             <Fragment>
                                 <div style={{ overflow: "hidden", position: "absolute", right: "2%", bottom: "11%", zIndex: 3 }}>
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                        <IconButton style={{ display: "flex", flexDirection: "column" }}>
-                                            <ThumbUpOutlinedIcon style={{ fontSize: "2.4ch" }} />
-                                            <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
-                                        </IconButton>
+                                        {currentData.self_like ? (
+                                            <IconButton style={{ display: "flex", flexDirection: "column", color: green[400] }}>
+                                                <ThumbUpIcon style={{ fontSize: "2.4ch" }} />
+                                                <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
+                                            </IconButton>
+                                        ) : (
+                                            <IconButton style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
+                                                <ThumbUpOutlinedIcon style={{ fontSize: "2.4ch" }} />
+                                                <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
+                                            </IconButton>
+                                        )}
 
                                     </div>
+                                    
                                     <div style={{ display: "flex", marginTop: "2px", flexDirection: "column", alignItems: "center" }}>
-                                        <IconButton style={{ display: "flex", flexDirection: "column" }}>
+                                    {currentData.self_dislike ? (
+                                        <IconButton style={{ display: "flex", flexDirection: "column", color: red[400] }}>
                                             <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
-                                            <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
+                                            <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
                                         </IconButton>
+                                    ) : (
+                                        <IconButton style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
+                                            <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
+                                            <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
+                                        </IconButton>
+                                    )}
 
 
                                     </div>
                                     <div style={{ display: "flex", marginTop: "2px", flexDirection: "column", alignItems: "center" }}>
-                                        <IconButton style={{ display: "flex", flexDirection: "column" }}>
+                                        <IconButton style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
                                             <ShareIcon style={{ fontSize: "2.5ch" }} />
                                             <span style={{ fontWeight: "bold", fontSize: "1.1ch", marginTop: "1px" }}>Share</span>
                                         </IconButton>
@@ -228,8 +245,8 @@ const Videos = (props) => {
 
                                 <div style={{ overflow: "hidden", position: "absolute", left: "3%", bottom: "4%", zIndex: 3, display: "flex", flexDirection: "column" }}>
                                     <div style={{ fontWeight: 450, display: "flex", alignItems: 'center' }}>
-                                        <span style={{ display: 'inline-block', maxWidth: "70vw", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", marginRight: "5px" }}>{currentData.name}</span> 
-                                        <span style={{marginRight: "5px"}}>•</span> 
+                                        <span style={{ display: 'inline-block', maxWidth: "70vw", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", marginRight: "5px" }}>{currentData.name}</span>
+                                        <span style={{ marginRight: "5px" }}>•</span>
                                         <span style={{ color: blue[300] }}> ${currentData.price}</span>
                                     </div>
                                     <div style={{ display: "flex", alignItems: "center", marginTop: "3px" }}>
