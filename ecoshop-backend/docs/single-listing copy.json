@@ -1,0 +1,22 @@
+{
+  "type": "single",
+  "listing": {
+    "name": "Laptop Repair Services",
+    "price": 100,
+    "type": 0,
+    "type_comment": "0 denotes a repair service and 1 denotes a product",
+    "quantity": 1,
+    "owner": "tkai",
+    "description": "'NEVER FEAR, TKAI IS HERE.' Reliable laptop repair services. 3 day repair duration and 3 month gura antee. We can repair various issues, both hardware and software... We will quote you a price once we do a free initial assessment. Support Acer laptop.",
+    "attributes": {
+      "duration": 3,
+      "warranty": 3,
+      "brand": "acer"
+    },
+    "images": [
+      "COVER IMAGE ID",
+      "OTHER IMG",
+      "OTHER IMG"
+    ]
+  }
+}
