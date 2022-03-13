@@ -25,7 +25,7 @@ const startup = async () => {
         socket.isAlive = true
         socket.isAuthed = false
         socket.on('pong', () => { socket.isAlive = true }); // check for any clients that dced without informing the server
-        setTimeout(() => { kickTimeOut(socket) }, 20000)
+        setTimeout(() => { kickTimeOut(socket) }, 60000)
         socket.send(JSON.stringify({ type: "welcome", success: true, data: "connection-established" }));
 
         socket.on("message", async (msg) => {
