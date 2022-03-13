@@ -183,6 +183,7 @@ const startup = async () => {
                 if (socket.username in socketList) {
                     for (let i = 0; i < socketList[socket.username]; i++) {
                         if (socket.isAlive === false) {
+                            console.log("Closing connection due to inactivity")
                             socketList[socket.username].splice(i, 1)
                             break
                         }
