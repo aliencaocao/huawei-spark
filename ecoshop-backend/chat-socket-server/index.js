@@ -29,7 +29,15 @@ const startup = async () => {
         socket.send(JSON.stringify({ type: "welcome", success: true, data: "connection-established" }));
 
         socket.on("message", async (msg) => {
-            const data = JSON.parse(msg)
+            let data = {}
+            try {
+                data = JSON.parse(msg)
+            }
+            catch (e) {
+                socket.send(JSON.stringify({ type: "auth", success: false, data: "invalid-json" }));
+            }
+
+
             if (data.token === undefined) {
                 socket.send(JSON.stringify({ type: "auth", success: false, data: "missing-auth" }));
                 return socket.terminate()
@@ -48,6 +56,7 @@ const startup = async () => {
                 if (tokenData.username in socketList) socketList[tokenData.username].push(socket)
                 else socketList[tokenData.username] = [socket]
                 socket.isAuthed = true
+                socket.send(JSON.stringify({ type: "init", success: true, data: "init-success" }));
             }
             else {
                 if (!(tokenData.username in socketList)) {
