@@ -417,7 +417,7 @@ const App = () => {
 
                   <Route path="/videos/:ID" element={<Videos setCurrentPlayer={setCurrentPlayer} currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
                   <Route path="/videos" element={<Videos setCurrentPlayer={setCurrentPlayer} currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
-                  <Route path="/chats" element={<Chats />} />
+                  <Route path="/chats" element={<ChatList />} />
                   <Route path="/create" element={<Create />} />
                   <Route path="/" element={
                     <Fragment>
