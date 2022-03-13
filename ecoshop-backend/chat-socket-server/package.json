@@ -1,0 +1,21 @@
+{
+  "name": "chat-socket-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ecoshop",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "fastify": "^3.27.4",
+    "fastify-cors": "^6.0.3",
+    "mysql2": "^2.3.3",
+    "nanoid": "^3.3.1",
+    "reallydangerous": "^2.1.0",
+    "ws": "^8.5.0"
+  }
+}
