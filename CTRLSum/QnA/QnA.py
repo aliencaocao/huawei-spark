@@ -30,6 +30,7 @@ from flask import Flask, request, jsonify
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s", datefmt="%m/%d/%Y %H:%M:%S", level=logging.DEBUG)
+app = Flask(__name__)
 
 
 class Summarizers:
@@ -143,14 +144,18 @@ class Summarizers:
 
 start = time.time()
 logger.info('Initializing CTRL-Sum...')
+if torch.cuda.is_available():
+    logger.info(torch.cuda.get_device_name(0))
+else:
+    logger.warning('CUDA is not available')
 ctrlsum = Summarizers(device='cuda')
+logger.info(f'CTRL-Sum initialized in {time.time() - start} sec')
+logger.info('Warming up...')
 try:
     ctrlsum(contents='hello my name is billy', query='', prompt='My name is:', num_beams=5, top_k=None, top_p=None, no_repeat_ngram_size=4, length_penalty=1.0, question_detection=True)  # call the model once first to warm up and load lazy-loaded data into memory
 except:
     pass
-logger.info(f'CTRL-Sum initialized in {time.time() - start} sec')
-
-app = Flask(__name__)
+logger.info('Warm up done.')
 
 
 @app.route('/qna', methods=['POST'])
