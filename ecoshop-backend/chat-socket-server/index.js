@@ -3,7 +3,7 @@ const ws = require('ws')
 const cors = require("fastify-cors");
 const mysql = require("mysql2/promise");
 const RD = require("reallydangerous");
-const nanoid = require("nanoid")
+const { nanoid } = require("nanoid")
 require('dotenv').config()
 
 const socketList = {}
@@ -21,6 +21,7 @@ const startup = async () => {
     const connection = await mysql.createConnection(JSON.parse(process.env.CONNECTION_STRING)) // MUST CONNECT IN VPC FOR DATABASE USAGE
 
     wss.on('connection', (socket) => {
+        nanoid.random()
         socket.id = nanoid()
         socket.isAlive = true
         socket.isAuthed = false
@@ -110,7 +111,7 @@ const startup = async () => {
                                 // send to all sender sockets except for the socket which sent the msg
                                 socketList[tokenData.username][i].send(JSON.stringify({ type: "new-msg", success: true, data: msgData }))
                             }
-                           
+
                         }
                     }
                     if (receipient in socketList) {
