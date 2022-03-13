@@ -21,7 +21,6 @@ const startup = async () => {
     const connection = await mysql.createConnection(JSON.parse(process.env.CONNECTION_STRING)) // MUST CONNECT IN VPC FOR DATABASE USAGE
 
     wss.on('connection', (socket) => {
-        nanoid.random()
         socket.id = nanoid()
         socket.isAlive = true
         socket.isAuthed = false
