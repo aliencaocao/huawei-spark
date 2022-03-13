@@ -29,14 +29,12 @@ const startup = async () => {
         socket.send(JSON.stringify({ type: "welcome", success: true, data: "connection-established" }));
 
         socket.on("message", async (msg) => {
-            console.log(msg)
             let data = {}
             try {
                 data = JSON.parse(msg)
             }
             catch (e) {
                 socket.send(JSON.stringify({ type: "auth", success: false, data: "invalid-json" }));
-                return socket.terminate()
             }
 
 
@@ -104,7 +102,7 @@ const startup = async () => {
                     }
 
                     // answer_bot column is a "0" or "1" indicating whether this msg is an answer bot msg
-                    const [rows, fields] = await connection.execute('INSERT INTO `chat_message` (`chat_id`, `sender`, `recipient`, `content`, `answer_bot`, `answer_bot_feedback`, `obs_image`, `sent`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ', [data.chatID, tokenData.username, receipient, data.content, data.answerBot, "", data.obs_image, currentTime]);
+                    const [rows, fields] = await connection.execute('INSERT INTO `chat_message` (`chat_id`, `sender`, `recipient`, `content`, `answer_bot`, `answer_bot_feedback`, `obs_image`, `sent`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ', [data.chatID, tokenData.username, receipient, data.content, data.answerBot, 0, data.obs_image, currentTime]);
 
                     const msgData = {
                         sender: tokenData.username,
