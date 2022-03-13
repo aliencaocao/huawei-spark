@@ -18,7 +18,7 @@ const kickTimeOut = async (socket) => {
 
 const startup = async () => {
     const wss = new ws.Server({ server: fastify.server })
-    const connection = await mysql.createConnection(JSON.parse(context.getUserData("gaussDBconnect"))) // MUST CONNECT IN VPC FOR DATABASE USAGE
+    const connection = await mysql.createConnection(JSON.parse(process.env.CONNECTION_STRING)) // MUST CONNECT IN VPC FOR DATABASE USAGE
 
     wss.on('connection', (socket) => {
         socket.id = nanoid()

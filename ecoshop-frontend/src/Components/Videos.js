@@ -142,7 +142,6 @@ const Videos = (props) => {
             }).then(async (data) => {
                 if (data.success === true) {
                     videoData = data.listings
-                    console.log(data.listings)
                     if (videoData.length > 0) {
                         if (props.videoIDRender !== "") {
                             for (let i = 0; i < videoData.length; i++) {
