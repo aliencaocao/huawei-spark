@@ -1,6 +1,7 @@
 import './App.css';
 import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction, Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem } from '@mui/material'
 import { LoadingButton } from '@mui/lab/';
+import { Routes, Route, Link } from "react-router-dom";
 import { Fragment, useEffect, useState } from 'react';
 import useStateRef from 'react-usestateref'
 import { useSnackbar } from 'notistack';
@@ -8,7 +9,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Shorts from './Components/Shorts';
+import { useNavigate, useLocation } from "react-router-dom";
 import Login from './Components/Login';
 import Chats from './Components/Chats';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
@@ -167,8 +168,9 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
 
 
 const App = () => {
-  const [page, updatePage] = useState("home")
-  const [videoIDRender, setvideoIDRender] = useState("")
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [page, updatePage] = useState("")
   // const [token, updateToken] = useState(null)
   const [token, updateToken] = useState(null)
   const [username, updateUsername] = useState("")
@@ -345,6 +347,8 @@ const App = () => {
             return results.json(); //return data in JSON (since its JSON data)
           }).then(async (data) => {
             if (data.success === true) {
+              if (location.pathname !== "/") updatePage(location.pathname.split("/")[1])
+
               const tokenData = JSON.parse(localStorageToken.split(".")[0])
 
               loadItemList()
@@ -382,9 +386,17 @@ const App = () => {
     startup()
   }, [])
 
+  // Handle location changes
+  useEffect(() => {
+    const currentPage = location.pathname.split("/")[1]
+    if (page !== currentPage) {
+      updatePage(currentPage)
+    }
+
+  }, [location])
+
   const handleVideoClick = async (id) => {
-    updatePage("videos")
-    setvideoIDRender(id)
+    navigate("/videos/" + id)
   }
 
   return (
@@ -398,122 +410,120 @@ const App = () => {
           <Fragment>
             {token ? (
               <div className='fadeIn' style={{ height: "100%", overflow: "hidden", width: "100%" }}>
+                <Routes>
 
-                {page === "home" && (
-                  <Fragment>
-                    <AppBar>
-                      <div style={{ height: "5ch", margin: "1ch", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <img className={(searchMode ? 'shrink-animation-style' : 'grow-animation-style') + ' icon-style'} src={ecoShopIcon} />
-                        <TextField value={searchValue} onChange={(e) => { searchQuery(e.target.value, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading, loadVideoList); setSearchValue(e.target.value) }} onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search Videos/Items/Products' size="small"
-                          InputProps={
-                            searchMode ? {
-                              startAdornment: (
-                                <InputAdornment position="start" onClick={() => {
-                                  setSearchMode(false);
-                                  if (searchValue !== "") {
-                                    loadItemList()
-                                    loadVideoList()
-                                    setSearchValue("")
-                                    updateFilterList([])
+                  <Route path="/videos/:ID" element={<Videos currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
+                  <Route path="/videos" element={<Videos currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
+                  <Route path="/chats" element={<Chats />} />
+                  <Route path="/" element={
+                    <Fragment>
+                      <AppBar>
+                        <div style={{ height: "5ch", margin: "1ch", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                          <img className={(searchMode ? 'shrink-animation-style' : 'grow-animation-style') + ' icon-style'} src={ecoShopIcon} />
+                          <TextField value={searchValue} onChange={(e) => { searchQuery(e.target.value, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading, loadVideoList); setSearchValue(e.target.value) }} onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search Videos/Items/Products' size="small"
+                            InputProps={
+                              searchMode ? {
+                                startAdornment: (
+                                  <InputAdornment position="start" onClick={() => {
+                                    setSearchMode(false);
+                                    if (searchValue !== "") {
+                                      loadItemList()
+                                      loadVideoList()
+                                      setSearchValue("")
+                                      updateFilterList([])
+                                    }
                                   }
-                                }
-                                }>
-                                  <ArrowBackIcon />
-                                  <Divider orientation="vertical" />
-                                </InputAdornment>
-                              ),
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <SearchIcon />
-                                </InputAdornment>
-                              )
-                            }
-                              :
-                              {
+                                  }>
+                                    <ArrowBackIcon />
+                                    <Divider orientation="vertical" />
+                                  </InputAdornment>
+                                ),
                                 endAdornment: (
                                   <InputAdornment position="end">
                                     <SearchIcon />
                                   </InputAdornment>
-                                ),
-                              }}>
-                        </TextField>
-
-                      </div>
-                    </AppBar>
-                    <PullToRefresh isPullable={!searchMode} onRefresh={async () => {
-                      await Promise.all([loadItemList(), loadVideoList()])
-                      return true
-                    }} pullDownThreshold={90} maxPullDownDistance={115} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
-                      <Grow in={true}>
-                        <div style={{ width: "100%", overflow: "hidden", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
-                          {searchMode && (
-                            <Paper elevation={12} style={{ width: "100%", padding: "2ch", marginTop: "1ch" }}>
-                              <span style={{ fontSize: "2ch", fontWeight: "bold", display: "flex", alignContent: "center" }}>Filters <FilterListIcon style={{ marginLeft: "4px" }} /> {filterloading && (<CircularProgress size="2ch" style={{ marginLeft: "1ch" }} />)}</span>
-                              {!filterloading && (
-                                <form
-                                  style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center" }}
-                                  onSubmit={async (e) => {
-                                    e.preventDefault()
-                                    handleFilterSubmit(e)
-                                  }}
-                                >
-                                  {filterList}
-                                  <div style={{ marginTop: "3ch", alignSelf: "center" }}>
-                                    {filterList.length > 0 ? (<LoadingButton loading={listLoading} type="submit" variant='outlined'>Apply Filters</LoadingButton>) : <span style={{ display: "flex", alignItems: "center" }}>No Filters Available  <SentimentDissatisfiedIcon style={{ marginLeft: "4px", color: "#2196f3" }} /></span>}
-                                  </div>
-                                </form>
-                              )}
-                            </Paper>
-                          )}
-                          <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h3>Your Videos</h3>)}</Divider>
-                          <VideoList data={videoData} handleVideoClick={handleVideoClick} loading={videoListLoading} />
-                          <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Item/Services Results For: <b>{searchValue}</b></h5>) : (<h2>Your Picks</h2>)}</Divider>
-                          {listLoading ? (
-                            <Grid container spacing={2}>
-                              {listLoadingSkeleton}
-                            </Grid>
-                          )
-                            : (
-                              <Fade in={true}>
-                                <Grid container spacing={2} style={{ width: "100%", marginBottom: "20vh" }}>
-                                  {itemListRender.length === 0 ? (
-                                    <Grid item columns={12} style={{ width: "100%" }}>
-                                      <Paper style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2ch" }} elevation={12}>
-                                        <SentimentDissatisfiedIcon style={{ fontSize: "5ch", color: "#2196f3" }} />
-                                        <h3>No Products/Services Were Found</h3>
-                                        <span>Perhaps try typing a different search query?</span>
-                                      </Paper>
-                                    </Grid>
-                                  ) : (
-                                    <Fragment>
-                                      {itemListRender}
-                                    </Fragment>
-                                  )}
-                                </Grid>
-                              </Fade>
-                            )}
-
+                                )
+                              }
+                                :
+                                {
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <SearchIcon />
+                                    </InputAdornment>
+                                  ),
+                                }}>
+                          </TextField>
 
                         </div>
-                      </Grow>
-                    </PullToRefresh>
-                  </Fragment>
-                )}
-                {page === "videos" && (
-                  <Videos currentSliderIndexRef={currentSliderIndexRef} videoIDRender={videoIDRender} setvideoIDRender={setvideoIDRender} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />
-                )}
-                {page === "shorts" && (
-                  <Shorts />
-                )}
-                {page === "chats" && (
-                  <Chats />
-                )}
+                      </AppBar>
+                      <PullToRefresh isPullable={!searchMode} onRefresh={async () => {
+                        await Promise.all([loadItemList(), loadVideoList()])
+                        return true
+                      }} pullDownThreshold={90} maxPullDownDistance={115} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
+                        <Grow in={true}>
+                          <div style={{ width: "100%", overflow: "hidden", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
+                            {searchMode && (
+                              <Paper elevation={12} style={{ width: "100%", padding: "2ch", marginTop: "1ch" }}>
+                                <span style={{ fontSize: "2ch", fontWeight: "bold", display: "flex", alignContent: "center" }}>Filters <FilterListIcon style={{ marginLeft: "4px" }} /> {filterloading && (<CircularProgress size="2ch" style={{ marginLeft: "1ch" }} />)}</span>
+                                {!filterloading && (
+                                  <form
+                                    style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center" }}
+                                    onSubmit={async (e) => {
+                                      e.preventDefault()
+                                      handleFilterSubmit(e)
+                                    }}
+                                  >
+                                    {filterList}
+                                    <div style={{ marginTop: "3ch", alignSelf: "center" }}>
+                                      {filterList.length > 0 ? (<LoadingButton loading={listLoading} type="submit" variant='outlined'>Apply Filters</LoadingButton>) : <span style={{ display: "flex", alignItems: "center" }}>No Filters Available  <SentimentDissatisfiedIcon style={{ marginLeft: "4px", color: "#2196f3" }} /></span>}
+                                    </div>
+                                  </form>
+                                )}
+                              </Paper>
+                            )}
+                            <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h3>Your Videos</h3>)}</Divider>
+                            <VideoList data={videoData} handleVideoClick={handleVideoClick} loading={videoListLoading} />
+                            <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Item/Services Results For: <b>{searchValue}</b></h5>) : (<h2>Your Picks</h2>)}</Divider>
+                            {listLoading ? (
+                              <Grid container spacing={2}>
+                                {listLoadingSkeleton}
+                              </Grid>
+                            )
+                              : (
+                                <Fade in={true}>
+                                  <Grid container spacing={2} style={{ width: "100%", marginBottom: "20vh" }}>
+                                    {itemListRender.length === 0 ? (
+                                      <Grid item columns={12} style={{ width: "100%" }}>
+                                        <Paper style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2ch" }} elevation={12}>
+                                          <SentimentDissatisfiedIcon style={{ fontSize: "5ch", color: "#2196f3" }} />
+                                          <h3>No Products/Services Were Found</h3>
+                                          <span>Perhaps try typing a different search query?</span>
+                                        </Paper>
+                                      </Grid>
+                                    ) : (
+                                      <Fragment>
+                                        {itemListRender}
+                                      </Fragment>
+                                    )}
+                                  </Grid>
+                                </Fade>
+                              )}
 
-                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={12}>
-                  <BottomNavigation sx={{ backgroundColor: "transparent" }} value={page} onChange={(e, newValue) => { updatePage(newValue) }}>
+
+                          </div>
+                        </Grow>
+                      </PullToRefresh>
+                    </Fragment>
+                  } />
+
+
+                </Routes>
+
+                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={12}>
+                  <BottomNavigation sx={{ backgroundColor: "transparent" }} value={page} onChange={(e, newValue) => { navigate("/" + newValue) }}>
                     <BottomNavigationAction
                       label="Home"
-                      value="home"
+                      value=""
                       icon={<HomeIcon />}
                     />
                     <BottomNavigationAction
