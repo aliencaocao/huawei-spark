@@ -34,30 +34,37 @@ exports.handler = async (event, context) => {
     let output = [];
 
     if (!("query" in body)) { // get generic homepage
-      const [rows, fields] = await connection.execute("SELECT `product`.`id`, `name`, `price`, `type`, `quantity`, `owner`, `obs_location`, `social_video`.`id`, " +
+      const [rows, fields] = await connection.execute("SELECT `product`.`id`, `name`, `obs_image`, `price`, `type`, `quantity`, `owner`, `obs_location`, `social_video`.`id` AS `videoId`, " +
+        "COUNT(`user_product_bookmark`.`user`) AS `bookmarks`, " +
         "COUNT(CASE WHEN `user_video_react`.`react` = 1 THEN 1 ELSE NULL END) as `likes`, " +
         "COUNT(CASE WHEN `user_video_react`.`react` = 2 THEN 1 ELSE NULL END) as `dislikes`, " +
         "COUNT(CASE WHEN `user_video_react`.`user` = ? AND `user_video_react`.`react` = 1 THEN 1 ELSE NULL END) as `self_like`, " +
         "COUNT(CASE WHEN `user_video_react`.`user` = ? AND `user_video_react`.`react` = 2 THEN 1 ELSE NULL END) as `self_dislike` FROM `product` " +
         "INNER JOIN `social_video_product` ON `social_video_product`.`product` = `product`.`id` " +
         "INNER JOIN `social_video` ON `social_video_product`.`video` = `social_video`.`id` " +
+        "INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` " +
+        "LEFT OUTER JOIN `user_product_bookmark` ON `user_product_bookmark`.`product` = `product`.`id` " +
         "LEFT OUTER JOIN `user_video_react` ON `user_video_react`.`video` = `social_video`.`id` " +
+        "WHERE `product_image`.`order` = 1 " +
         "GROUP BY `social_video`.`id`, `product`.`id` ORDER BY `social_video`.`id` DESC LIMIT 5",
-        [authData.username, authData.username]
+        [authData.username, authData.username],
       );
 
       output = rows;
     }
     else {
-      const [rows, fields] = await connection.execute("SELECT `product`.`id`, `name`, `price`, `type`, `quantity`, `owner`, `obs_location`, `social_video`.`id`, " +
+      const [rows, fields] = await connection.execute("SELECT `product`.`id`, `name`, `obs_image`, `price`, `type`, `quantity`, `owner`, `obs_location`, `social_video`.`id` AS `videoId`, " +
+        "COUNT(`user_product_bookmark`.`user`) AS `bookmarks`, " +
         "COUNT(CASE WHEN `user_video_react`.`react` = 1 THEN 1 ELSE NULL END) as `likes`, " +
         "COUNT(CASE WHEN `user_video_react`.`react` = 2 THEN 1 ELSE NULL END) as `dislikes`, " +
         "COUNT(CASE WHEN `user_video_react`.`user` = ? AND `user_video_react`.`react` = 1 THEN 1 ELSE NULL END) as `self_like`, " +
         "COUNT(CASE WHEN `user_video_react`.`user` = ? AND `user_video_react`.`react` = 2 THEN 1 ELSE NULL END) as `self_dislike` FROM `product` " +
         "INNER JOIN `social_video_product` ON `social_video_product`.`product` = `product`.`id` " +
         "INNER JOIN `social_video` ON `social_video_product`.`video` = `social_video`.`id` " +
+        "INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` " +
         "LEFT OUTER JOIN `user_video_react` ON `user_video_react`.`video` = `social_video`.`id` " +
-        "WHERE MATCH(`name`, `tags`) AGAINST(? IN BOOLEAN MODE) " +
+        "LEFT OUTER JOIN `user_product_bookmark` ON `user_product_bookmark`.`product` = `product`.`id` " +
+        "WHERE MATCH(`name`, `tags`) AGAINST(? IN BOOLEAN MODE) AND `product_image`.`order` = 1 " +
         "GROUP BY `social_video`.`id`, `product`.`id` ORDER BY `social_video`.`id` DESC LIMIT 5",
         [authData.username, authData.username, body["query"]],
       );

@@ -2,7 +2,9 @@
 
 const RD = require("reallydangerous");
 const mysql = require("mysql2/promise");
-const argon2 = require("argon2");
+const bcrypt = require("bcrypt");
+
+const BCRYPT_ROUNDS = 10;
 
 let signer = null;
 let connection = null;
@@ -46,7 +48,15 @@ exports.handler = async (event, context) => {
     if (!("username" in body) || !("password" in body)) return validationError
 
     try {
-      const [rows, fields] = await connection.execute('INSERT INTO `user` (`user`, `pass`, `plan`, `reputation`)  VALUES(?, ?, ?, ?) ', [body.username, await argon2.hash(body.password), "standard", 0]);
+      const [rows, fields] = await connection.execute(
+        'INSERT INTO `user` (`user`, `pass`, `plan`, `reputation`)  VALUES(?, ?, ?, ?) ',
+        [
+          body.username,
+          await bcrypt.hash(body.password, BCRYPT_ROUNDS),
+          1, // for our promotional period, all users get EcoShop Pro on registering a new account!
+          0,
+        ]
+      );
     }
     catch (e) {
       if (e.errno === 1062) {

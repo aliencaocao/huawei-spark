@@ -2,7 +2,7 @@
 
 const RD = require("reallydangerous");
 const mysql = require("mysql2/promise");
-const argon2 = require("argon2");
+const bcrypt = require("bcrypt");
 
 let signer = null;
 let connection = null;
@@ -40,23 +40,22 @@ exports.initializer = async (context, callback) => {
 };
 
 exports.handler = async (event, context) => {
-
   try {
     const body = JSON.parse((Buffer.from(event.body, 'base64')).toString()) 
   
     if (!("username" in body) || !("password" in body)) return validationError;
 
-    const [rows, fields] = await connection.execute('SELECT `pass` FROM `user` WHERE `user` = ? ', [body.username]);
+    const [rows, fields] = await connection.execute('SELECT `pass`, `plan` FROM `user` WHERE `user` = ? ', [body.username]);
     if (rows.length === 0) return invalidCredentialsResponse // user was not found
     const savedHash = rows[0].pass
-    if (await argon2.verify(savedHash, body.password)) {
+    if (await bcrypt.compare(body.password, savedHash)) {
       return {
         "statusCode": 200,
         "headers": { "Content-Type": "application/json" },
         "isBase64Encoded": false,
         "body": JSON.stringify({
           success: true,
-          token: signer.sign(JSON.stringify({ username: body.username }))
+          token: signer.sign(JSON.stringify({ username: body.username, plan: rows[0].plan }))
         }),
       };
     }
