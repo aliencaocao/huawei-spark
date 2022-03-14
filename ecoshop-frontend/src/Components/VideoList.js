@@ -25,7 +25,7 @@ const VideoList = (props) => {
             ) : (
                 props.data && props.data.length > 0 ? (
                     props.data.map((current) =>
-                        <Paper key={current.name + "-video"} className='listing-styles' elevation={12} style={{ width: "45vw", marginLeft: "1ch" }} onClick={() => { props.handleVideoClick(current.obs_location) }}>
+                        <Paper key={current.name + "-video"} className='listing-styles' elevation={12} style={{ width: "45vw", marginLeft: "1ch" }} onClick={() => { props.handleVideoClick(current.id) }}>
                             <div>
                                 <img src={`https://ecoshop-content.obs.ap-southeast-3.myhuaweicloud.com/mpc-video/${current.obs_location}/thumbnail.jpg`} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
                             </div>

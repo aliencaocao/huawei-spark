@@ -1,4 +1,4 @@
-import { CircularProgress, SwipeableDrawer, IconButton, Avatar, Divider } from '@mui/material'
+import { CircularProgress, SwipeableDrawer, IconButton, Avatar, Divider, Button } from '@mui/material'
 import SwipeableViews from 'react-swipeable-views';
 import { virtualize } from 'react-swipeable-views-utils';
 import { useEffect, useState, Fragment } from 'react';
@@ -16,6 +16,8 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import HandymanIcon from '@mui/icons-material/Handyman';
+import ShoppingBagOutlined from '@mui/icons-material/ShoppingBagOutlined';
+
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 let videoData = []
@@ -52,6 +54,7 @@ const Videos = (props) => {
         }
 
         player = new shaka.Player(currentPlayerRef);
+        props.setCurrentPlayer(player)
 
         player.configure({
             streaming: {
@@ -145,13 +148,12 @@ const Videos = (props) => {
             }).then(async (data) => {
                 if (data.success === true) {
                     videoData = data.listings
-                    console.log(videoData)
                     if (videoData.length > 0) {
                         let found = false
 
                         if (location.pathname !== "/videos") {
                             const videoID = parseInt(location.pathname.split("/")[2])
-                            
+
                             for (let i = 0; i < videoData.length; i++) {
                                 if (videoData[i].id === videoID) {
                                     currentVideoIndexPlaying = i
@@ -159,13 +161,13 @@ const Videos = (props) => {
                                     break
                                 }
                             }
-                            if (!found)  enqueueSnackbar("Oops. The video with ID '" + videoID + "' was not found.", {
+                            if (!found) enqueueSnackbar("Oops. The video with ID '" + videoID + "' was not found.", {
                                 variant: 'error',
                                 autoHideDuration: 2500
                             })
                         }
 
-                      
+
                         currentSliderIndex = props.currentSliderIndex
                         if (!found) navigate("/videos/" + data.listings[currentVideoIndexPlaying].id)
                         setCurrentData(data.listings[currentVideoIndexPlaying])
@@ -233,19 +235,19 @@ const Videos = (props) => {
                                         )}
 
                                     </div>
-                                    
+
                                     <div style={{ display: "flex", marginTop: "2px", flexDirection: "column", alignItems: "center" }}>
-                                    {currentData.self_dislike ? (
-                                        <IconButton style={{ display: "flex", flexDirection: "column", color: red[400] }}>
-                                            <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
-                                            <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
-                                        </IconButton>
-                                    ) : (
-                                        <IconButton style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
-                                            <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
-                                            <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
-                                        </IconButton>
-                                    )}
+                                        {currentData.self_dislike ? (
+                                            <IconButton style={{ display: "flex", flexDirection: "column", color: red[400] }}>
+                                                <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
+                                                <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
+                                            </IconButton>
+                                        ) : (
+                                            <IconButton style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
+                                                <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
+                                                <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
+                                            </IconButton>
+                                        )}
 
 
                                     </div>
@@ -324,8 +326,8 @@ const Videos = (props) => {
                 container={container}
                 anchor="top"
                 open={openDrawer}
-                onClose={() => { setopenDrawer(false) }}
-                onOpen={() => { setopenDrawer(true) }}
+                onClose={() => { setopenDrawer(false); videoPlayerRef[currentSliderIndex].play() }}
+                onOpen={() => { setopenDrawer(true); videoPlayerRef[currentSliderIndex].pause() }}
                 swipeAreaWidth={100}
                 disableSwipeToOpen={false}
                 ModalProps={{
@@ -335,7 +337,8 @@ const Videos = (props) => {
                 PaperProps={{ style: { borderRadius: "25px", borderTopRightRadius: "0px", borderTopLeftRadius: "0px" } }}
             >
                 <div style={{ margin: "2ch" }} >
-                    <img src={currentData.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
+                    <img src={currentData.obs_image} style={{ width: "100%", height: "25vh", objectFit: "cover", borderRadius: "15px" }} />
+
                     <div className='listing-info-style'>
                         <h5 className='listing-title-style'>{currentData.name}</h5>
                         <h4 className='listing-price-style'>${currentData.price}</h4>
@@ -352,9 +355,12 @@ const Videos = (props) => {
                                 {currentData.owner}
                             </span>
                         </span>
+                        <Divider />
+
+                        <Button fullWidth variant="contained" style={{ marginTop: "1.5ch", marginBottom: "2ch" }} endIcon={<ShoppingBagOutlined />}>View Product Info</Button>
                     </div>
 
-                    <div className='puller-style'> </div>
+                    <div className='puller-style' />
                 </div>
             </SwipeableDrawer>
             <VirtualizeSwipeableViews overscanSlideAfter={3} index={props.currentSliderIndex} slideRenderer={slideRenderer} onChangeIndex={handleChangeIndex} style={{ height: "95vh", width: "100vw", zIndex: 1 }} />

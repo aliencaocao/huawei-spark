@@ -2,7 +2,7 @@ import time
 import requests
 
 url = "https://01516f373f434921a874bf502a986a58.apig.ap-southeast-3.huaweicloudapis.com/v1/infers/3a471035-f481-4f5e-bb16-ecf9a4d4dded"
-# url = "http://94.74.92.241:8080"
+# url = "http://192.168.1.9:8080"
 # url = "http://de.irscybersec.ml:8080"
 headers = {'Content-Type': 'application/json', 'X-Apig-Appcode': 'b50c2b3280ce4962a72610a4a4e0fc14f3b6b05932de4346b21e41ec5c32c4ac'}
 

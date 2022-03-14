@@ -1,7 +1,7 @@
 import './App.css';
 import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction, Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem } from '@mui/material'
 import { LoadingButton } from '@mui/lab/';
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Fragment, useEffect, useState } from 'react';
 import useStateRef from 'react-usestateref'
 import { useSnackbar } from 'notistack';
@@ -11,6 +11,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from "react-router-dom";
 import Login from './Components/Login';
+import Create from './Components/Create'
 import ChatList from './Components/chats/ChatList';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -173,6 +174,7 @@ const App = () => {
   const [page, updatePage] = useState("")
   // const [token, updateToken] = useState(null)
   const [token, updateToken] = useState(null)
+  const [currentPlayer, setCurrentPlayer] = useState(null)
   const [username, updateUsername] = useState("")
   const [currentSliderIndex, updateCurrentSliderIndex, currentSliderIndexRef] = useStateRef(0)
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
@@ -350,7 +352,7 @@ const App = () => {
               if (location.pathname !== "/") updatePage(location.pathname.split("/")[1])
 
               const tokenData = JSON.parse(localStorageToken.split(".")[0])
-
+              
               loadItemList()
               loadVideoList()
               updateUsername(tokenData.username)
@@ -390,6 +392,7 @@ const App = () => {
   useEffect(() => {
     const currentPage = location.pathname.split("/")[1]
     if (page !== currentPage) {
+      if (page === "videos" && currentPlayer) currentPlayer.destroy()
       updatePage(currentPage)
     }
 
@@ -400,7 +403,7 @@ const App = () => {
   }
 
   return (
-    <div style={{ overflowX: "hidden", overflowY: "auto", height: "100vh", width: "100vw" }}>
+    <div style={{ overflowX: "hidden",  height: "100vh", width: "100vw" }}>
       {loadingGlobal ? (
         <div style={{ overflow: "hidden", height: "97vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <CircularProgress size="10ch" />
@@ -409,12 +412,12 @@ const App = () => {
         (
           <Fragment>
             {token ? (
-              <div className='fadeIn' style={{ height: "100%", overflow: "hidden", width: "100%" }}>
+              <div className='fadeIn' style={{ overflowY: "auto", width: "100%" }}>
                 <Routes>
-
-                  <Route path="/videos/:ID" element={<Videos currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
-                  <Route path="/videos" element={<Videos currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
+                  <Route path="/videos/:ID" element={<Videos setCurrentPlayer={setCurrentPlayer} currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
+                  <Route path="/videos" element={<Videos setCurrentPlayer={setCurrentPlayer} currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
                   <Route path="/chats" element={<ChatList />} />
+                  <Route path="/create" element={<Create />} />
                   <Route path="/" element={
                     <Fragment>
                       <AppBar>
@@ -531,7 +534,7 @@ const App = () => {
                     />
                     <BottomNavigationAction
                       label="Sell"
-                      value="sell"
+                      value="create"
                       showLabel
                       style={{ color: "#4caf50", fontWeight: "bold" }}
                       icon={<AddCircleTwoToneIcon style={{ fontSize: "4ch" }} />}

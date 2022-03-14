@@ -1,0 +1,26 @@
+{
+  "type": "bulk",
+  "listing": {
+    "name": "Seagate 500 GB 2.5 inch Laptop Hard Drive",
+    "price": 15,
+    "type": 1,
+    "type_comment": "0 denotes a repair service and 1 denotes a product",
+    "quantity": 2,
+    "owner": "tkai",
+    "description": "Seagate 2.5 inch 500 GB Momentus Hard Drive. In-use for 2 years. CrystalDiskInfo says 0 bad sectors, and 2500 hours used.",
+    "attributes": {
+      "capacity": 500,
+      "size": 2.5,
+      "brand": "seagate",
+      "brand_comment": "Lowercase text strings",
+      "bad sectors": 0,
+      "hours": 2500,
+      "series": "momentus"
+    },
+    "images": [
+      "COVER IMAGE ID",
+      "OTHER IMG",
+      "OTHER IMG"
+    ]
+  }
+}
