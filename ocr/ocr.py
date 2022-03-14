@@ -16,7 +16,7 @@ image_url = 'https://www.minitool.com/images/uploads/news/2019/07/how-to-check-p
 image_path = 'phone.jpeg'
 with open(image_path, "rb") as f:
     image = base64.b64encode(f.read()).decode("utf-8")  # base64 encoded image, set to 'image' attribute of payload instead of 'url'
-payload = {'image': image}  # 'detect_direction': 'true' for some reason don't work here although its documented in docs
+payload = {'image': image, 'detect_direction': True}
 
 print('POSTing request to the server')
 response = requests.post(url, headers=headers, json=payload, verify=False)

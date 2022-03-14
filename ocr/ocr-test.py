@@ -2,7 +2,7 @@
 import time
 import requests
 
-url = "https://182.160.1.242:8080"
+url = "http://182.160.1.242:8080"
 # url = "http://192.168.1.9:8080"
 image_url = 'https://www.minitool.com/images/uploads/news/2019/07/how-to-check-pc-specs-windows-10/how-to-check-pc-specs-windows-10-2.png'
 category = 'Computer'

@@ -88,7 +88,7 @@ category_to_extractor = {'Computer': computer_extractor, 'Mobile Gadgets': mobil
 def ocr(image_url):
     url = 'https://ocr.ap-southeast-2.myhuaweicloud.com/v2/0ebb608a1580900e2faac00bec01abbd/ocr/web-image'
     headers = {'Content-Type': 'application/json', 'X-Auth-Token': token}
-    payload = {'url': image_url}  # 'detect_direction': 'true' for some reason don't work here although its documented in docs
+    payload = {'url': image_url, 'detect_direction': True}  # 'detect_direction': 'true' for some reason don't work here although its documented in docs
 
     logger.debug('POSTing request to the server')
     response = requests.post(url, headers=headers, json=payload, verify=False)
