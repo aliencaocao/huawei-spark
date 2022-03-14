@@ -54,8 +54,10 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
 
     case MSGS_LOADED:
       console.log("Messages loaded");
-      
+
+      /*
       for (const )
+      */
 
       break;
   }

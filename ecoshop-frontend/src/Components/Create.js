@@ -1,31 +1,41 @@
-import { Paper, Grow, Button, CircularProgress } from "@mui/material";
-import { Fragment, useState } from "react";
+import { Paper, Grow, Button, CircularProgress, Checkbox } from "@mui/material";
+import { Fragment, useState, useRef } from "react";
 import { useSnackbar } from 'notistack';
 import { blue } from '@mui/material/colors';
 import ContentCopyTwoTone from '@mui/icons-material/ContentCopyTwoTone';
 import AddCircleTwoTone from '@mui/icons-material/AddCircleTwoTone';
 import ArrowCircleLeftOutlined from '@mui/icons-material/ArrowCircleLeftOutlined';
 import CloudUploadOutlined from '@mui/icons-material/CloudUploadOutlined';
+import CheckIcon from '@mui/icons-material/Check';
 
 import { DropzoneArea } from 'material-ui-dropzone';
 import "./../css/create.css"
 
 let bulkProductInformation = []
+let imageFile = null
 
 const Create = (props) => {
   const [page, setPage] = useState("options");
+  const canvasRef = useRef(null);
+  const imgRef = useRef(null);
+  const [scanningStage, setScanningStage] = useState(0)
   const [bulkListingStep, setBulkListingStep] = useState(0);
   const [imageLink, setImageLink] = useState("")
-  const [boundingBoxes, setBoundingBoxes] = useState([])
+  const [boundingBoxInfo, setboundingBoxInfo] = useState([])
+  const [chosenIDs, setChosenIDs] = useState({})
   const [loadingImageAnalysis, setloadingImageAnalysis] = useState(false)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleImageUpload = async (files) => {
     if (files.length > 0) {
+      setChosenIDs({})
+      setScanningStage(0)
+      setboundingBoxInfo([])
       setloadingImageAnalysis(true)
       setBulkListingStep(1)
       let signedUrl = ""
       let imageName = ""
+      imageFile = files[0]
 
       await fetch(window.globalURL + "/upload", {
         method: 'post',
@@ -49,7 +59,7 @@ const Create = (props) => {
         return false
       })
 
-
+      setScanningStage(1)
       await fetch("https://cors-anywhere.herokuapp.com/" + signedUrl, {
         method: 'put',
         headers: { 'Content-Type': 'image/*', 'Authorization': window.token },
@@ -74,7 +84,7 @@ const Create = (props) => {
         return false
       })
 
-
+      setScanningStage(2)
       await fetch(window.globalURL + "/image/analyse ", {
         method: 'POST',
         headers: { 'Content-Type': 'image/*', 'Authorization': window.token },
@@ -83,7 +93,7 @@ const Create = (props) => {
         return results.json(); //return data in JSON (since its JSON data)
       }).then(async (data) => {
         if (data.success === true) {
-
+          let newChosenIDs = {}
           for (let i = 0; i < data.result.result.tags.length; i++) {
             const current = data.result.result.tags[i]
             if (current.instances.length > 0) {
@@ -93,8 +103,10 @@ const Create = (props) => {
                 instances: current.instances
               }
               bulkProductInformation.push(newItem)
+              newChosenIDs[i] = true
             }
           }
+          setChosenIDs(newChosenIDs)
           if (bulkProductInformation.length === 0) {
             enqueueSnackbar("No items were dected in your image. Please try another image.", {
               variant: 'error',
@@ -126,34 +138,53 @@ const Create = (props) => {
         setloadingImageAnalysis(false)
         return false
       })
-
-
-
-
       setloadingImageAnalysis(false)
 
     }
-
   }
 
   const drawBoundingBoxes = (e) => {
     const ratio = e.target.naturalWidth / e.target.width
-    let newBoundingBoxes = []
+    let boundingBoxInfo = []
     for (let i = 0; i < bulkProductInformation.length; i++) {
       for (let x = 0; x < bulkProductInformation[i].instances.length; x++) {
         const bottom = bulkProductInformation[i].instances[x].bounding_box.top_left_y / ratio
         const left = bulkProductInformation[i].instances[x].bounding_box.top_left_x / ratio
         const width = bulkProductInformation[i].instances[x].bounding_box.width / ratio
         const height = bulkProductInformation[i].instances[x].bounding_box.height / ratio
-        newBoundingBoxes.push((
-          <div onClick={(i) => {console.log("selected item ID " + i)}} style={{border: "2px solid red", position: "absolute", bottom: bottom, left: left, width: width, height: height  }}>
-    
-          </div>
-        ))
+
+        boundingBoxInfo.push({
+          bottom: bottom,
+          left: left,
+          width: width,
+          height: height,
+          itemID: i,
+          instanceID: x
+        })
+
+        bulkProductInformation[i].instances[x].bounding_box.bottom = bottom
+        bulkProductInformation[i].instances[x].bounding_box.left = left
+        bulkProductInformation[i].instances[x].bounding_box.newWidth = width
+        bulkProductInformation[i].instances[x].bounding_box.newHeight = height
       }
-     
+
     }
-    setBoundingBoxes(newBoundingBoxes)
+    setboundingBoxInfo(boundingBoxInfo)
+  }
+
+  const generateProductListingInfo = () => {
+    let finalInfo = []
+    const imgElement = imgRef.current
+    for (const ID in chosenIDs) {
+      if (ID) finalInfo.push(bulkProductInformation[ID])
+    }
+
+    for (let i = 0; i < finalInfo.length; i++) {
+      const current = finalInfo[i]
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgRef.current, current.instances[0].bounding_box.top_left_x, current.instances[0].bounding_box.top_left_y, current.instances[0].bounding_box.width, current.instances[0].bounding_box.height, 0,0, current.instances[0].bounding_box.newWidth, current.instances[0].bounding_box.newHeight);
+    }
    
   }
 
@@ -213,18 +244,49 @@ const Create = (props) => {
                   {loadingImageAnalysis ? (
                     <div style={{ margin: "5ch" }}>
                       <CircularProgress size="12ch" />
-                      <h3>Scanning your image for items and safety...</h3>
+                      {scanningStage === 0 && (
+                        <h3>Uploading your image to our servers</h3>
+                      )}
+                      {scanningStage === 1 && (
+                        <h3>Scanning your image for any dis-allowed content</h3>
+                      )}
+                      {scanningStage === 2 && (
+                        <h3>Scanning your image for items and tag information</h3>
+                      )}
+
                       <span>This shouldn't take too long</span>
                     </div>
                   ) : (
                     <div style={{ margin: "1ch" }}>
+                      <canvas ref={canvasRef} style={{display: "visible"}} />
                       <h3>Step 2</h3>
-                      <Paper elevation={12} style={{ width: "100%", height: "30ch", borderRadius: "15px", padding: "1ch" }}>
-                        <div style={{position: "relative", width: "fit-content", height: "fit-content"}}>
-                          <img src={imageLink} onLoad={(e) => { drawBoundingBoxes(e) }} style={{height: "100%", width: "100%", objectFit: "scale-down" }} />
-                          {boundingBoxes}
+                      <span>Tap on the boxes below to add items!</span>
+                      <Paper elevation={12} style={{ width: "100%", height: "30ch", borderRadius: "15px", padding: "1ch", marginTop: "1ch" }}>
+                        <div style={{ position: "relative", width: "fit-content", height: "fit-content" }}>
+                          <img ref={imgRef} src={imageLink} onLoad={(e) => { drawBoundingBoxes(e) }} style={{ height: "100%", width: "100%", objectFit: "scale-down" }} />
+                          {boundingBoxInfo.map((current) => <div
+                            key={current.instanceID + "bounding-box-id"}
+                            onClick={() => {
+                              const newID = JSON.parse(JSON.stringify(chosenIDs))
+                              if (chosenIDs[current.itemID]) newID[current.itemID] = false
+                              else newID[current.itemID] = true
+                              setChosenIDs(newID)
+                            }} style={{ border: chosenIDs[current.itemID] ? "4px solid #4caf50" : "4px solid #f44336", position: "absolute", bottom: current.bottom, left: current.left, width: current.width, height: current.height }}>
+                            <div style={{ position: "absolute", right: 0, bottom: 0 }}>
+                              <Checkbox checked={chosenIDs[current.itemID]} />
+                            </div>
+                          </div>)}
                         </div>
                       </Paper>
+
+                      <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <Button style={{ marginTop: "3ch" }} onClick={() => { setBulkListingStep(0) }} variant="outlined" startIcon={<ArrowCircleLeftOutlined />}>
+                          Back
+                        </Button>
+                        <Button style={{ marginTop: "3ch", marginLeft: "2ch" }} onClick={() => { generateProductListingInfo() }} color="success" variant="contained" endIcon={<CheckIcon />}>
+                          Confirm Selection
+                        </Button>
+                      </div>
                     </div>
                   )}
 
