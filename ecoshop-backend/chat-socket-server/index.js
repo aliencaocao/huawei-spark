@@ -150,7 +150,7 @@ const startup = async () => {
               body: JSON.stringify({
                 "source": checkEnabledRows[0]["description"],
                 "prompt": "",
-                "query": msgData,
+                "query": msgData.content,
               }),
               timeout: 5000,
             }).then(res => res.json())
