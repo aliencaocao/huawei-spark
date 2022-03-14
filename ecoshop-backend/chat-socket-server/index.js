@@ -135,7 +135,7 @@ const startup = async () => {
 
             const [checkEnabledRows, checkEnabledFields] = await connection.execute(
               "SELECT `description`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` WHERE `chat`.`id` = ? AND (`buyer` = ?)",
-              [data.chatID, tokenData.username, tokenData.username],
+              [data.chatID, tokenData.username],
             )
             console.log(checkEnabledRows)
             if (checkEnabledRows.length !== 1) return
