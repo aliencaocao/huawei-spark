@@ -29,13 +29,13 @@ const loadChats = () => {
   });
 };
 
-const initChatWebSocketConnection = (setChats) => {
+const initChatWebSocketConnection = (setChats, setMessages) => {
   // connection will fail without trailing slash in WS server URL
   const CHAT_WEBSOCKET_URL = "wss://tkai.sieberrsec.tech/api/";
   const chatWebSocket = new WebSocket(CHAT_WEBSOCKET_URL);
   chatWebSocket.addEventListener("message", (event) => {
     console.log(event.data);
-    handleChatWebSocketMessage(event.data, setChats);
+    handleChatWebSocketMessage(event.data, setChats, setMessages);
   });
   chatWebSocket.addEventListener("open", () => {
     sendJsonMessageToWebSocket(chatWebSocket, {
@@ -47,48 +47,11 @@ const initChatWebSocketConnection = (setChats) => {
   return chatWebSocket;
 };
 
-// const chats = {
-//   withSellers: [
-//     {
-//       chatId: 1,
-//       productName: "Product 1",
-//       thumbnailUrl: "https://picsum.photos/100/200",
-//       messages: [
-//         // { author: "Them", text: "Message 1" },
-//         // { author: "Them", text: "Message 2" },
-//         // { author: "You", text: "Message 3" },
-//       ]
-//     },
-//     {
-//       chatId: 2,
-//       productName: "Product 2",
-//       thumbnailUrl: "https://picsum.photos/100/200",
-//       messages: [
-//         { author: "Them", text: "Message 1" },
-//         { author: "Them", text: "Message 2" },
-//         { author: "You", text: "Message 3" },
-//       ]
-//     }
-//   ],
-//   withBuyers: [
-//     {
-//       chatId: 3,
-//       productName: "Faeces-Scented Perfume",
-//       thumbnailUrl: "https://picsum.photos/100/200",
-//       messages: [
-//         { author: "theoleecj", text: "Message 1" },
-//         { author: "theoleecj", text: "Message 2" },
-//         { author: "You", text: "Message 3" },
-//         { author: "theoleecj", text: "Extremely ridiculously unbelievably ludicrously long reply" },
-//       ]
-//     }
-//   ],
-// };
-
 const ChatList = (props) => {
   const [currentChatTab, setCurrentChatTab] = useState(0);
   const [openedChatLogId, openChatLog] = useState(null);
-  const [chats, setChats] = useState([]);
+  const [chats, setChats] = useState({});
+  const [messages, setMessages] = useState({});
 
   const handleTabChange = (event, newTabIdx) => {
     setCurrentChatTab(newTabIdx);
@@ -96,7 +59,7 @@ const ChatList = (props) => {
 
   // if ChatList gets re-rendered, don't re-initialize the connection
   if (chatWebSocket === null) {
-    chatWebSocket = initChatWebSocketConnection(setChats);
+    chatWebSocket = initChatWebSocketConnection(setChats, setMessages);
     chatWebSocket.addEventListener("open", loadChats);
   }
 
@@ -123,8 +86,8 @@ const ChatList = (props) => {
             <ListItemText
               primary={productName}
               secondary={
-                messages.length > 0 &&
-                <div className="message-preview">{mostRecentMessage.author}: {mostRecentMessage.text}</div>
+                Array.isArray(messages[chatId]) && messages[chatId].length > 0 &&
+                <div className="message-preview">{messages[chatId][0].sender}: {messages[chatId][0].content}</div>
               }
             />
           </ListItem>
@@ -138,7 +101,7 @@ const ChatList = (props) => {
         >
           <AppBar position="fixed">
             <Toolbar className="chat-log-toolbar">
-              <IconButton onClick={() => openChatLog(-1)}>
+              <IconButton onClick={() => openChatLog(null)}>
                 <ArrowBackIcon></ArrowBackIcon>
               </IconButton>
               <ListItemText primary={productName} secondary={"Test"}></ListItemText>
@@ -175,16 +138,22 @@ const ChatList = (props) => {
         >
           <TabPanel value={0} className="chat-tab-panel">
             <List>{
-              typeof chats.withSellers === "undefined" ?
-              <CircularProgress className="chat-tab-loading-icon" /> :
-              chats.withSellers.map(createChatListItemFromChatData)
+              Array.isArray(chats.withSellers) ?
+                chats.withSellers.length > 0 ?
+                  chats.withSellers.map(createChatListItemFromChatData) :
+                  "No chats." 
+                :
+              <CircularProgress className="chat-tab-loading-icon" />
             }</List>
           </TabPanel>
           <TabPanel value={1} className="chat-tab-panel">
             <List>{
-              typeof chats.withBuyers === "undefined" ?
-              <CircularProgress className="chat-tab-loading-icon" /> :
-              chats.withBuyers.map(createChatListItemFromChatData)
+              Array.isArray(chats.withBuyers) ?
+                chats.withBuyers.length > 0 ?
+                  chats.withBuyers.map(createChatListItemFromChatData) :
+                  "No chats." 
+                :
+              <CircularProgress className="chat-tab-loading-icon" />
             }</List>
           </TabPanel>
         </SwipeableViews>

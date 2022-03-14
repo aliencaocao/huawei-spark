@@ -13,13 +13,13 @@ const {
   },
 } = wsMessageTypes;
 
-const { token } = window;
-let tokenData;
-if (token !== null) {
-  tokenData = JSON.parse(token.split(".")[0]);
-}
+const handleChatWebSocketMessage = (message, setChats, setMessages) => {
+  const token = window.token;
+  let tokenData;
+  if (typeof token !== "undefined" && token !== null) {
+    tokenData = JSON.parse(token.split(".")[0]);
+  }
 
-const handleChatWebSocketMessage = (message, setChats) => {
   const parsedMessage = JSON.parse(message);
 
   switch (parsedMessage.type) {
@@ -30,24 +30,28 @@ const handleChatWebSocketMessage = (message, setChats) => {
     case CHATS_LOADED:
       console.log("Chats loaded");
 
-      const chats = { withSellers: [], withBuyers: [] };
+      const newChats = { withSellers: [], withBuyers: [] };
       for (const chat of parsedMessage.data) {
         if (chat.buyer === tokenData.username) {
           // user is buyer, so they are talking to a seller
-          chats.withSellers.push(chat);
+          newChats.withSellers.push(chat);
         } else if (chat.seller === tokenData.username) {
           // user is seller, so they are talking to a buyer
-          chats.withBuyers.push(chat);
+          newChats.withBuyers.push(chat);
         } else {
           throw Error("User is neither buyer nor seller in this chat.");
         }
       }
 
-      setChats(chats);
+      setTimeout(() => {
+        // UI update of chats is deferred to next render or something??? Doesn't happen immediately when setChats is called
+        setChats(newChats);
+        console.log("Setting chats")
+      }, 1000);
       break;
 
     case MSGS_LOADED:
-        
+      
 
       break;
   }
