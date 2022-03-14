@@ -414,7 +414,7 @@ const App = () => {
 
                   <Route path="/videos/:ID" element={<Videos currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
                   <Route path="/videos" element={<Videos currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
-                  <Route path="/chats" element={<Chats />} />
+                  <Route path="/chats" element={<ChatList />} />
                   <Route path="/" element={
                     <Fragment>
                       <AppBar>
