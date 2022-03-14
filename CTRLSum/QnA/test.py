@@ -5,11 +5,23 @@ url = "https://01516f373f434921a874bf502a986a58.apig.ap-southeast-3.huaweiclouda
 # url = "http://192.168.1.9:8080"
 headers = {'Content-Type': 'application/json', 'X-Apig-Appcode': 'b50c2b3280ce4962a72610a4a4e0fc14f3b6b05932de4346b21e41ec5c32c4ac'}
 
-source = 'Delivery within 3-days  Cash on delivery or Transfer Office Chair 04 Material: Mesh Colour: Black，Red，Grey Size:See the image Free Delivery Free Installation Fast respond to your inquiry Registered business For Your Information Dimension may be approximately 2-3cm different.  Free delivery to lift level If lift not available Extra Charges for Labour charges will apply. → 2nd level (no lift) $20 → 3rd level (no lift) $30 → 4th level (no lift) $40 → Delivery to Jurong Island, Sentosa, and Changi Airport $30  Appointment Based, Please indicate delivery date and the timing is according to the seller schedule only. Condo and office no weekend delivery. Strictly no exchange,return or refund. Blk2 Toa Payoh Industrial Park. S(319054)'
-# source = "Settings: Home: About: Find a setting: System: Device specifications: Puvel & sleep: Device name: DESKTOP-V6183lG: Storage: Processor: AMD Ryzen 5 2400G with Radeon Vega Graphics: 3.59 GHz: Tablet mode: Installed RAM: 2.00 GB: Device ID: A3C65BE3-F518-481F-9D67-72D929E34B21: 吕i：Multitasking: Product ID: 00331-10000-00001-AA877: System type: 32-bit operating system, x64-based processor: 口 Projecting to this PC: Pen and touch: No pen or touch input is available for this display: X Shared experiences: Rename this PC: Remote Desktop: About: Windows specifications: Edition: Windows 10 Pro: Version: 1803: Installed on: 4/8/2019: "
-prompt = ''  # for chat box, leave prompt empty, only use it for attributes autofill
-query = 'Is the delivery free?'  # works
-query = 'What is the address?'  # works
+source = 'Red office chairs for sale, in mint conditions, buy more for cheaper! Dimensions: height: 70cm, width: 40cm. Delivery is appointment Based, Please indicate delivery date and the timing is according to the seller schedule only. Condo and office no weekend delivery. Strictly no exchange,return or refund. You can also pick up at Blk2 Toa Payoh Industrial Park S(319054)'
+prompt = 'The colour is:'
+query = 'What is the colour?'
+
+
+# source = 'Red office chairs for sale, in mint conditions, buy more for cheaper! Dimensions: height: 70cm, width: 40cm. Delivery is appointment Based, Please indicate delivery date and the timing is according to the seller schedule only. Condo and office no weekend delivery. Strictly no exchange,return or refund. You can also pick up at Blk2 Toa Payoh Industrial Park S(319054)'
+'''For attribute filling'''
+# prompt = 'The colour is:'  # works: red
+# query = 'What is the colour?'  # works: red
+# prompt = 'The height is:'  # works: 70cm
+# query = 'What is the height?'  # works: 70cm
+# prompt = 'The width is:'  # works: 40cm
+# query = 'What is the width?'  # works: 40cm
+
+'''For chat bot'''
+# prompt = ''  # works when prompt is empty
+# query = 'What is the address for self collection?'  # works: Blk2 Toa Payoh Industrial Park S(319054)
 
 payload = {'source': source, 'prompt': prompt, 'query': query}
 
