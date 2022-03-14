@@ -1,0 +1,37 @@
+{
+  "type": "bulk",
+  "listings": [
+    {
+      "name": "IKEA MARIUS STOOL",
+      "price": 5,
+      "type": 1,
+      "type_comment": "0 denotes a repair service and 1 denotes a product",
+      "quantity": 2,
+      "description": "IKEA MARIUS STOOL. Is very compact and convenient chair - use it for your guests or your kids! Black version, width 30cm length 30cm. Self-pickup at Rivervale Plaza.",
+      "attributes": {
+        "color": "black",
+        "width": 30,
+        "length": 30
+      },
+      "images": [
+        "dievfAvZhNmFJGAtQrVf1h"
+      ]
+    },
+    {
+      "name": "IKEA MARIUS STOOL",
+      "price": 5,
+      "type": 1,
+      "type_comment": "0 denotes a repair service and 1 denotes a product",
+      "quantity": 2,
+      "description": "IKEA MARIUS STOOL. A very compact and white chair - use it for your guests or your kids! White version, width 30cm length 30cm. Self-pickup at Rivervale Plaza.",
+      "attributes": {
+        "color": "white",
+        "width": 30,
+        "length": 30
+      },
+      "images": [
+        "7pEd6WT9sMR3xhotLRn5ih"
+      ]
+    }
+  ]
+}
