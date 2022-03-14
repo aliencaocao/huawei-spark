@@ -1,5 +1,6 @@
 # coding=utf-8
 import sys
+sys.path.append('..')
 import logging
 import re
 import base64
