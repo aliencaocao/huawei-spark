@@ -3,6 +3,7 @@ const ws = require('ws')
 const cors = require("fastify-cors")
 const mysql = require("mysql2/promise")
 const RD = require("reallydangerous")
+const fetch = require("node-fetch")
 const { nanoid } = require("nanoid")
 require('dotenv').config()
 
@@ -133,7 +134,7 @@ const startup = async () => {
             let autoReplyContent
 
             const [checkEnabledRows, checkEnabledFields] = await connection.execute(
-              "SELECT `description`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`id` WHERE `chat`.`id` = ? AND (`buyer` = ?)",
+              "SELECT `description`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` WHERE `chat`.`id` = ? AND (`buyer` = ?)",
               [data.chatID, tokenData.username, tokenData.username],
             )
             if (checkEnabledRows.length !== 1) return
