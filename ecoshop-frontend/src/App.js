@@ -333,7 +333,6 @@ const App = () => {
   }
 
   useEffect(() => {
-
     const startup = async () => {
       if (token === null) {
         const localStorageToken = localStorage.getItem("ecoshop-token")
@@ -414,7 +413,6 @@ const App = () => {
             {token ? (
               <div className='fadeIn' style={{ overflowY: "auto", width: "100%" }}>
                 <Routes>
-
                   <Route path="/videos/:ID" element={<Videos setCurrentPlayer={setCurrentPlayer} currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
                   <Route path="/videos" element={<Videos setCurrentPlayer={setCurrentPlayer} currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
                   <Route path="/chats" element={<ChatList />} />

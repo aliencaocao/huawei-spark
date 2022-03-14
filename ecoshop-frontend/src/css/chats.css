@@ -10,6 +10,16 @@ main {
   padding: 0;
 }
 
+.chat-tab-panel > .MuiList-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chat-tab-loading-icon {
+  margin-top: 15px;
+}
+
 .chat-row.chat-row {
   width: 100%;
   /* padding: 7px 0; */
