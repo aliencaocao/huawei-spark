@@ -13,7 +13,7 @@ url = 'https://ocr.ap-southeast-2.myhuaweicloud.com/v2/0ebb608a1580900e2faac00be
 headers = {'Content-Type': 'application/json', 'X-Auth-Token': token}
 
 image_url = 'https://www.minitool.com/images/uploads/news/2019/07/how-to-check-pc-specs-windows-10/how-to-check-pc-specs-windows-10-2.png'  # can be Huawei OBS URL or any other
-image_path = 'phone.jpeg'
+image_path = 'computer.jpeg'
 with open(image_path, "rb") as f:
     image = base64.b64encode(f.read()).decode("utf-8")  # base64 encoded image, set to 'image' attribute of payload instead of 'url'
 payload = {'image': image, 'detect_direction': True}
