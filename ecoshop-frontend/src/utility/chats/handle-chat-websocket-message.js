@@ -30,28 +30,32 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
     case CHATS_LOADED:
       console.log("Chats loaded");
 
-      const newChats = { withSellers: [], withBuyers: [] };
+      const chats = { withSellers: [], withBuyers: [] };
       for (const chat of parsedMessage.data) {
         if (chat.buyer === tokenData.username) {
           // user is buyer, so they are talking to a seller
-          newChats.withSellers.push(chat);
+          chats.withSellers.push(chat);
         } else if (chat.seller === tokenData.username) {
           // user is seller, so they are talking to a buyer
-          newChats.withBuyers.push(chat);
+          chats.withBuyers.push(chat);
         } else {
           throw Error("User is neither buyer nor seller in this chat.");
         }
       }
+      
+      setChats(chats);
 
-      setTimeout(() => {
-        // UI update of chats is deferred to next render or something??? Doesn't happen immediately when setChats is called
-        setChats(newChats);
-        console.log("Setting chats")
-      }, 1000);
+      // setTimeout(() => {
+      //   // UI update of chats is deferred to next render or something???
+      //   // Doesn't happen immediately when setChats is called
+      //   setChats(newChats);
+      // }, 1000);
       break;
 
     case MSGS_LOADED:
+      console.log("Messages loaded");
       
+      for (const )
 
       break;
   }

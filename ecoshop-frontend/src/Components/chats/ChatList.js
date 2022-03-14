@@ -1,7 +1,7 @@
 import { AppBar, Avatar, Button, ButtonBase, CircularProgress, Divider, Drawer, IconButton, Input, InputAdornment, List, ListItem, ListItemAvatar, ListItemText, Tab, Tabs, TextField, Toolbar } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { AccountCircle, Person } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews";
@@ -20,10 +20,8 @@ const {
   },
 } = wsMessageTypes;
 
-let chatWebSocket = null;
-
 const loadChats = () => {
-  sendJsonMessageToWebSocket(chatWebSocket, {
+  sendJsonMessageToWebSocket(window.chatWebSocket, {
     action: LOAD_CHATS,
     token: window.token,
   });
@@ -32,19 +30,17 @@ const loadChats = () => {
 const initChatWebSocketConnection = (setChats, setMessages) => {
   // connection will fail without trailing slash in WS server URL
   const CHAT_WEBSOCKET_URL = "wss://tkai.sieberrsec.tech/api/";
-  const chatWebSocket = new WebSocket(CHAT_WEBSOCKET_URL);
-  chatWebSocket.addEventListener("message", (event) => {
+  window.chatWebSocket = new WebSocket(CHAT_WEBSOCKET_URL);
+  window.chatWebSocket.addEventListener("message", (event) => {
     console.log(event.data);
     handleChatWebSocketMessage(event.data, setChats, setMessages);
   });
-  chatWebSocket.addEventListener("open", () => {
-    sendJsonMessageToWebSocket(chatWebSocket, {
+  window.chatWebSocket.addEventListener("open", () => {
+    sendJsonMessageToWebSocket(window.chatWebSocket, {
       action: INIT,
       token: window.token,
     });
   });
-
-  return chatWebSocket;
 };
 
 const ChatList = (props) => {
@@ -57,11 +53,11 @@ const ChatList = (props) => {
     setCurrentChatTab(newTabIdx);
   };
 
-  // if ChatList gets re-rendered, don't re-initialize the connection
-  if (chatWebSocket === null) {
-    chatWebSocket = initChatWebSocketConnection(setChats, setMessages);
-    chatWebSocket.addEventListener("open", loadChats);
-  }
+  useEffect(() => {
+    // run only on first render
+    initChatWebSocketConnection(setChats, setMessages);
+    window.chatWebSocket.addEventListener("open", loadChats);
+  }, []);
 
   const createChatListItemFromChatData = (chatData) => {
     const {
@@ -73,9 +69,6 @@ const ChatList = (props) => {
       started: chatStartedTime,
     } = chatData;
 
-    // const { chatId, productName, thumbnailUrl, messages } = chatData;
-    // const mostRecentMessage = messages.length > 0 ? messages[messages.length - 1] : null;
-  
     return (
       <Fragment key={chatId}>
         <ButtonBase onClick={() => openChatLog(chatId)} className="chat-row">
@@ -141,7 +134,7 @@ const ChatList = (props) => {
               Array.isArray(chats.withSellers) ?
                 chats.withSellers.length > 0 ?
                   chats.withSellers.map(createChatListItemFromChatData) :
-                  "No chats." 
+                  "No chats."
                 :
               <CircularProgress className="chat-tab-loading-icon" />
             }</List>
