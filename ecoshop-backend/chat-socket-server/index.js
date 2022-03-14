@@ -63,8 +63,8 @@ const startup = async () => {
                     socket.send(JSON.stringify({ type: "auth", success: false, error: "missing-init" }));
                 }
                 if (data.action === "load-msgs") {
-                    const [rows, fields] = await connection.execute('SELECT `sender`, `recipient`, `content`, `sent`, `obs_image`, `answer_bot`, `chat_id` FROM `chat_message` WHERE `chat_id` = ? AND (`recipient` = ? OR `sender` = ?) ORDER BY `id` DESC LIMIT 50 ', [data.chatID, tokenData.username, tokenData.username]);
-                    socket.send(JSON.stringify({ type: "load-msgs", success: true, data: rows }))
+                    const [rows, fields] = await connection.execute('SELECT `sender`, `recipient`, `content`, `sent`, `obs_image`, `answer_bot` FROM `chat_message` WHERE `chat_id` = ? AND (`recipient` = ? OR `sender` = ?) ORDER BY `id` DESC LIMIT 50 ', [data.chatID, tokenData.username, tokenData.username]);
+                    socket.send(JSON.stringify({ type: "load-msgs", success: true, data: { chatID: data.chatID, messages: rows } }))
                 }
                 else if (data.action === "load-chats") {
                     const [rows, fields] = await connection.execute('SELECT `chat`.`id`, `buyer`, `seller`, `name`, `obs_image`, `started` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` WHERE (`buyer` = ? OR `seller` = ?) AND `product_image`.`order` = 1 ORDER BY `started`', [tokenData.username, tokenData.username]);
