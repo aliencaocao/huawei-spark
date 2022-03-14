@@ -7,25 +7,9 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews";
 import "../../css/chats.css";
 import ChatLog from "./ChatLog";
-import sendJsonMessageToWebSocket from "../../utility/send-json-message-to-websocket";
+import { sendInit, loadChats, loadMessages } from "../../utility/chats/chat-websocket-message-senders";
 import handleChatWebSocketMessage from "../../utility/chats/handle-chat-websocket-message";
-import wsMessageTypes from "../../utility/chats/chat-websocket-message-types";
-const {
-  requestTypes: {
-    INIT,
-    LOAD_CHATS,
-    LOAD_MSGS,
-    CREATE_NEW_CHAT,
-    SEND_NEW_MSG,
-  },
-} = wsMessageTypes;
 
-const loadChats = () => {
-  sendJsonMessageToWebSocket(window.chatWebSocket, {
-    action: LOAD_CHATS,
-    token: window.token,
-  });
-};
 
 const initChatWebSocketConnection = (setChats, setMessages) => {
   // connection will fail without trailing slash in WS server URL
@@ -35,12 +19,7 @@ const initChatWebSocketConnection = (setChats, setMessages) => {
     console.log(event.data);
     handleChatWebSocketMessage(event.data, setChats, setMessages);
   });
-  window.chatWebSocket.addEventListener("open", () => {
-    sendJsonMessageToWebSocket(window.chatWebSocket, {
-      action: INIT,
-      token: window.token,
-    });
-  });
+  window.chatWebSocket.addEventListener("open", sendInit);
 };
 
 const ChatList = (props) => {

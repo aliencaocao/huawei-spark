@@ -1,3 +1,4 @@
+import { loadMessages } from "./chat-websocket-message-senders";
 import wsMessageTypes from "./chat-websocket-message-types";
 const {
   responseTypes: {
@@ -20,9 +21,9 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
     tokenData = JSON.parse(token.split(".")[0]);
   }
 
-  const parsedMessage = JSON.parse(message);
+  const parsedWebSocketMessage = JSON.parse(message);
 
-  switch (parsedMessage.type) {
+  switch (parsedWebSocketMessage.type) {
     case INIT_SUCCESS:
       console.log("Init successful");
       break;
@@ -31,7 +32,7 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
       console.log("Chats loaded");
 
       const chats = { withSellers: [], withBuyers: [] };
-      for (const chat of parsedMessage.data) {
+      for (const chat of parsedWebSocketMessage.data) {
         if (chat.buyer === tokenData.username) {
           // user is buyer, so they are talking to a seller
           chats.withSellers.push(chat);
@@ -41,24 +42,24 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
         } else {
           throw Error("User is neither buyer nor seller in this chat.");
         }
+        
+        loadMessages(chat.id);
       }
-      
       setChats(chats);
-
-      // setTimeout(() => {
-      //   // UI update of chats is deferred to next render or something???
-      //   // Doesn't happen immediately when setChats is called
-      //   setChats(newChats);
-      // }, 1000);
       break;
 
     case MSGS_LOADED:
       console.log("Messages loaded");
-
-      /*
-      for (const )
-      */
-
+      
+      const messages = {};
+      const chatId = parsedWebSocketMessage.data.chatID;
+      if (typeof messages[chatId] === "undefined") {
+        messages[chatId] = [];
+      }
+      for (const message of parsedWebSocketMessage.data.messages) {
+        messages[chatId].push(message);
+      }
+      setMessages((oldMessages) => ({ ...oldMessages, ...messages }));
       break;
   }
 };
