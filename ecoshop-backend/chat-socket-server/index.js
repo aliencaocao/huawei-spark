@@ -152,8 +152,11 @@ const startup = async () => {
                 "prompt": "",
                 "query": msgData,
               }),
-              timeout: 3000,
+              timeout: 5000,
             }).then(res => res.json())
+
+            console.log(msgData);
+            console.log(response);
       
             if (response.success) autoReplyContent = response.answer
             else return
