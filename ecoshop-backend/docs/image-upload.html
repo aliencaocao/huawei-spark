@@ -18,6 +18,9 @@
 
         let formData = new FormData(document.querySelector("form"));
 
+        console.log(formData.get("file"))
+
+        
         fetch(formData.get("url"), {
           method: "put",
           headers: {

@@ -25,6 +25,7 @@ let currentVideoIndexPlaying = 0
 let currentSliderIndex = 0
 let playWhenReady = false;
 let player = null;
+let endVideoDrawerOpen = false;
 
 const container = window !== undefined ? () => window.document.body : undefined;
 
@@ -208,7 +209,8 @@ const Videos = (props) => {
     }
 
     const handleVideoEnded = async () => {
-        handleChangeIndex(props.currentSliderIndexRef.current + 1)
+        setopenDrawer(true)
+        endVideoDrawerOpen = true
     }
 
     function slideRenderer(params) {
@@ -326,7 +328,13 @@ const Videos = (props) => {
                 container={container}
                 anchor="top"
                 open={openDrawer}
-                onClose={() => { setopenDrawer(false); videoPlayerRef[currentSliderIndex].play() }}
+                onClose={() => { setopenDrawer(false); 
+                    if (endVideoDrawerOpen) {
+                        endVideoDrawerOpen = false
+                        handleChangeIndex(props.currentSliderIndexRef.current + 1)
+                    }
+                    else videoPlayerRef[currentSliderIndex].play()
+                 }}
                 onOpen={() => { setopenDrawer(true); videoPlayerRef[currentSliderIndex].pause() }}
                 swipeAreaWidth={100}
                 disableSwipeToOpen={false}

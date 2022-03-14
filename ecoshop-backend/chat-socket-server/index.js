@@ -63,7 +63,7 @@ const startup = async () => {
                     socket.send(JSON.stringify({ type: "auth", success: false, error: "missing-init" }));
                 }
                 if (data.action === "load-msgs") {
-                    const [rows, fields] = await connection.execute('SELECT `sender`, `recipient`, `content`, `sent`, `obs_image`, `answer_bot` FROM `chat_message` WHERE `chat_id` = ? AND (`recipient` = ? OR `sender` = ?) ORDER BY `id` DESC LIMIT 50 ', [data.chatID, tokenData.username, tokenData.username]);
+                    const [rows, fields] = await connection.execute('SELECT `sender`, `recipient`, `content`, `sent`, `obs_image`, `answer_bot`, `chat_id` FROM `chat_message` WHERE `chat_id` = ? AND (`recipient` = ? OR `sender` = ?) ORDER BY `id` DESC LIMIT 50 ', [data.chatID, tokenData.username, tokenData.username]);
                     socket.send(JSON.stringify({ type: "load-msgs", success: true, data: rows }))
                 }
                 else if (data.action === "load-chats") {

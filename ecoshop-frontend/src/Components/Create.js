@@ -1,4 +1,4 @@
-import { Paper, Grow, Button } from "@mui/material";
+import { Paper, Grow, Button, CircularProgress } from "@mui/material";
 import { Fragment, useState } from "react";
 import { useSnackbar } from 'notistack';
 import { blue } from '@mui/material/colors';
@@ -10,9 +10,152 @@ import CloudUploadOutlined from '@mui/icons-material/CloudUploadOutlined';
 import { DropzoneArea } from 'material-ui-dropzone';
 import "./../css/create.css"
 
+let bulkProductInformation = []
+
 const Create = (props) => {
   const [page, setPage] = useState("options");
+  const [bulkListingStep, setBulkListingStep] = useState(0);
+  const [imageLink, setImageLink] = useState("")
+  const [boundingBoxes, setBoundingBoxes] = useState([])
+  const [loadingImageAnalysis, setloadingImageAnalysis] = useState(false)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  const handleImageUpload = async (files) => {
+    if (files.length > 0) {
+      setloadingImageAnalysis(true)
+      setBulkListingStep(1)
+      let signedUrl = ""
+      let imageName = ""
+
+      await fetch(window.globalURL + "/upload", {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
+        body: JSON.stringify({
+          "type": "image"
+        })
+      }).then((results) => {
+        return results.json(); //return data in JSON (since its JSON data)
+      }).then(async (data) => {
+        signedUrl = data.uploadParams.SignedUrl
+        imageName = data.uploadPath.replace("user-image/", "")
+      }).catch((error) => {
+        console.log(error)
+        enqueueSnackbar("There was an issue connecting to the server", {
+          variant: 'error',
+          autoHideDuration: 2500
+        });
+        setBulkListingStep(0)
+        setloadingImageAnalysis(false)
+        return false
+      })
+
+
+      await fetch("https://cors-anywhere.herokuapp.com/" + signedUrl, {
+        method: 'put',
+        headers: { 'Content-Type': 'image/*', 'Authorization': window.token },
+        body: files[0]
+      }).then((results) => {
+        if (results.status !== 200) {
+          enqueueSnackbar("There was an issue uploading the image.", {
+            variant: 'error',
+            autoHideDuration: 2500
+          });
+          setBulkListingStep(0)
+          setloadingImageAnalysis(false)
+        }
+      }).catch((error) => {
+        console.log(error)
+        enqueueSnackbar("There was an issue connecting to the server", {
+          variant: 'error',
+          autoHideDuration: 2500
+        });
+        setBulkListingStep(0)
+        setloadingImageAnalysis(false)
+        return false
+      })
+
+
+      await fetch(window.globalURL + "/image/analyse ", {
+        method: 'POST',
+        headers: { 'Content-Type': 'image/*', 'Authorization': window.token },
+        body: JSON.stringify({ image: imageName })
+      }).then((results) => {
+        return results.json(); //return data in JSON (since its JSON data)
+      }).then(async (data) => {
+        if (data.success === true) {
+
+          for (let i = 0; i < data.result.result.tags.length; i++) {
+            const current = data.result.result.tags[i]
+            if (current.instances.length > 0) {
+              const newItem = {
+                name: current.tag,
+                category: current.type,
+                instances: current.instances
+              }
+              bulkProductInformation.push(newItem)
+            }
+          }
+          if (bulkProductInformation.length === 0) {
+            enqueueSnackbar("No items were dected in your image. Please try another image.", {
+              variant: 'error',
+              autoHideDuration: 2500
+            });
+            setBulkListingStep(0)
+            setloadingImageAnalysis(false)
+          }
+          else {
+            setImageLink("https://ecoshop-content.obs.ap-southeast-3.myhuaweicloud.com/user-image/" + imageName)
+          }
+        }
+        else {
+          enqueueSnackbar("Your image was picked up by our moderation algorithms for: " + data.error, {
+            variant: 'error',
+            autoHideDuration: 2500
+          });
+          setBulkListingStep(0)
+          setloadingImageAnalysis(false)
+        }
+        console.log(data)
+      }).catch((error) => {
+        console.log(error)
+        enqueueSnackbar("There was an issue connecting to the server", {
+          variant: 'error',
+          autoHideDuration: 2500
+        });
+        setBulkListingStep(0)
+        setloadingImageAnalysis(false)
+        return false
+      })
+
+
+
+
+      setloadingImageAnalysis(false)
+
+    }
+
+  }
+
+  const drawBoundingBoxes = (e) => {
+    const ratio = e.target.naturalWidth / e.target.width
+    let newBoundingBoxes = []
+    for (let i = 0; i < bulkProductInformation.length; i++) {
+      for (let x = 0; x < bulkProductInformation[i].instances.length; x++) {
+        const bottom = bulkProductInformation[i].instances[x].bounding_box.top_left_y / ratio
+        const left = bulkProductInformation[i].instances[x].bounding_box.top_left_x / ratio
+        const width = bulkProductInformation[i].instances[x].bounding_box.width / ratio
+        const height = bulkProductInformation[i].instances[x].bounding_box.height / ratio
+        newBoundingBoxes.push((
+          <div onClick={(i) => {console.log("selected item ID " + i)}} style={{border: "2px solid red", position: "absolute", bottom: bottom, left: left, width: width, height: height  }}>
+    
+          </div>
+        ))
+      }
+     
+    }
+    setBoundingBoxes(newBoundingBoxes)
+   
+  }
 
   return (
     <div className='fadeIn' style={{ overflowY: "auto", padding: "1ch" }}>
@@ -39,27 +182,55 @@ const Create = (props) => {
           <Grow in={true}>
             <div>
               <h1 className="bulk-text">Bulk Listing Creation</h1>
-              <h3>Step 1</h3>
-              <DropzoneArea
-                acceptedFiles={['image/*']}
-                dropzoneText={"Tap to upload an image"}
-                Icon={() => <CloudUploadOutlined style={{ fontSize: "10ch", color: blue[500] }} />}
-                filesLimit={1}
-                maxFileSize={20000000}
-                dropzoneClass="dropzone-class"
-                showPreviewsInDropzone={false}
-                onChange={(files) => console.log('Files:', files)}
-                onDropRejected={(e) => {
-                  enqueueSnackbar("Oops. Please upload a valid image that is < 20MB", {
-                    variant: 'error',
-                    autoHideDuration: 2500
-                  })
-                }}
-                showAlerts={false}
-              />
-              <Button onClick={() => { setPage("options") }} variant="outlined" startIcon={<ArrowCircleLeftOutlined />}>
-                Back
-              </Button>
+              {bulkListingStep === 0 && (
+                <div style={{ margin: "5vw" }}>
+                  <h3>Step 1</h3>
+                  <DropzoneArea
+                    acceptedFiles={['image/*']}
+                    dropzoneText={"Tap to upload an image"}
+                    Icon={() => <CloudUploadOutlined style={{ fontSize: "10ch", color: blue[500] }} />}
+                    filesLimit={1}
+                    maxFileSize={20000000}
+                    dropzoneClass="dropzone-class"
+                    showPreviewsInDropzone={false}
+                    onChange={(files) => { handleImageUpload(files) }}
+                    onDropRejected={(e) => {
+                      enqueueSnackbar("Oops. Please upload a valid image that is < 20MB", {
+                        variant: 'error',
+                        autoHideDuration: 2500
+                      })
+                    }}
+                    showAlerts={false}
+                  />
+                  <span>Upload an image containing <b>multiple items</b> - We will take care of it! <br /></span>
+                  <Button style={{ marginTop: "3ch" }} onClick={() => { setPage("options") }} variant="outlined" startIcon={<ArrowCircleLeftOutlined />}>
+                    Back
+                  </Button>
+                </div>
+              )}
+              {bulkListingStep === 1 && (
+                <Fragment>
+                  {loadingImageAnalysis ? (
+                    <div style={{ margin: "5ch" }}>
+                      <CircularProgress size="12ch" />
+                      <h3>Scanning your image for items and safety...</h3>
+                      <span>This shouldn't take too long</span>
+                    </div>
+                  ) : (
+                    <div style={{ margin: "1ch" }}>
+                      <h3>Step 2</h3>
+                      <Paper elevation={12} style={{ width: "100%", height: "30ch", borderRadius: "15px", padding: "1ch" }}>
+                        <div style={{position: "relative", width: "fit-content", height: "fit-content"}}>
+                          <img src={imageLink} onLoad={(e) => { drawBoundingBoxes(e) }} style={{height: "100%", width: "100%", objectFit: "scale-down" }} />
+                          {boundingBoxes}
+                        </div>
+                      </Paper>
+                    </div>
+                  )}
+
+
+                </Fragment>
+              )}
             </div>
           </Grow>
         )}
