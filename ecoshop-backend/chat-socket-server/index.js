@@ -133,9 +133,10 @@ const startup = async () => {
             let autoReplyContent
 
             const [checkEnabledRows, checkEnabledFields] = await connection.execute(
-              "SELECT `description`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`id` WHERE `chat`.`id` = ? AND (`buyer` = ? OR `seller` = ?)",
+              "SELECT `description`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`id` WHERE `chat`.`id` = ? AND (`buyer` = ?)",
               [data.chatID, tokenData.username, tokenData.username],
             )
+            if (checkEnabledRows.length !== 1) return
             console.log(checkEnabledRows);
             if (checkEnabledRows[0]["answer_bot"] === 0) return // if answering bot is not enabled, do not generate response
 
