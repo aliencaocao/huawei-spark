@@ -118,6 +118,7 @@ exports.handler = async (event, context) => {
         }
       }
       else if (body.type === "single") {
+        body.listing.owner = authData.username;
         if (!validateListing(body.listing)) return validationError; // check if the listing contains all required fields
         await insertListing(body.listing);
       }
