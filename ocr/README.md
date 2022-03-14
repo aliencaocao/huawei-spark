@@ -42,7 +42,7 @@ For example:
 }
 ```
 
-If error occurred, the `success` field will be `false` and the `answer` field will be replaced by `error` which contains the detailed error message.
+If error occurred, the `success` field will be `false` and the `result` field will be replaced by `error` which contains the detailed error message.
 ```json
 {
     "success": "false",
