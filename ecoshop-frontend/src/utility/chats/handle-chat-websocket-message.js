@@ -13,8 +13,11 @@ const {
   },
 } = wsMessageTypes;
 
-const token = window.localStorage.getItem("ecoshop-token");
-const tokenData = JSON.parse(token.split(".")[0]);
+const { token } = window;
+let tokenData;
+if (token !== null) {
+  tokenData = JSON.parse(token.split(".")[0]);
+}
 
 const handleChatWebSocketMessage = (message, setChats) => {
   const parsedMessage = JSON.parse(message);
@@ -36,11 +39,16 @@ const handleChatWebSocketMessage = (message, setChats) => {
           // user is seller, so they are talking to a buyer
           chats.withBuyers.push(chat);
         } else {
-          throw Error("User is neither buyer nor seller in chat.");
+          throw Error("User is neither buyer nor seller in this chat.");
         }
       }
 
       setChats(chats);
+      break;
+
+    case MSGS_LOADED:
+        
+
       break;
   }
 };

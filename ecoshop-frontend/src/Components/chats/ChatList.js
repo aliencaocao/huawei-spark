@@ -20,12 +20,13 @@ const {
   },
 } = wsMessageTypes;
 
-const token = window.localStorage.getItem("ecoshop-token");
-
 let chatWebSocket = null;
 
 const loadChats = () => {
-  sendJsonMessageToWebSocket(chatWebSocket, { action: LOAD_CHATS, token });
+  sendJsonMessageToWebSocket(chatWebSocket, {
+    action: LOAD_CHATS,
+    token: window.token,
+  });
 };
 
 const initChatWebSocketConnection = (setChats) => {
@@ -37,7 +38,10 @@ const initChatWebSocketConnection = (setChats) => {
     handleChatWebSocketMessage(event.data, setChats);
   });
   chatWebSocket.addEventListener("open", () => {
-    sendJsonMessageToWebSocket(chatWebSocket, { action: INIT, token });
+    sendJsonMessageToWebSocket(chatWebSocket, {
+      action: INIT,
+      token: window.token,
+    });
   });
 
   return chatWebSocket;
@@ -97,15 +101,24 @@ const ChatList = (props) => {
   }
 
   const createChatListItemFromChatData = (chatData) => {
-    const { chatId, productName, thumbnailUrl, messages } = chatData;
-    const mostRecentMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+    const {
+      id: chatId,
+      buyer,
+      seller,
+      name: productName,
+      obs_image: productImageUrl,
+      started: chatStartedTime,
+    } = chatData;
+
+    // const { chatId, productName, thumbnailUrl, messages } = chatData;
+    // const mostRecentMessage = messages.length > 0 ? messages[messages.length - 1] : null;
   
     return (
       <Fragment key={chatId}>
         <ButtonBase onClick={() => openChatLog(chatId)} className="chat-row">
           <ListItem>
             <ListItemAvatar>
-              <Avatar src={thumbnailUrl}></Avatar>
+              <Avatar src={productImageUrl}></Avatar>
             </ListItemAvatar>
             <ListItemText
               primary={productName}

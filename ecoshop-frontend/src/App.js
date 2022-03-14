@@ -333,7 +333,6 @@ const App = () => {
   }
 
   useEffect(() => {
-
     const startup = async () => {
       if (token === null) {
         const localStorageToken = localStorage.getItem("ecoshop-token")
