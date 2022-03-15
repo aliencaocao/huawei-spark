@@ -154,6 +154,7 @@ const startup = async () => {
           const [rows, fields] = await connection.execute('INSERT INTO `chat_message` (`chat_id`, `sender`, `recipient`, `content`, `answer_bot`, `answer_bot_feedback`, `obs_image`, `sent`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ', [data.chatID, tokenData.username, receipient, data.content, data.answerBot, 0, data.obs_image, currentTime]);
 
           const msgData = {
+            chatID: data.chatID,
             sender: tokenData.username,
             recipient: receipient,
             content: data.content,
