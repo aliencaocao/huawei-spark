@@ -109,8 +109,8 @@ const startup = async () => {
 
           // increase green points
           await connection.execute(
-            "UPDATE `user` SET `green` = ?",
-            [checkSellerRows[0].points],
+            "UPDATE `user` SET `green` = ? WHERE `user` = ? OR `user` = ?",
+            [checkSellerRows[0].points, checkSellerRows.buyer, tokenData.username],
           )
 
           const currentTime = new Date()
