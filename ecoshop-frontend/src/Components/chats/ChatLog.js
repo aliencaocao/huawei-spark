@@ -65,7 +65,7 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages, setMessages
             type={message.sender === tokenData.username ? "outgoing" : "incoming"}
             content={message.content}
             timestamp={message.sent}
-            isAutomated={message.answer_bot === 1}
+            isAutoReply={message.answer_bot === 1}
             key={`${chatId};${messageIdx}`}
           />
         ))

@@ -31,14 +31,16 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
     case CHATS_LOADED:
       console.log("Chats loaded");
 
-      const chats = { withSellers: [], withBuyers: [] };
+      const chats = { withSellers: {}, withBuyers: {} };
       for (const chat of parsedWebSocketMessage.data) {
         if (chat.buyer === tokenData.username) {
           // user is buyer, so they are talking to a seller
-          chats.withSellers.push(chat);
+          chats.withSellers[chat.id] = chat;
+          // chats.withSellers.push(chat);
         } else if (chat.seller === tokenData.username) {
           // user is seller, so they are talking to a buyer
-          chats.withBuyers.push(chat);
+          chats.withBuyers[chat.id] = chat;
+          // chats.withBuyers.push(chat);
         } else {
           throw Error("User is neither buyer nor seller in this chat.");
         }

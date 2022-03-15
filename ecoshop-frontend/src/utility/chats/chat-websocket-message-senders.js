@@ -37,7 +37,7 @@ const sendChatMessage = (
   buyer,
   seller,
   messageText,
-  isAutomated,
+  isAutoReply,
   obsImageId,
   setMessages
 ) => {
@@ -46,7 +46,7 @@ const sendChatMessage = (
   const newMessage = {
     content: messageText,
     obs_image: obsImageId,
-    answerBot: Number(isAutomated),
+    answerBot: Number(isAutoReply),
   };
 
   sendJsonMessageToWebSocket(window.chatWebSocket, {
@@ -64,10 +64,21 @@ const sendChatMessage = (
       recipient: buyer === tokenData.username ? seller : buyer,
       sent: new Date().toISOString(),
     });
+
     // state update is ignored if new and old state have the same reference
     // so construct a new object and return it
     return { ...oldMessages };
   });
 };
 
-export { sendInit, loadChats, loadMessages, sendChatMessage };
+const sendToggleAutoReply = (chatId) => {
+  // TODO: send request to toggle auto-reply for given chatId
+};
+
+export {
+  sendInit,
+  loadChats,
+  loadMessages,
+  sendChatMessage,
+  sendToggleAutoReply
+};
