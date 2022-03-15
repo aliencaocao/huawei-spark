@@ -95,6 +95,8 @@ const startup = async () => {
             [data.chatID, tokenData.username],
           )
 
+          console.log(checkSellerRows);
+
           if (checkSellerRows.length == 0) return;
 
           // decrement quantity if it's a product
