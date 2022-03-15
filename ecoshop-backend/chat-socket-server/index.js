@@ -88,6 +88,29 @@ const startup = async () => {
             }
           }
         }
+        else if (data.action === "product-sold") { // product-sold can only be issued by the seller
+          // check if seller issued it
+          const [checkSellerRows, checkSellerFields] = await connection.execute(
+            "SELECT `points`, `type`, `quantity`, `chat`.`product` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` WHERE `chat`.`id` = ? AND (`seller` = ?)",
+            [data.chatID, tokenData.username],
+          )
+
+          if (checkSellerRows.length == 0) return;
+
+          // decrement quantity if it's a product
+          if (("quantity" in data) && (checkSellerRows.type === 1)) {
+            await connection.execute(
+              "UPDATE `product` SET `quantity` = ? WHERE `product`.`id` = ?",
+              [checkSellerRows.quantity - data.quantity, checkSellerRows.product],
+            )
+          }
+
+          // increase green points
+          await connection.execute(
+            "UPDATE `user` SET `green` = ?",
+            checkSellerRows.points,
+          )
+        }
         else if (data.action === "new-msg") {
           const [chatRows, chatFields] = await connection.execute('SELECT `id`, `buyer`, `seller` FROM `chat` WHERE `id` = ? AND (`buyer` = ? OR `seller` = ?)', [data.chatID, tokenData.username, tokenData.username])
           if (chatRows.length === 0) socket.send(JSON.stringify({ type: "new-msg", success: false, error: "missing-chat" }))
