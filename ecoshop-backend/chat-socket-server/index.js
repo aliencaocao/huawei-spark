@@ -91,7 +91,7 @@ const startup = async () => {
         else if (data.action === "product-sold") { // product-sold can only be issued by the seller
           // check if seller issued it
           const [checkSellerRows, checkSellerFields] = await connection.execute(
-            "SELECT `points`, `type`, `quantity`, `chat`.`product` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` WHERE `chat`.`id` = ? AND (`seller` = ?)",
+            "SELECT `buyer`, `points`, `type`, `quantity`, `chat`.`product` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` WHERE `chat`.`id` = ? AND (`seller` = ?)",
             [data.chatID, tokenData.username],
           )
 
@@ -110,6 +110,29 @@ const startup = async () => {
             "UPDATE `user` SET `green` = ?",
             checkSellerRows.points,
           )
+
+          const currentTime = new Date()
+
+          const msgData = {
+            sender: tokenData.username,
+            recipient: checkSellerRows.buyer,
+            content: `Product / service sold! ${checkSellerRows.points} green points have been credited to the account.`,
+            sent: currentTime,
+            obs_image: "",
+            answer_bot: 1,
+          }
+
+          if (checkSellerRows.buyer in socketList) {
+            // send it to all of the sender sockets
+            for (let i = 0; i < socketList[checkSellerRows.buyer].length; i++) {
+              socketList[checkSellerRows.buyer][i].send(JSON.stringify({ type: "new-msg", success: true, data: msgData }))
+            }
+          }
+
+          const [rows, fields] = await connection.execute(
+            'INSERT INTO `chat_message` (`chat_id`, `sender`, `recipient`, `content`, `answer_bot`, `answer_bot_feedback`, `obs_image`, `sent`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ',
+            [data.chatID, tokenData.username, checkSellerRows.buyer, msgData.content, msgData.answer_bot, 0, "", currentTime],
+          );
         }
         else if (data.action === "new-msg") {
           const [chatRows, chatFields] = await connection.execute('SELECT `id`, `buyer`, `seller` FROM `chat` WHERE `id` = ? AND (`buyer` = ? OR `seller` = ?)', [data.chatID, tokenData.username, tokenData.username])
@@ -144,7 +167,6 @@ const startup = async () => {
                 // send to all sender sockets except for the socket which sent the msg
                 socketList[tokenData.username][i].send(JSON.stringify({ type: "new-msg", success: true, data: msgData }))
               }
-
             }
           }
           if (receipient in socketList) {
