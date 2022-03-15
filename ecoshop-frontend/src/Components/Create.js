@@ -60,9 +60,9 @@ const Create = (props) => {
       })
 
       setScanningStage(1)
-      await fetch("https://cors-anywhere.herokuapp.com/" + signedUrl, {
+      await fetch(signedUrl, {
         method: 'put',
-        headers: { 'Content-Type': 'image/*', 'Authorization': window.token },
+        headers: { 'Content-Type': 'image/*' },
         body: files[0]
       }).then((results) => {
         if (results.status !== 200) {

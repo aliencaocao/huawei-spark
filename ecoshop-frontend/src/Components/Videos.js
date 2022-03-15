@@ -32,6 +32,7 @@ const container = window !== undefined ? () => window.document.body : undefined;
 const Videos = (props) => {
     const navigate = useNavigate()
     const location = useLocation()
+    const [reactLoading, setReactLoading] = useState(false)
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [currentData, setCurrentData] = useState({})
     const [openDrawer, setopenDrawer] = useState(false)
@@ -139,11 +140,13 @@ const Videos = (props) => {
     }
 
     const handleLikeDislike = async (likeDislike, id) => {
+        setReactLoading(true)
         let action = ""
         let oppositeAction = ""
-        if (likeDislike === "like") {
+
+        if (likeDislike === "like" || likeDislike === "unlike") {
             const currentLike = videoData[id].self_like
-            if (currentLike) action = "unlike"
+            if (currentLike === 1) action = "unlike"
             else action = "like"
 
             if (videoData[id].self_dislike) {
@@ -152,8 +155,8 @@ const Videos = (props) => {
         }
         else {
             const currentLike = videoData[id].self_dislike
-            if (currentLike) action = "dislike"
-            else action = "undislike"
+            if (currentLike === 1) action = "undislike"
+            else action = "dislike"
 
             if (videoData[id].self_like) {
                 oppositeAction = "unlike"
@@ -161,19 +164,33 @@ const Videos = (props) => {
         }
 
         if (oppositeAction === "") {
-            await fetch(window.globalURL + "/video/react", {
+            await fetch(window.globalURL + "/video/reaction", {
                 method: 'post',
                 headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
                 body: JSON.stringify({
-                    video: videoData[id].id,
+                    video: videoData[id].videoId,
                     action: action
                 })
             }).then((results) => {
                 return results.json(); //return data in JSON (since its JSON data)
             }).then(async (data) => {
                 if (data.success === true) {
-                   console.log(data)
-                     
+                    if (action === "like") {
+                        videoData[id].self_like = 1
+                        videoData[id].likes += 1
+                    }
+                    else if (action === "dislike") {
+                        videoData[id].self_dislike = 1
+                        videoData[id].dislikes += 1
+                    } 
+                    else if (action === "unlike") {
+                        videoData[id].self_like = 0
+                        videoData[id].likes -= 1
+                    } 
+                    else if (action === "undislike") {
+                        videoData[id].self_dislike = 0
+                        videoData[id].dislikes -= 1
+                    } 
                 }
                 else {
                     enqueueSnackbar("Oops. Unknown error", {
@@ -190,20 +207,36 @@ const Videos = (props) => {
                     autoHideDuration: 2500
                 });
             })
+            setCurrentData({})
+            setCurrentData(videoData[id])
         } else {
-            await Promise.all([await fetch(window.globalURL + "/video/react", {
+            await Promise.all([await fetch(window.globalURL + "/video/reaction", {
                 method: 'post',
                 headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
                 body: JSON.stringify({
-                    video: videoData[id].id,
+                    video: videoData[id].videoId,
                     action: action
                 })
             }).then((results) => {
                 return results.json(); //return data in JSON (since its JSON data)
             }).then(async (data) => {
                 if (data.success === true) {
-                   console.log(data)
-                     
+                    if (action === "like") {
+                        videoData[id].self_like = 1
+                        videoData[id].likes += 1
+                    }
+                    else if (action === "dislike") {
+                        videoData[id].self_dislike = 1
+                        videoData[id].dislikes += 1
+                    } 
+                    else if (action === "unlike") {
+                        videoData[id].self_like = 0
+                        videoData[id].likes -= 1
+                    } 
+                    else if (action === "undislike") {
+                        videoData[id].self_dislike = 0
+                        videoData[id].dislikes -= 1
+                    } 
                 }
                 else {
                     enqueueSnackbar("Oops. Unknown error", {
@@ -220,19 +253,25 @@ const Videos = (props) => {
                     autoHideDuration: 2500
                 });
             }),
-            await fetch(window.globalURL + "/video/react", {
+            await fetch(window.globalURL + "/video/reaction", {
                 method: 'post',
                 headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
                 body: JSON.stringify({
-                    video: videoData[id].id,
+                    video: videoData[id].videoId,
                     action: oppositeAction
                 })
             }).then((results) => {
                 return results.json(); //return data in JSON (since its JSON data)
             }).then(async (data) => {
                 if (data.success === true) {
-                   console.log(data)
-                     
+                    if (oppositeAction === "unlike") {
+                        videoData[id].self_like = 0
+                        videoData[id].likes -= 1
+                    } 
+                    else if (oppositeAction === "undislike") {
+                        videoData[id].self_dislike = 0
+                        videoData[id].dislikes -= 1
+                    } 
                 }
                 else {
                     enqueueSnackbar("Oops. Unknown error", {
@@ -249,9 +288,12 @@ const Videos = (props) => {
                     autoHideDuration: 2500
                 });
             })
-        ])
+            ])
+            setCurrentData({})
+            setCurrentData(videoData[id])
         }
-        
+        setReactLoading(false)
+
 
 
     }
@@ -274,7 +316,7 @@ const Videos = (props) => {
                             const videoID = parseInt(location.pathname.split("/")[2])
 
                             for (let i = 0; i < videoData.length; i++) {
-                                if (videoData[i].id === videoID) {
+                                if (videoData[i].videoId === videoID) {
                                     currentVideoIndexPlaying = i
                                     found = true
                                     break
@@ -288,7 +330,7 @@ const Videos = (props) => {
 
 
                         currentSliderIndex = props.currentSliderIndex
-                        if (!found) navigate("/videos/" + data.listings[currentVideoIndexPlaying].id)
+                        if (!found) navigate("/videos/" + data.listings[currentVideoIndexPlaying].videoId)
                         setCurrentData(data.listings[currentVideoIndexPlaying])
                         playVideo(data.listings[currentVideoIndexPlaying].obs_location)
                     }
@@ -321,7 +363,7 @@ const Videos = (props) => {
         else currentVideoIndexPlaying += 1
 
         setCurrentData(videoData[currentVideoIndexPlaying])
-        navigate("/videos/" + videoData[currentVideoIndexPlaying].id)
+        navigate("/videos/" + videoData[currentVideoIndexPlaying].videoId)
         if (!videoPlayerRef[currentSliderIndex]) playWhenReady = true
         else playVideo(videoData[currentVideoIndexPlaying].obs_location)
     }
@@ -343,14 +385,14 @@ const Videos = (props) => {
                                 <div style={{ overflow: "hidden", position: "absolute", right: "2%", bottom: "11%", zIndex: 3 }}>
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                         {currentData.self_like ? (
-                                            <IconButton onClick={() => {
+                                            <IconButton disabled={reactLoading} onClick={() => {
                                                 handleLikeDislike("unlike", currentVideoIndexPlaying)
                                             }} style={{ display: "flex", flexDirection: "column", color: green[400] }}>
                                                 <ThumbUpIcon style={{ fontSize: "2.4ch" }} />
                                                 <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
                                             </IconButton>
                                         ) : (
-                                            <IconButton onClick={() => {
+                                            <IconButton disabled={reactLoading} onClick={() => {
                                                 handleLikeDislike("like", currentVideoIndexPlaying)
                                             }} style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
                                                 <ThumbUpOutlinedIcon style={{ fontSize: "2.4ch" }} />
@@ -362,14 +404,14 @@ const Videos = (props) => {
 
                                     <div style={{ display: "flex", marginTop: "2px", flexDirection: "column", alignItems: "center" }}>
                                         {currentData.self_dislike ? (
-                                            <IconButton onClick={() => {
+                                            <IconButton disabled={reactLoading} onClick={() => {
                                                 handleLikeDislike("undislike", currentVideoIndexPlaying)
-                                            }}  style={{ display: "flex", flexDirection: "column", color: red[400] }}>
+                                            }} style={{ display: "flex", flexDirection: "column", color: red[400] }}>
                                                 <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
                                                 <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
                                             </IconButton>
                                         ) : (
-                                            <IconButton onClick={() => {
+                                            <IconButton disabled={reactLoading} onClick={() => {
                                                 handleLikeDislike("dislike", currentVideoIndexPlaying)
                                             }} style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
                                                 <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
@@ -454,13 +496,14 @@ const Videos = (props) => {
                 container={container}
                 anchor="top"
                 open={openDrawer}
-                onClose={() => { setopenDrawer(false); 
+                onClose={() => {
+                    setopenDrawer(false);
                     if (endVideoDrawerOpen) {
                         endVideoDrawerOpen = false
                         handleChangeIndex(props.currentSliderIndexRef.current + 1)
                     }
                     else videoPlayerRef[currentSliderIndex].play()
-                 }}
+                }}
                 onOpen={() => { setopenDrawer(true); videoPlayerRef[currentSliderIndex].pause() }}
                 swipeAreaWidth={100}
                 disableSwipeToOpen={false}
