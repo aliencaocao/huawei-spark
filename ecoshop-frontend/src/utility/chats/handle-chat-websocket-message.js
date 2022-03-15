@@ -18,6 +18,10 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
   const tokenData = JSON.parse(window.token.split(".")[0]);
 
   const parsedWebSocketMessage = JSON.parse(message);
+  if (!parsedWebSocketMessage.success) {
+    console.error("message.success is not true. Message:", message);
+    return;
+  }
 
   switch (parsedWebSocketMessage.type) {
     case INIT_SUCCESS:
@@ -56,6 +60,23 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
         messages[chatId].push(message);
       }
       setMessages((oldMessages) => ({ ...oldMessages, ...messages }));
+      break;
+
+    case NEW_CHAT_NOTIF:
+      break;
+
+    case NEW_MSG_NOTIF:
+      console.log("New message received");
+
+      const newMessage = parsedWebSocketMessage.data;
+      setMessages((oldMessages) => {
+        // unshift, not push, because most recent message comes first
+        oldMessages[newMessage.chatID].unshift(newMessage);
+        // state update is ignored if new and old state have the same reference
+        // so construct a new object and return it
+        return { ...oldMessages };
+      });
+
       break;
   }
 };

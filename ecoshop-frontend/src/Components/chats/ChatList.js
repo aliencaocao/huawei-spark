@@ -27,10 +27,6 @@ const ChatList = (props) => {
   const [chats, setChats] = useState({});
   const [messages, setMessages] = useState({});
 
-  const handleTabChange = (event, newTabIdx) => {
-    setCurrentChatTab(newTabIdx);
-  };
-
   useEffect(() => {
     // run only on first render
     initChatWebSocketConnection(setChats, setMessages);
@@ -66,6 +62,7 @@ const ChatList = (props) => {
           openChatLog={openChatLog}
           chatData={chatData}
           messages={messages}
+          setMessages={setMessages}
         />
       </Fragment>
     );
@@ -86,7 +83,7 @@ const ChatList = (props) => {
       />
       
       <TabContext value={currentChatTab}>
-        <TabList onChange={handleTabChange}>
+        <TabList onChange={(event, newTabIdx) => setCurrentChatTab(newTabIdx)}>
           <Tab value={0} label="With sellers" />
           <Tab value={1} label="With buyers" />
         </TabList>

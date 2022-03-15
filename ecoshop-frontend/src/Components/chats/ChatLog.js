@@ -4,8 +4,10 @@ import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import SendIcon from '@mui/icons-material/Send';
 import { blue } from "@mui/material/colors";
 import MessageBubble from "./MessageBubble";
+import { sendChatMessage } from "../../utility/chats/chat-websocket-message-senders";
+import { useState } from "react";
 
-const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
+const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages, setMessages }) => {
   const {
     id: chatId,
     buyer,
@@ -14,8 +16,22 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
     obs_image: productImageUrl,
     started: chatStartedTime,
   } = chatData;
-
   const tokenData = JSON.parse(window.token.split(".")[0]);
+
+  const [newMessageText, setNewMessageText] = useState("");
+  const [attachedImageId, setAttachedImageId] = useState("");
+  // TODO: add state for attached image
+
+  const sendChatMessageButWithFewerArguments = () => {
+    sendChatMessage(chatId, buyer, seller, newMessageText, false, attachedImageId, setMessages);
+  };
+
+  const handleKeyDownInTextField = (event) => {
+    if (event.key === "Enter") {
+      sendChatMessageButWithFewerArguments();
+      setNewMessageText("");
+    }
+  };
 
   return (
     <Drawer
@@ -35,9 +51,7 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
           <ListItemText
             primary={productName}
             secondary={
-              buyer === tokenData.username
-              ? `Seller: ${seller}`
-              : `Buyer: ${buyer}`
+              buyer === tokenData.username ? `Seller: ${seller}` : `Buyer: ${buyer}`
             }
           />
         </Toolbar>
@@ -62,12 +76,18 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
           <ImageOutlinedIcon />
         </IconButton>
         <TextField
+          value={newMessageText}
+          onChange={(event) => setNewMessageText(event.target.value)}
+          onKeyDown={handleKeyDownInTextField}
           label=""
           placeholder="Type your message..."
           fullWidth={true}
           className="chat-log-message-input"
         />
-        <IconButton className="chat-log-send-icon">
+        <IconButton
+          onClick={sendChatMessageButWithFewerArguments}
+          className="chat-log-send-icon"
+        >
           <SendIcon />
         </IconButton>
       </Box>
