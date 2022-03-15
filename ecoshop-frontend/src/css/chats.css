@@ -43,6 +43,13 @@ main {
   margin-right: 11px;
 }
 
+.chat-log-messages {
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 75px 17px;
+  overflow: auto;
+}
+
 .chat-log-bottom {
   position: fixed;
   bottom: 0;
@@ -73,6 +80,66 @@ main {
 
 .chat-log-message-input > * {
   max-height: inherit;
+}
+
+.chat-log-send-icon.MuiIconButton-root,
+.chat-log-send-icon.MuiIconButton-root:hover {
+  background-color: #2196f3;
+}
+
+.chat-message {
+  display: flex;
+}
+.chat-message:not(:last-of-type) {
+  margin-top: 4px;
+}
+
+.incoming-message {
+  justify-content: flex-start;
+}
+.outgoing-message {
+  justify-content: flex-end;
+}
+
+.incoming-message + .outgoing-message,
+.outgoing-message + .incoming-message {
+  margin-bottom: 15px;
+}
+
+.chat-message-content {
+  width: max-content;
+  max-width: 80%;
+  padding: 9px 12px 8px;
+  border-radius: 17px;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.incoming-message > .chat-message-content {
+  left: 0;
+  border-bottom-left-radius: 0;
+  background-color: #ddd;
+  color: #000;
+}
+.incoming-message + .incoming-message > .chat-message-content {
+  /* border-top-left-radius: 0; */
+}
+
+.outgoing-message > .chat-message-content {
+  right: 0;
+  border-bottom-right-radius: 0;
+  background-color: #2196f3;
+  color: #fff;
+}
+.outgoing-message + .outgoing-message > .chat-message-content {
+  /* border-top-right-radius: 0; */
+}
+
+.automated-reply-notice {
+  /* text-align: right; */
+  margin-top: 2px;
+  font-size: 14px;
+  opacity: 0.7;
 }
 
 .message-preview {

@@ -3,6 +3,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import SendIcon from '@mui/icons-material/Send';
 import { blue } from "@mui/material/colors";
+import MessageBubble from "./MessageBubble";
 
 const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
   const {
@@ -15,7 +16,7 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
   } = chatData;
 
   const tokenData = JSON.parse(window.token.split(".")[0]);
-  
+
   return (
     <Drawer
       anchor="right"
@@ -42,9 +43,19 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
         </Toolbar>
       </AppBar>
       
-      <Box>
-
-      </Box>
+      <Box className="chat-log-messages">{
+        Array.isArray(messages[chatId]) &&
+        // create shallow copy and reverse it (doesn't mutate messages[chatId] itself)
+        messages[chatId].map((message, messageIdx) => (
+          <MessageBubble
+            type={message.sender === tokenData.username ? "outgoing" : "incoming"}
+            content={message.content}
+            timestamp={message.sent}
+            isAutomated={message.answer_bot === 1}
+            key={`${chatId};${messageIdx}`}
+          />
+        ))
+      }</Box>
       
       <Box className="chat-log-bottom">
         <IconButton className="chat-log-attach-image-button">
@@ -56,7 +67,7 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
           fullWidth={true}
           className="chat-log-message-input"
         />
-        <IconButton sx={{ backgroundColor: blue[500], ":hover": { backgroundColor: blue[500] } }}>
+        <IconButton className="chat-log-send-icon">
           <SendIcon />
         </IconButton>
       </Box>
