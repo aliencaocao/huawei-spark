@@ -110,7 +110,7 @@ const startup = async () => {
           // increase green points
           await connection.execute(
             "UPDATE `user` SET `green` = ?",
-            checkSellerRows.points,
+            [checkSellerRows.points],
           )
 
           const currentTime = new Date()
