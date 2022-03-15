@@ -68,7 +68,7 @@ const startup = async () => {
           socket.send(JSON.stringify({ type: "load-msgs", success: true, data: { chatID: data.chatID, messages: rows } }))
         }
         else if (data.action === "load-chats") {
-          const [rows, fields] = await connection.execute('SELECT `chat`.`id`, `buyer`, `seller`, `name`, `obs_image`, `started` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` WHERE (`buyer` = ? OR `seller` = ?) AND `product_image`.`order` = 1 ORDER BY `started`', [tokenData.username, tokenData.username]);
+          const [rows, fields] = await connection.execute('SELECT `chat`.`id`, `buyer`, `seller`, `name`, `obs_image`, `started`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` WHERE (`buyer` = ? OR `seller` = ?) AND `product_image`.`order` = 1 ORDER BY `started`', [tokenData.username, tokenData.username]);
           socket.send(JSON.stringify({ type: "load-chats", success: true, data: rows }))
         }
         else if (data.action === "new-chat") {
