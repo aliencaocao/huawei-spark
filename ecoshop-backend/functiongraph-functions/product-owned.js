@@ -1,4 +1,4 @@
-// Saves users' video reactions (likes and dislikes)
+// Lists the products which belong to the current user
 // Authorization Required - API Gateway Custom Authorizer required.
 
 const mysql = require("mysql2/promise");
@@ -31,38 +31,23 @@ exports.handler = async (event, context) => {
     const body = JSON.parse((Buffer.from(event.body, 'base64')).toString());
     const authData = JSON.parse(event.headers["authData"]); // verified by API Gateway Custom Authorizer
 
-    let output = [];
+    const [rows, fields] = await connection.execute("SELECT `id`, `name`, `price`, `type`, `quantity`, `owner`, `obs_image`, COUNT(`user_product_bookmark`.`user`) AS `bookmarks` FROM `product` " +
+      "INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` " +
+      "LEFT OUTER JOIN `user_product_bookmark` ON `user_product_bookmark`.`product` = `product`.`id` " +
+      "WHERE `owner` = ? AND `product_image`.`order` = 1 " +
+      "GROUP BY `id` ORDER BY `id` DESC LIMIT 21 ",
+      [authData.username],
+    );
 
-    if (!("action" in body) || !("video" in body)) return validationError;
-
-    // reset reaction
-    await connection.execute("DELETE FROM `user_video_react` WHERE `user` = ? AND `video` = ?", [authData.username, body.video]);
-
-    switch (body.action) {
-      case "like":
-        await connection.execute("INSERT INTO `user_video_react` (`user`, `video`, `react`) VALUES(?, ?, ?)", [authData.username, body.video, 1]);
-        break;
-      case "dislike":
-        await connection.execute("INSERT INTO `user_video_react` (`user`, `video`, `react`) VALUES(?, ?, ?)", [authData.username, body.video, 2]);
-        break;
-      case "undislike":
-        break;
-      case "unlike":
-        break;
-      default:
-        return validationError;
-    }
-
-    const response = {
+    return {
       "statusCode": 200,
       "headers": { "Content-Type": "application/json" },
       "isBase64Encoded": false,
       "body": JSON.stringify({
         success: true,
+        listings: rows,
       }),
     };
-
-    return response;
   }
   catch (e) {
     return {
