@@ -32,4 +32,53 @@ const loadMessages = (chatId) => {
   });
 };
 
-export { sendInit, loadChats, loadMessages };
+const sendChatMessage = (
+  chatId,
+  buyer,
+  seller,
+  messageText,
+  isAutoReply,
+  obsImageId,
+  setMessages
+) => {
+  const tokenData = JSON.parse(window.token.split(".")[0])
+
+  const newMessage = {
+    content: messageText,
+    obs_image: obsImageId,
+    answerBot: Number(isAutoReply),
+  };
+
+  sendJsonMessageToWebSocket(window.chatWebSocket, {
+    action: SEND_NEW_MSG,
+    token: window.token,
+    chatID: chatId,
+    ...newMessage,
+  });
+  
+  setMessages((oldMessages) => {
+    // unshift, not push, because most recent message comes first
+    oldMessages[chatId].unshift({
+      ...newMessage,
+      sender: tokenData.username,
+      recipient: buyer === tokenData.username ? seller : buyer,
+      sent: new Date().toISOString(),
+    });
+
+    // state update is ignored if new and old state have the same reference
+    // so construct a new object and return it
+    return { ...oldMessages };
+  });
+};
+
+const sendToggleAutoReply = (chatId) => {
+  // TODO: send request to toggle auto-reply for given chatId
+};
+
+export {
+  sendInit,
+  loadChats,
+  loadMessages,
+  sendChatMessage,
+  sendToggleAutoReply
+};

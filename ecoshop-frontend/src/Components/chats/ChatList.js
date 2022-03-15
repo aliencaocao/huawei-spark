@@ -1,4 +1,4 @@
-import { AppBar, Avatar, Button, ButtonBase, CircularProgress, Divider, Drawer, IconButton, Input, InputAdornment, List, ListItem, ListItemAvatar, ListItemText, Tab, Tabs, TextField, Toolbar } from "@mui/material";
+import { AppBar, Avatar, Button, ButtonBase, CircularProgress, Divider, Drawer, FormControlLabel, IconButton, Input, InputAdornment, List, ListItem, ListItemAvatar, ListItemText, Switch, Tab, Tabs, TextField, Toolbar } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Fragment, useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews";
 import "../../css/chats.css";
 import ChatLog from "./ChatLog";
-import { sendInit, loadChats, loadMessages } from "../../utility/chats/chat-websocket-message-senders";
+import { sendInit, loadChats, sendToggleAutoReply } from "../../utility/chats/chat-websocket-message-senders";
 import handleChatWebSocketMessage from "../../utility/chats/handle-chat-websocket-message";
 
 const initChatWebSocketConnection = (setChats, setMessages) => {
@@ -27,9 +27,7 @@ const ChatList = (props) => {
   const [chats, setChats] = useState({});
   const [messages, setMessages] = useState({});
 
-  const handleTabChange = (event, newTabIdx) => {
-    setCurrentChatTab(newTabIdx);
-  };
+  const tokenData = JSON.parse(window.token.split(".")[0]);
 
   useEffect(() => {
     // run only on first render
@@ -37,11 +35,14 @@ const ChatList = (props) => {
     window.chatWebSocket.addEventListener("open", loadChats);
   }, []);
 
-  const createChatListItemFromChatData = (chatData) => {
+  const createChatListItemFromChatData = ([chatId, chatData]) => {
+    chatId = Number(chatId);
+
     const {
-      id: chatId,
+      seller,
       name: productName,
       obs_image: productImageUrl,
+      answer_bot: isAutoReply,
     } = chatData;
 
     return (
@@ -59,6 +60,27 @@ const ChatList = (props) => {
               }
             />
           </ListItem>
+
+          {seller === tokenData.username &&
+          <FormControlLabel
+            control={
+              <Switch
+                size="small"
+                checked={isAutoReply}
+                onChange={(event) => {
+                  setChats((oldChats) => {
+                    oldChats.withBuyers[chatId].answer_bot = Number(event.target.checked);
+                    return { ...oldChats };
+                  });
+                  sendToggleAutoReply(chatId);
+                }}
+                onClick={(event) => event.stopPropagation()}
+              />
+            }
+            label="Auto-reply"
+            labelPlacement="end"
+            className="auto-reply-switch-label"
+          />}
         </ButtonBase>
 
         <ChatLog
@@ -66,6 +88,7 @@ const ChatList = (props) => {
           openChatLog={openChatLog}
           chatData={chatData}
           messages={messages}
+          setMessages={setMessages}
         />
       </Fragment>
     );
@@ -86,7 +109,7 @@ const ChatList = (props) => {
       />
       
       <TabContext value={currentChatTab}>
-        <TabList onChange={handleTabChange}>
+        <TabList onChange={(event, newTabIdx) => setCurrentChatTab(newTabIdx)}>
           <Tab value={0} label="With sellers" />
           <Tab value={1} label="With buyers" />
         </TabList>
@@ -97,9 +120,9 @@ const ChatList = (props) => {
         >
           <TabPanel value={0} className="chat-tab-panel">
             <List>{
-              Array.isArray(chats.withSellers) ?
-                chats.withSellers.length > 0 ?
-                  chats.withSellers.map(createChatListItemFromChatData) :
+              typeof chats.withSellers === "object" ?
+                Object.keys(chats.withSellers).length > 0 ?
+                  Object.entries(chats.withSellers).map(createChatListItemFromChatData) :
                   "No chats."
                 :
               <CircularProgress className="chat-tab-loading-icon" />
@@ -107,10 +130,14 @@ const ChatList = (props) => {
           </TabPanel>
           <TabPanel value={1} className="chat-tab-panel">
             <List>{
-              Array.isArray(chats.withBuyers) ?
-                chats.withBuyers.length > 0 ?
-                  chats.withBuyers.map(createChatListItemFromChatData) :
-                  "No chats." 
+              // Array.isArray(chats.withBuyers) ?
+              //   chats.withBuyers.length > 0 ?
+              //     chats.withBuyers.map(createChatListItemFromChatData) :
+              //     "No chats." 
+              typeof chats.withBuyers === "object" ?
+                Object.keys(chats.withBuyers).length > 0 ?
+                  Object.entries(chats.withBuyers).map(createChatListItemFromChatData) :
+                  "No chats."
                 :
               <CircularProgress className="chat-tab-loading-icon" />
             }</List>

@@ -28,6 +28,30 @@ main {
   padding: 7px 0;
 }
 
+label.auto-reply-switch-label {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 0;
+  background-color: #121212;
+}
+label.auto-reply-switch-label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  height: 100%;
+  width: 35px;
+  background: linear-gradient(to right, transparent, #121212 70%);
+  transform: translateX(-100%);
+}
+
+.auto-reply-switch-label > .MuiFormControlLabel-label {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .chat-log {
   display: flex;
   flex-direction: column;
@@ -46,7 +70,7 @@ main {
 .chat-log-messages {
   display: flex;
   flex-direction: column-reverse;
-  padding: 75px 17px;
+  padding: 75px 17px 77px;
   overflow: auto;
 }
 
@@ -58,6 +82,8 @@ main {
   gap: 10px;
   width: 100%;
   padding: 15px;
+  background-color: #353535;
+  /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5); */
   box-sizing: border-box;
 }
 
