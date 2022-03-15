@@ -138,6 +138,124 @@ const Videos = (props) => {
         currentPlayerRef.play()
     }
 
+    const handleLikeDislike = async (likeDislike, id) => {
+        let action = ""
+        let oppositeAction = ""
+        if (likeDislike === "like") {
+            const currentLike = videoData[id].self_like
+            if (currentLike) action = "unlike"
+            else action = "like"
+
+            if (videoData[id].self_dislike) {
+                oppositeAction = "undislike"
+            }
+        }
+        else {
+            const currentLike = videoData[id].self_dislike
+            if (currentLike) action = "dislike"
+            else action = "undislike"
+
+            if (videoData[id].self_like) {
+                oppositeAction = "unlike"
+            }
+        }
+
+        if (oppositeAction === "") {
+            await fetch(window.globalURL + "/video/react", {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
+                body: JSON.stringify({
+                    video: videoData[id].id,
+                    action: action
+                })
+            }).then((results) => {
+                return results.json(); //return data in JSON (since its JSON data)
+            }).then(async (data) => {
+                if (data.success === true) {
+                   console.log(data)
+                     
+                }
+                else {
+                    enqueueSnackbar("Oops. Unknown error", {
+                        variant: 'error',
+                        autoHideDuration: 2500
+                    })
+                    console.log(data)
+                }
+
+            }).catch((error) => {
+                console.log(error)
+                enqueueSnackbar("There was an issue connecting to the server", {
+                    variant: 'error',
+                    autoHideDuration: 2500
+                });
+            })
+        } else {
+            await Promise.all([await fetch(window.globalURL + "/video/react", {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
+                body: JSON.stringify({
+                    video: videoData[id].id,
+                    action: action
+                })
+            }).then((results) => {
+                return results.json(); //return data in JSON (since its JSON data)
+            }).then(async (data) => {
+                if (data.success === true) {
+                   console.log(data)
+                     
+                }
+                else {
+                    enqueueSnackbar("Oops. Unknown error", {
+                        variant: 'error',
+                        autoHideDuration: 2500
+                    })
+                    console.log(data)
+                }
+
+            }).catch((error) => {
+                console.log(error)
+                enqueueSnackbar("There was an issue connecting to the server", {
+                    variant: 'error',
+                    autoHideDuration: 2500
+                });
+            }),
+            await fetch(window.globalURL + "/video/react", {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
+                body: JSON.stringify({
+                    video: videoData[id].id,
+                    action: oppositeAction
+                })
+            }).then((results) => {
+                return results.json(); //return data in JSON (since its JSON data)
+            }).then(async (data) => {
+                if (data.success === true) {
+                   console.log(data)
+                     
+                }
+                else {
+                    enqueueSnackbar("Oops. Unknown error", {
+                        variant: 'error',
+                        autoHideDuration: 2500
+                    })
+                    console.log(data)
+                }
+
+            }).catch((error) => {
+                console.log(error)
+                enqueueSnackbar("There was an issue connecting to the server", {
+                    variant: 'error',
+                    autoHideDuration: 2500
+                });
+            })
+        ])
+        }
+        
+
+
+    }
+
     useEffect(() => {
         const startup = async () => {
             await fetch(window.globalURL + "/video/query", {
@@ -225,12 +343,16 @@ const Videos = (props) => {
                                 <div style={{ overflow: "hidden", position: "absolute", right: "2%", bottom: "11%", zIndex: 3 }}>
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                         {currentData.self_like ? (
-                                            <IconButton style={{ display: "flex", flexDirection: "column", color: green[400] }}>
+                                            <IconButton onClick={() => {
+                                                handleLikeDislike("unlike", currentVideoIndexPlaying)
+                                            }} style={{ display: "flex", flexDirection: "column", color: green[400] }}>
                                                 <ThumbUpIcon style={{ fontSize: "2.4ch" }} />
                                                 <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
                                             </IconButton>
                                         ) : (
-                                            <IconButton style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
+                                            <IconButton onClick={() => {
+                                                handleLikeDislike("like", currentVideoIndexPlaying)
+                                            }} style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
                                                 <ThumbUpOutlinedIcon style={{ fontSize: "2.4ch" }} />
                                                 <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.likes}</span>
                                             </IconButton>
@@ -240,12 +362,16 @@ const Videos = (props) => {
 
                                     <div style={{ display: "flex", marginTop: "2px", flexDirection: "column", alignItems: "center" }}>
                                         {currentData.self_dislike ? (
-                                            <IconButton style={{ display: "flex", flexDirection: "column", color: red[400] }}>
+                                            <IconButton onClick={() => {
+                                                handleLikeDislike("undislike", currentVideoIndexPlaying)
+                                            }}  style={{ display: "flex", flexDirection: "column", color: red[400] }}>
                                                 <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
                                                 <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
                                             </IconButton>
                                         ) : (
-                                            <IconButton style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
+                                            <IconButton onClick={() => {
+                                                handleLikeDislike("dislike", currentVideoIndexPlaying)
+                                            }} style={{ display: "flex", flexDirection: "column", color: grey[300] }}>
                                                 <ThumbDownOffAltOutlinedIcon style={{ fontSize: "2.4ch" }} />
                                                 <span style={{ fontWeight: "bold", fontSize: "1.3ch", marginTop: "1px" }}>{currentData.dislikes}</span>
                                             </IconButton>
