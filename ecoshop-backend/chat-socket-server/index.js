@@ -100,40 +100,40 @@ const startup = async () => {
           if (checkSellerRows.length == 0) return;
 
           // decrement quantity if it's a product
-          if (("quantity" in data) && (checkSellerRows.type === 1)) {
+          if (("quantity" in data) && (checkSellerRows[0].type === 1)) {
             await connection.execute(
               "UPDATE `product` SET `quantity` = ? WHERE `product`.`id` = ?",
-              [checkSellerRows.quantity - data.quantity, checkSellerRows.product],
+              [checkSellerRows[0].quantity - data.quantity, checkSellerRows[0].product],
             )
           }
 
           // increase green points
           await connection.execute(
             "UPDATE `user` SET `green` = ?",
-            [checkSellerRows.points],
+            [checkSellerRows[0].points],
           )
 
           const currentTime = new Date()
 
           const msgData = {
             sender: tokenData.username,
-            recipient: checkSellerRows.buyer,
-            content: `Product / service sold! ${checkSellerRows.points} green points have been credited to the account.`,
+            recipient: checkSellerRows[0].buyer,
+            content: `Product / service sold! ${checkSellerRows[0].points} green points have been credited to the account.`,
             sent: currentTime,
             obs_image: "",
             answer_bot: 1,
           }
 
-          if (checkSellerRows.buyer in socketList) {
+          if (checkSellerRows[0].buyer in socketList) {
             // send it to all of the sender sockets
-            for (let i = 0; i < socketList[checkSellerRows.buyer].length; i++) {
-              socketList[checkSellerRows.buyer][i].send(JSON.stringify({ type: "new-msg", success: true, data: msgData }))
+            for (let i = 0; i < socketList[checkSellerRows[0].buyer].length; i++) {
+              socketList[checkSellerRows[0].buyer][i].send(JSON.stringify({ type: "new-msg", success: true, data: msgData }))
             }
           }
 
           const [rows, fields] = await connection.execute(
             'INSERT INTO `chat_message` (`chat_id`, `sender`, `recipient`, `content`, `answer_bot`, `answer_bot_feedback`, `obs_image`, `sent`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ',
-            [data.chatID, tokenData.username, checkSellerRows.buyer, msgData.content, msgData.answer_bot, 0, "", currentTime],
+            [data.chatID, tokenData.username, checkSellerRows[0].buyer, msgData.content, msgData.answer_bot, 0, "", currentTime],
           );
         }
         else if (data.action === "new-msg") {
