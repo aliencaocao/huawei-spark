@@ -29,11 +29,45 @@ main {
 }
 
 .chat-log {
+  display: flex;
+  flex-direction: column;
   width: 100%;
 }
 
 .chat-log-toolbar.chat-log-toolbar {
   padding: 2px 16px 0 10px;
+}
+
+.chat-log-bottom {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.chat-log-bottom > * {
+  max-height: 45px;
+}
+
+.chat-log-bottom > .MuiIconButton-root {
+  width: 45px;
+  height: 45px;
+}
+
+.chat-log-attach-image-button.chat-log-attach-image-button {
+  border: 1px solid #fff;
+}
+
+.chat-log-message-input > .MuiOutlinedInput-root {
+  border-radius: 99999px;
+}
+
+.chat-log-message-input > * {
+  max-height: inherit;
 }
 
 .message-preview {

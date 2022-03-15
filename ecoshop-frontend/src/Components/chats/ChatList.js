@@ -10,7 +10,6 @@ import ChatLog from "./ChatLog";
 import { sendInit, loadChats, loadMessages } from "../../utility/chats/chat-websocket-message-senders";
 import handleChatWebSocketMessage from "../../utility/chats/handle-chat-websocket-message";
 
-
 const initChatWebSocketConnection = (setChats, setMessages) => {
   // connection will fail without trailing slash in WS server URL
   const CHAT_WEBSOCKET_URL = "wss://tkai.sieberrsec.tech/api/";
@@ -41,11 +40,8 @@ const ChatList = (props) => {
   const createChatListItemFromChatData = (chatData) => {
     const {
       id: chatId,
-      buyer,
-      seller,
       name: productName,
       obs_image: productImageUrl,
-      started: chatStartedTime,
     } = chatData;
 
     return (
@@ -64,22 +60,7 @@ const ChatList = (props) => {
             />
           </ListItem>
         </ButtonBase>
-        
-        {/* TODO: extract chat log Drawer component to ChatLog.js */}
-        <Drawer
-          anchor="right"
-          open={openedChatLogId === chatId}
-          PaperProps={{ className: "chat-log" }}
-        >
-          <AppBar position="fixed">
-            <Toolbar className="chat-log-toolbar">
-              <IconButton onClick={() => openChatLog(null)}>
-                <ArrowBackIcon></ArrowBackIcon>
-              </IconButton>
-              <ListItemText primary={productName} secondary={"Test"}></ListItemText>
-            </Toolbar>
-          </AppBar>
-        </Drawer>
+        <ChatLog openedChatLogId={openedChatLogId} openChatLog={openChatLog} chatData={chatData} />
       </Fragment>
     );
   };

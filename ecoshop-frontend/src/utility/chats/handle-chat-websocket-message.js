@@ -15,11 +15,7 @@ const {
 } = wsMessageTypes;
 
 const handleChatWebSocketMessage = (message, setChats, setMessages) => {
-  const token = window.token;
-  let tokenData;
-  if (typeof token !== "undefined" && token !== null) {
-    tokenData = JSON.parse(token.split(".")[0]);
-  }
+  const tokenData = JSON.parse(window.token.split(".")[0]);
 
   const parsedWebSocketMessage = JSON.parse(message);
 
