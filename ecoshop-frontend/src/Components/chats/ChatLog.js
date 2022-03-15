@@ -1,10 +1,10 @@
-import { AppBar, Box, Drawer, IconButton, ListItemText, TextField, Toolbar } from "@mui/material";
+import { AppBar, Avatar, Box, Drawer, IconButton, ListItemText, TextField, Toolbar } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import SendIcon from '@mui/icons-material/Send';
 import { blue } from "@mui/material/colors";
 
-const ChatLog = ({ openedChatLogId, openChatLog, chatData }) => {
+const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages }) => {
   const {
     id: chatId,
     buyer,
@@ -27,6 +27,10 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData }) => {
           <IconButton onClick={() => openChatLog(null)}>
             <ArrowBackIcon></ArrowBackIcon>
           </IconButton>
+          <Avatar
+            className="chat-log-toolbar-avatar"
+            src={new URL(productImageUrl, window.mediaURL).href}
+          ></Avatar>
           <ListItemText
             primary={productName}
             secondary={
@@ -37,7 +41,10 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData }) => {
           />
         </Toolbar>
       </AppBar>
-      {/* <div style={{ flexGrow: 1, flexShrink: 0 }}></div> */}
+      
+      <Box>
+
+      </Box>
       
       <Box className="chat-log-bottom">
         <IconButton className="chat-log-attach-image-button">

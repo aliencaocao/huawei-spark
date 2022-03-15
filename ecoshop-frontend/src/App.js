@@ -32,7 +32,7 @@ import { blue } from '@mui/material/colors';
 
 
 window.globalURL = "https://api.eco-shop.me"
-
+window.mediaURL = "https://ecoshop-content.obs.ap-southeast-3.myhuaweicloud.com/user-image/";
 
 const listLoadingSkeleton = []
 for (let i = 0; i < 6; i++) {
@@ -241,7 +241,7 @@ const App = () => {
       const itemComponent = (
         <Grid item xs={6} sm={6} md={4} lg={3} key={current.name + "-" + current.owner}>
           <Paper className='listing-styles' elevation={12}>
-            <img src={"https://ecoshop-content.obs.ap-southeast-3.myhuaweicloud.com/user-image/" + current.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
+            <img src={window.mediaURL + current.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
             <div className='listing-info-style'>
               <h5 className='listing-title-style'>{current.name}</h5>
               <h4 className='listing-price-style'>${current.price}</h4>

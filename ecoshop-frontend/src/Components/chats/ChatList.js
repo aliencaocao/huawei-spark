@@ -49,7 +49,7 @@ const ChatList = (props) => {
         <ButtonBase onClick={() => openChatLog(chatId)} className="chat-row">
           <ListItem>
             <ListItemAvatar>
-              <Avatar src={productImageUrl}></Avatar>
+              <Avatar src={new URL(productImageUrl, window.mediaURL).href}></Avatar>
             </ListItemAvatar>
             <ListItemText
               primary={productName}
@@ -60,7 +60,13 @@ const ChatList = (props) => {
             />
           </ListItem>
         </ButtonBase>
-        <ChatLog openedChatLogId={openedChatLogId} openChatLog={openChatLog} chatData={chatData} />
+
+        <ChatLog
+          openedChatLogId={openedChatLogId}
+          openChatLog={openChatLog}
+          chatData={chatData}
+          messages={messages}
+        />
       </Fragment>
     );
   };

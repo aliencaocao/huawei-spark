@@ -35,7 +35,12 @@ main {
 }
 
 .chat-log-toolbar.chat-log-toolbar {
+  /* gap: 7px; */
   padding: 2px 16px 0 10px;
+}
+
+.chat-log-toolbar-avatar {
+  margin-right: 11px;
 }
 
 .chat-log-bottom {
