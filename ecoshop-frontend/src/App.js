@@ -33,6 +33,7 @@ import { blue } from '@mui/material/colors';
 
 window.globalURL = "https://api.eco-shop.me"
 
+
 const listLoadingSkeleton = []
 for (let i = 0; i < 6; i++) {
   listLoadingSkeleton.push(
