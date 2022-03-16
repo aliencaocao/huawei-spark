@@ -1,4 +1,4 @@
-import { Alert, Paper, Grow, Button, CircularProgress, IconButton, Checkbox, Divider, TextField, Select, MenuItem, OutlinedInput } from "@mui/material";
+import { Alert, Paper, Grow, Button, CircularProgress, InputLabel, FormControl, IconButton, Checkbox, Divider, TextField, Select, MenuItem, OutlinedInput, getFormLabelUtilityClasses } from "@mui/material";
 import { Fragment, useState, useRef, useEffect } from "react";
 import { LoadingButton } from '@mui/lab/';
 import { useSnackbar } from 'notistack';
@@ -44,6 +44,7 @@ const Create = (props) => {
   const [quantity, setQuantity] = useState("")
   const [description, setDescription] = useState("")
   const [attributes, setAttributes] = useState([])
+  const [attributeNameError, setattributeNameError] = useState(false)
   const [OCRCat, setOCRCat] = useState("Computer")
   const [emptyValues, setEmptyValues] = useState(false)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -117,7 +118,6 @@ const Create = (props) => {
         return results.json(); //return data in JSON (since its JSON data)
       }).then(async (data) => {
         if (data.success === true) {
-          console.log(data)
           let newChosenIDs = {}
           let ID = 0
           for (let i = 0; i < data.result.result.tags.length; i++) {
@@ -187,7 +187,7 @@ const Create = (props) => {
           setBulkListingStep(0)
           setloadingImageAnalysis(false)
         }
-        console.log(data)
+        
       }).catch((error) => {
         console.log(error)
         enqueueSnackbar("There was an issue connecting to the server", {
@@ -344,7 +344,7 @@ const Create = (props) => {
 
 
       }
-      console.log(TotalFormData)
+      
       setGettingInfo(false)
       setSelectedItemsInfo([])
       setSelectedItemsInfo(finalInfo)
@@ -396,7 +396,6 @@ const Create = (props) => {
           autoHideDuration: 2500
         });
 
-        console.log(listAttributes.length - attributesEdited)
         if (listAttributes.length - attributesEdited > 0) {
           enqueueSnackbar("Skipped " + listAttributes.length - attributesEdited + " attributes as they were already present.", {
             variant: 'info',
@@ -433,11 +432,11 @@ const Create = (props) => {
       }
       setEmptyValues(false)
     }
-   
+
   }, [attributes])
 
   const AttributesInference = async () => {
-    
+
     if (description.length === 0) {
       enqueueSnackbar("Please enter a description first", {
         variant: 'error',
@@ -549,15 +548,16 @@ const Create = (props) => {
         <Grow in={true}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
             <h1>Create:</h1>
-            <Paper onClick={() => { setPage("bulk-listing") }} elevation={16} style={{ padding: "2ch", display: "flex", alignItems: "center", justifyContent: "center", width: "80vw", flexDirection: "column" }}>
-              <ContentCopyTwoTone style={{ color: blue[500], fontSize: "5ch" }} />
-              <h1 className="bulk-text">Bulk Listing </h1>
-              <span>Create multiple listings with completed information from just one image. <br /><br /> Powered by EchoShop's AI algorithms.</span>
-            </Paper>
-            <Paper onClick={() => { setPage("normal-listing") }} elevation={16} style={{ padding: "2ch", display: "flex", marginBottom: "5ch", alignItems: "center", justifyContent: "center", marginTop: "5vh", width: "80vw", flexDirection: "column" }}>
+        
+            <Paper onClick={() => { setPage("normal-listing") }} elevation={16} style={{ padding: "2ch", display: "flex", marginBottom: "5ch", alignItems: "center", justifyContent: "center", width: "80vw", flexDirection: "column" }}>
               <AddCircleTwoTone style={{ color: blue[500], fontSize: "5ch" }} />
               <h2 className="normal-text">Single Listing</h2>
               <span>Create a repair service or single product by inputting details.</span>
+            </Paper>
+            <Paper onClick={() => { setPage("bulk-listing") }} elevation={16} style={{ padding: "2ch", display: "flex", alignItems: "center", justifyContent: "center", width: "80vw", flexDirection: "column", marginTop: "3vh" }}>
+              <ContentCopyTwoTone style={{ color: blue[500], fontSize: "5ch" }} />
+              <h1 className="bulk-text">Bulk Listing </h1>
+              <span>Create multiple listings with completed information from just one image. <br /><br /> Powered by EchoShop's AI algorithms.</span>
             </Paper>
           </div>
         </Grow>
@@ -615,8 +615,8 @@ const Create = (props) => {
                     <h3>Step 2</h3>
                     <span>Tap on the boxes below to add items!</span>
                     <Paper elevation={12} style={{ width: "100%", maxHeight: "50vh", borderRadius: "15px", padding: "1ch", marginTop: "1ch" }}>
-                      <div style={{ position: "relative", width: "fit-content", height: "fit-content" }}>
-                        <img ref={imgRef} src={imageLink} crossOrigin="anonymous" onLoad={(e) => { drawBoundingBoxes(e) }} style={{ height: "100%", width: "100%", objectFit: "scale-down" }} />
+                      <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                        <img ref={imgRef} src={imageLink} crossOrigin="anonymous" onLoad={(e) => { drawBoundingBoxes(e) }} style={{  objectFit: "contain", width: "100%", height: "100%" }} />
                         {boundingBoxInfo.map((current) => <div
                           key={"instance-" + current.instanceID + "bounding-box-" + current.itemID}
                           onClick={() => {
@@ -704,27 +704,29 @@ const Create = (props) => {
 
                     <Divider style={{ width: "100%", marginBottom: "2ch" }} />
 
-                    <Alert style={{display: "flex", flexDirection: "column", alignItems: "center"}} severity="info">
+                    <Alert style={{ display: "flex", flexDirection: "column", alignItems: "center" }} severity="info">
                       <div>
                         <span>Run OCR on the current product image by selecting a category. This generates attributes automatically via infomation from the image.</span>
                       </div>
-                      <div style={{ display: "flex", marginTop: "2ch", justifyContent: "center" }}>
+                      <div style={{ display: "flex", marginTop: "2ch", alignItems: "center", justifyContent: "center" }}>
 
                         <LoadingButton loading={OCRLoading} onClick={() => { OCRCurrentImage() }} variant="contained">OCR Current Image</LoadingButton>
-                        <Select
-                          disabled={OCRLoading}
-                          label="Category"
-                          name="category"
-                          value={OCRCat}
-                          variant="filled"
-                          onChange={(e) => {
-                            setOCRCat(e.target.value)
-                          }}
-                          style={{ marginLeft: "1ch" }}
-                        >
-                          <MenuItem value="Computer">Computer</MenuItem>
-                          <MenuItem value="Mobile Gadgets">Mobile Gadgets</MenuItem>
-                        </Select>
+                        <FormControl variant="filled">
+                          <InputLabel id="category-label">Category</InputLabel>
+                          <Select
+                            disabled={OCRLoading}
+                            labelId="category-label"
+                            name="category"
+                            value={OCRCat}
+                            onChange={(e) => {
+                              setOCRCat(e.target.value)
+                            }}
+                            style={{ marginLeft: "1ch", textAlign: "center" }}
+                          >
+                            <MenuItem value="Computer">Computer</MenuItem>
+                            <MenuItem value="Mobile Gadgets">Mobile Gadgets</MenuItem>
+                          </Select>
+                        </FormControl>
                       </div>
                     </Alert>
 
@@ -757,8 +759,11 @@ const Create = (props) => {
                         helperText={priceErrorMsg}
                         value={price}
                         onChange={(e) => {
-                          const number = Number(e.target.value)
-                          if (isNaN(number) || number <= 0) {
+
+                          let number = ""
+                          if (e.target.value !== "") number = Number(e.target.value)
+
+                          if (e.target.value !== "" && (isNaN(number) || number <= 0)) {
                             setPriceError(true)
                             setPriceErrorMsg("Please enter a valid numerical price >$0")
                           }
@@ -768,14 +773,15 @@ const Create = (props) => {
                             setPriceErrorMsg("")
                             TotalFormData[currentFormID].price = number
                           }
-                          
+
                         }}
                       />
+                        <FormControl variant="filled">
+                        <InputLabel id="type-label">Type</InputLabel>
                       <Select
-                        label="Type"
                         name="type"
+                        labelId="type-label"
                         value={type}
-                        variant="filled"
                         onChange={(e) => {
                           setType(e.target.value)
                           TotalFormData[currentFormID].type = e.target.value
@@ -785,6 +791,7 @@ const Create = (props) => {
                         <MenuItem value={1}>Product</MenuItem>
                         <MenuItem value={0}>Repair Service</MenuItem>
                       </Select>
+                      </FormControl>
                       <TextField
                         className="input-style"
                         label="Quantity *"
@@ -794,8 +801,10 @@ const Create = (props) => {
                         helperText={quantityErrorMsg}
                         value={quantity}
                         onChange={(e) => {
-                          const number = Number(e.target.value)
-                          if (isNaN(number) || number <= 0) {
+                          let number = ""
+                          if (e.target.value !== "") number = Number(e.target.value)
+
+                          if (e.target.value !== "" && (isNaN(number) || number <= 0)) {
                             setQuantityError(true)
                             setquantityErrorMsg("Please set a quantity that is a valid number >= 0")
                           }
@@ -803,11 +812,11 @@ const Create = (props) => {
                             setQuantity(e.target.value)
                             setquantityErrorMsg("")
                             setQuantityError(false)
-                            TotalFormData[currentFormID].quantity = e.target.value
-                            selectedItemsInfo[currentFormID].amount = e.target.value
+                            TotalFormData[currentFormID].quantity = number
+                            selectedItemsInfo[currentFormID].amount = number
                             setSelectedItemsInfo(selectedItemsInfo)
                           }
-                          
+
                         }}
                       />
                       <TextField
@@ -826,16 +835,25 @@ const Create = (props) => {
                     </form>
                     <h3>Attributes</h3>
 
-                    <Alert severity="info" style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                    <Alert severity="info" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                       <div>
                         <span>Automatically fill in any missing attribute <b>values</b> by inferring from your description!</span>
                       </div>
-                        <LoadingButton loading={inferenceLoading} disabled={!emptyValues} variant="contained" onClick={() => { AttributesInference() }} style={{ marginTop: "2ch" }}>Infer Attributes</LoadingButton>
+                      <LoadingButton loading={inferenceLoading} disabled={!emptyValues} variant="contained" onClick={() => { AttributesInference() }} style={{ marginTop: "2ch" }}>Infer Attributes</LoadingButton>
                     </Alert>
                     <div>
                       {attributes.map((current, index) =>
-                        <div key={index + "-attribute"} style={{ display: "flex", width: "100%", alignItems: "center", marginTop: "1ch", textTransform: "capitalize" }}>
-                          <TextField value={current} onChange={(e) => {
+                        <div key={index + "-attribute"} style={{ display: "flex", width: "100%",  marginTop: "1ch", textTransform: "capitalize" }}>
+                          <TextField
+                          error={attributeNameError}
+                          helperText={attributeNameError ? "No two attributes can have the same name" : ""}
+                          value={current} onChange={(e) => {
+                            if (e.target.value in TotalFormData[currentFormID].attributes) {
+                              setattributeNameError(true)
+                              return false
+                            }
+                            else if (attributeNameError) setattributeNameError(false)
+
                             const oldAttributes = JSON.parse(JSON.stringify(TotalFormData[currentFormID].attributes))
                             TotalFormData[currentFormID].attributes[e.target.value] = oldAttributes[current]
                             delete TotalFormData[currentFormID].attributes[current]
@@ -860,14 +878,21 @@ const Create = (props) => {
                       )}
                     </div>
 
-                    <Button endIcon={<AddCircleOutlineOutlinedIcon/>} style={{marginTop: "1ch"}} onClick={() => {
-                      TotalFormData[currentFormID].attributes["new attribute " + Object.keys(attributes).length] = ""
+                    <Button endIcon={<AddCircleOutlineOutlinedIcon />} style={{ marginTop: "1ch" }} onClick={() => {
+                      // find smallest unused integer
+                      let counter = 0
+                      while (true) {
+                        const name = "Attribute " + counter
+                        if (!(name in TotalFormData[currentFormID].attributes)) break
+                        counter += 1
+                      }
+                      TotalFormData[currentFormID].attributes["Attribute " + counter] = ""
                       setAttributes([])
                       setAttributes(Object.keys(TotalFormData[currentFormID].attributes))
                     }}>Add Attribute</Button>
 
 
-                    <LoadingButton loading={submitLoading} color="success" variant="contained" onClick={() => { handleSubmit() }} style={{ marginTop: "2ch" }} endIcon={<CheckIcon />}>Submit All Items</LoadingButton>
+                    <LoadingButton loading={submitLoading} color="success" variant="contained" onClick={() => { handleSubmit() }} style={{ marginTop: "2ch" }} endIcon={<CheckIcon />}>Publish All Items</LoadingButton>
                   </div>
 
                 )}
