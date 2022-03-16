@@ -1,6 +1,6 @@
 .bulk-text {
     background: #12c2e9;
-    margin-top: 3ch;
+    margin-top: 0ch !important;
     margin-bottom: 0ch !important;
     /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #12c2e9, #c471ed, #f64f59);
@@ -11,6 +11,11 @@
     -moz-background-clip: text;
     -webkit-text-fill-color: transparent;
     -moz-text-fill-color: transparent;
+}
+
+.minimum-height {
+    min-height: calc(100vh - 6.4ch) !important;
+    width: 100%;
 }
 
 .normal-text {
