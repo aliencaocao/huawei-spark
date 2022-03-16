@@ -24,7 +24,6 @@ const ListingDetailsPage = ({ listingId, listingImageId, setOpenListingId, drawe
         .then((res) => res.json())
         .then(({ listingInfo }) => {
           setListingDetails(listingInfo);
-          console.log(listingInfo);
         });
   };
 
