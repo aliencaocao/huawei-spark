@@ -116,6 +116,7 @@ const startup = async () => {
           const currentTime = new Date()
 
           const msgData = {
+            chatID: data.chatID,
             sender: tokenData.username,
             recipient: checkSellerRows[0].buyer,
             content: `Product / service sold! ${checkSellerRows[0].points} green points have been credited to the account.`,
@@ -239,6 +240,7 @@ const startup = async () => {
                 "SELECT `description`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` WHERE `chat`.`id` = ? AND (`buyer` = ?)",
                 [data.chatID, tokenData.username],
               )
+              console.log("THE OFFLINE");
               console.log(checkEnabledRows)
               if (checkEnabledRows.length !== 1) return
               if (checkEnabledRows[0]["answer_bot"] === 0) return // if answering bot is not enabled, do not generate response
@@ -264,6 +266,7 @@ const startup = async () => {
               else return
 
               const autoReplyMsg = {
+                chatID: data.chatID,
                 sender: receipient,
                 recipient: tokenData.username,
                 content: autoReplyContent,
