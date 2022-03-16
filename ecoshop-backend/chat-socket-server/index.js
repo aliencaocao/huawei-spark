@@ -74,7 +74,7 @@ const startup = async () => {
         else if (data.action === "new-chat") {
           // answer_bot is "0" or "1" and determines whether answering bot is enabled in this chat
           const [rows, fields] = await connection.execute('INSERT INTO `chat` (`buyer`, `seller`, `answer_bot`, `product`) VALUES (?, ?, ?, ?) ', [data.buyer, data.seller, data.answerBot, data.productID]);
-          socket.send(JSON.stringify({ type: "new-chat-created", success: true }))
+          socket.send(JSON.stringify({ type: "new-chat-created", success: true, data: { chatID: rows.insertId } }))
 
           // notify both parties that the new chat has been created
           if (data.buyer in socketList) {
