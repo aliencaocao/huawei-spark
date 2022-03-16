@@ -48,7 +48,7 @@ const SingeListing = (props) => {
 
     const OCRCurrentImage = async () => {
         setOCRLoading(true)
-        await fetch("http://182.160.1.242:8080/extract", {
+        await fetch("https://ocr.eco-shop.me/extract", {
             method: 'post',
             headers: { 'Content-Type': 'application/json', 'Authorization': window.token },
             body: JSON.stringify({
