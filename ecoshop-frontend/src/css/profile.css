@@ -5,7 +5,7 @@
   margin-bottom: 25px;
 }
 
-#profile-top > .MuiAvatar-root {
+#profile-top :is(.MuiAvatar-root, .MuiSvgIcon-root) {
   width: 95px;
   height: 95px;
 }
@@ -24,6 +24,7 @@
 }
 
 #profile-green-points {
+  margin-bottom: 25px;
   font-size: 16px;
   background-color: #0cb035;
 }
@@ -57,4 +58,43 @@
 #profile-green-points h1 {
   /* display: inline; */
   margin: 0;
+}
+
+.profile-listings > .MuiGrid-item {
+  /* background-color: #333; */
+}
+
+.profile-listings .MuiPaper-root {
+  /* min-height: 300px; */
+  background-color: #333;
+}
+
+.profile-listing-text {
+  padding: 12px 12px;
+}
+
+.profile-listing-add-video-button {
+  margin-top: 7px;
+}
+
+.profile-listing-add-video-button > .MuiSvgIcon-root {
+  margin-right: 6px;
+}
+
+.profile-listings img {
+  display: block;
+  width: 100%;
+  height: 15ch;
+  object-fit: cover;
+}
+
+.profile-listings h3 {
+  width: 100%;
+  margin: 0;
+  font-weight: 500;
+  font-size: 17px;
+  /* line-height: 1.5; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

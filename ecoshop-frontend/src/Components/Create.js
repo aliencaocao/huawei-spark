@@ -11,6 +11,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CheckIcon from '@mui/icons-material/Check';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SingleListing from './SingleListing'
 
 import { DropzoneArea } from 'material-ui-dropzone';
 import "./../css/create.css"
@@ -554,10 +555,12 @@ const Create = (props) => {
               <h2 className="normal-text">Single Listing</h2>
               <span>Create a repair service or single product by inputting details.</span>
             </Paper>
-            <Paper onClick={() => { setPage("bulk-listing") }} elevation={16} style={{ padding: "2ch", display: "flex", alignItems: "center", justifyContent: "center", width: "80vw", flexDirection: "column", marginTop: "3vh" }}>
+            <Paper onClick={() => { setPage("bulk-listing") }} elevation={16} style={{ padding: "2ch", display: "flex", position: "relative", alignItems: "center", justifyContent: "center", width: "80vw", flexDirection: "column", marginTop: "3vh" }}>
+              
               <ContentCopyTwoTone style={{ color: blue[500], fontSize: "5ch" }} />
-              <h1 className="bulk-text">Bulk Listing </h1>
+              <h1 className="bulk-text">Bulk Listing</h1>
               <span>Create multiple listings with completed information from just one image. <br /><br /> Powered by EchoShop's AI algorithms.</span>
+              <span className="pro-text">(PRO)</span>
             </Paper>
           </div>
         </Grow>
@@ -904,10 +907,7 @@ const Create = (props) => {
       {page === "normal-listing" && (
         <Grow in={true}>
           <div>
-            <h1>Normal Listing Creation</h1>
-            <Button onClick={() => { setPage("options") }} variant="outlined" startIcon={<ArrowCircleLeftOutlined />}>
-              Back
-            </Button>
+            <SingleListing setPage={setPage}/>
           </div>
         </Grow>
       )}
