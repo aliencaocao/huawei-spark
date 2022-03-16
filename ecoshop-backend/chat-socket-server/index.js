@@ -213,8 +213,10 @@ const startup = async () => {
               socketList[receipient][i].send(JSON.stringify({
                 type: "suggestion",
                 success: true,
-                chatID: data.chatID,
-                data: autoReplyContent
+                data: {
+                  chatID: data.chatID,
+                  suggestionText: autoReplyContent,
+                }
               }))
             }
           }
