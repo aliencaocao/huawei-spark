@@ -2,9 +2,10 @@ import "../css/profile.css";
 import "../css/global.css"
 import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import VideocamIcon from '@mui/icons-material/Videocam';
-import { Avatar, Box, Button, Card, CardContent, CircularProgress, Divider, Grid, Paper } from "@mui/material";
+import { Avatar, Box, Button, Card, CardContent, CircularProgress, Divider, Grid, Input, Paper } from "@mui/material";
 import { useState, useEffect, Fragment } from "react";
 import { AccountCircle, Person } from "@mui/icons-material";
+import AddVideoButton from "./AddVideoButton";
 
 const Profile = (props) => {
   const [userInfo, setUserInfo] = useState(null);
@@ -86,11 +87,7 @@ const Profile = (props) => {
                         <h3>{listing.name}</h3>
                         <div>${listing.price}</div>
                         <div>Quantity: {listing.quantity}</div>
-                        <Button
-                          variant="outlined"
-                          size="medium"
-                          className="profile-listing-add-video-button"
-                        ><VideocamIcon />Add video</Button>
+                        <AddVideoButton listingId={listing.id} />
                       </Box>
                     </Paper>
                   </Grid>
