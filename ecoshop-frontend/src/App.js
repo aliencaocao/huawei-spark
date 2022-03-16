@@ -1,5 +1,5 @@
 import './App.css';
-import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction, Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem, Button } from '@mui/material'
+import { Grow, Fade, CircularProgress, Dialog, BottomNavigation, BottomNavigationAction, Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem, Button } from '@mui/material'
 import { LoadingButton } from '@mui/lab/';
 import { Routes, Route } from "react-router-dom";
 import { Fragment, useEffect, useState } from 'react';
@@ -30,6 +30,7 @@ import Videos from './Components/Videos';
 import { debounce } from 'lodash';
 import { blue } from '@mui/material/colors';
 import ListingDetailsPage from './Components/ListingDetails';
+import { isMobile } from 'react-device-detect';
 import Profile from './Components/Profile';
 
 
@@ -166,7 +167,7 @@ const searchQuery = debounce(async (query, setListLoading, setItems, enqueueSnac
     console.log(error)
   })
 
-  
+
 
   setListLoading(false)
 }, 300)
@@ -176,6 +177,7 @@ const App = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [page, updatePage] = useState("")
+  const [modalOpen, setModalOpen] = useState(false)
   // const [token, updateToken] = useState(null)
   const [token, updateToken] = useState(null)
   const [currentPlayer, setCurrentPlayer] = useState(null)
@@ -235,7 +237,7 @@ const App = () => {
           }
           fieldsObj.push(fields)
         }
-      
+
       }
     }
     if (fieldsObj.length > 0) loadItemList(searchValue, fieldsObj)
@@ -310,6 +312,9 @@ const App = () => {
 
   useEffect(() => {
     const startup = async () => {
+      if (!isMobile) {
+        setModalOpen(true)
+      }
       if (token === null) {
         const localStorageToken = localStorage.getItem("ecoshop-token")
 
@@ -327,7 +332,7 @@ const App = () => {
               if (location.pathname !== "/") updatePage(location.pathname.split("/")[1])
 
               const tokenData = JSON.parse(localStorageToken.split(".")[0])
-              
+
               loadItemList()
               loadVideoList()
               updateUsername(tokenData.username)
@@ -378,7 +383,7 @@ const App = () => {
   }
 
   return (
-    <div style={{ overflowX: "hidden",  height: "100vh", width: "100vw" }}>
+    <div style={{ overflowX: "hidden", height: "100vh", width: "100vw" }}>
       {loadingGlobal ? (
         <div style={{ overflow: "hidden", height: "97vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <CircularProgress size="10ch" />
@@ -386,6 +391,15 @@ const App = () => {
       ) :
         (
           <Fragment>
+            <Dialog
+              open={modalOpen}
+              onClose={() => { setModalOpen(false) }}
+            >
+              <div style={{margin: "2ch"}}>
+                <span>Dear judges, <br /><br/> EcoShop is best viewed on mobile. Please kindly use a mobile device for the best experience. Thank you! <br/><br/></span>
+                <Button variant='contained' onClick={() => { setModalOpen(false) }}>I understand.</Button>
+              </div>
+            </Dialog>
             {token ? (
               <div className='fadeIn' style={{ overflowY: "auto", width: "100%" }}>
                 <Routes>
@@ -440,7 +454,7 @@ const App = () => {
                         return true
                       }} pullDownThreshold={90} maxPullDownDistance={115} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
                         <Grow in={true}>
-                          <div style={{ width: "100%", overflow: "hidden",  display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
+                          <div style={{ width: "100%", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
                             {searchMode && (
                               <Paper elevation={12} style={{ width: "100%", padding: "2ch", marginTop: "1ch" }}>
                                 <span style={{ fontSize: "2ch", fontWeight: "bold", display: "flex", alignContent: "center" }}>Filters <FilterListIcon style={{ marginLeft: "4px" }} /> {filterloading && (<CircularProgress size="2ch" style={{ marginLeft: "1ch" }} />)}</span>
@@ -490,8 +504,8 @@ const App = () => {
                                                 <h5 className='listing-title-style'>{item.name}</h5>
                                                 <h4 className='listing-price-style'>${item.price}</h4>
                                                 <h5 className='listing-quantity-style'><b>Amount:</b> {item.quantity}</h5>
-                                                <h5 className='listing-type-style'>{item.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon className='type-style'/><span>Repair Service</span></Fragment>)}</h5>
-                                  
+                                                <h5 className='listing-type-style'>{item.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon className='type-style' /><span>Repair Service</span></Fragment>)}</h5>
+
                                                 <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>{item.bookmarks}</span></span>
                                                 <Divider />
                                                 <span className='listing-owner-style'>
@@ -504,7 +518,7 @@ const App = () => {
                                                 </span>
                                               </div>
                                             </Paper>
-                                  
+
                                             <ListingDetailsPage
                                               listingId={item.id}
                                               listingImageId={item.obs_image}
