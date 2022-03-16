@@ -840,7 +840,7 @@ const Create = (props) => {
 
                     <Alert severity="info" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                       <div>
-                        <span>Automatically fill in any missing attribute <b>values</b> by inferring from your description!</span>
+                        <span>Automatically fill in any missing attribute <b>values</b> by inferring from your description.</span>
                       </div>
                       <LoadingButton loading={inferenceLoading} disabled={!emptyValues} variant="contained" onClick={() => { AttributesInference() }} style={{ marginTop: "2ch" }}>Infer Attributes</LoadingButton>
                     </Alert>
