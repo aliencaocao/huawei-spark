@@ -502,6 +502,7 @@ const App = () => {
                                               listingImageId={item.obs_image}
                                               setOpenListingId={setOpenListingId}
                                               drawerIsOpen={openListingId === item.id}
+                                              navigate={navigate}
                                             />
                                           </Grid>
                                         ))}

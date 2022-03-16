@@ -7,7 +7,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews";
 import "../../css/chats.css";
 import ChatLog from "./ChatLog";
-import { sendInit, loadChats, sendToggleAutoReply } from "../../utility/chats/chat-websocket-message-senders";
+import { sendInit, loadChats, sendToggleAutoReply, sendStartChat } from "../../utility/chats/chat-websocket-message-senders";
 import handleChatWebSocketMessage from "../../utility/chats/handle-chat-websocket-message";
 
 const ChatList = (props) => {
@@ -36,6 +36,18 @@ const ChatList = (props) => {
     // run only on first render
     initChatWebSocketConnection(setChats, setMessages);
     window.chatWebSocket.addEventListener("open", loadChats);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("startChat") === "true") {
+      window.chatWebSocket.addEventListener("open", () => {
+        sendStartChat(
+          urlParams.get("buyer"),
+          urlParams.get("seller"),
+          Number(urlParams.get("isAutoReply") === "true"),
+          urlParams.get("productId"),
+        );
+      });
+    }
   }, []);
 
   const createChatListItemFromChatData = ([chatId, chatData]) => {

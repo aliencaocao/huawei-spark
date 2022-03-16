@@ -11,8 +11,8 @@
   align-items: center;
 }
 
-.listing-page-toolbar-back-icon {
-  margin: 0 6px 0 -6px;
+.listing-page-toolbar-back-icon.listing-page-toolbar-back-icon {
+  margin: 0 4px 0 1px;
   padding-left: 0;
 }
 
@@ -27,7 +27,7 @@
 }
 
 .listing-page-main-text {
-  padding: 15px 21px;
+  padding: 12px 21px;
 }
 
 .title {
@@ -46,6 +46,18 @@
   font-weight: 400;
   font-size: 20px;
   color: rgba(255, 255, 255, 0.7);
+}
+
+button.start-chat {
+  margin: 10px 0;
+  padding: 8px 15px;
+  background-color: #2196f3;
+  color: #fff;
+  font-size: 16px;
+}
+
+button.start-chat > .MuiSvgIcon-root {
+  margin-right: 8px;
 }
 
 .listing-description {

@@ -88,6 +88,7 @@ label.auto-reply-switch-label::before {
   display: flex;
   flex-direction: column-reverse;
   /* padding: 75px 17px 77px; */
+  flex: 1;
   padding: 17px 17px 0;
   overflow: auto;
 }

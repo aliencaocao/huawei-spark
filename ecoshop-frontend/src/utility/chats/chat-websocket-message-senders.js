@@ -85,6 +85,17 @@ const sendCompleteTransaction = (chatId, quantitySold) => {
   });
 };
 
+const sendStartChat = (buyer, seller, isAutoReply, productId) => {
+  sendJsonMessageToWebSocket(window.chatWebSocket, {
+    action: CREATE_NEW_CHAT,
+    token: window.token,
+    buyer,
+    seller,
+    answerBot: Number(isAutoReply),
+    productID: productId,
+  });
+};
+
 export {
   sendInit,
   loadChats,
@@ -92,4 +103,5 @@ export {
   sendChatMessage,
   sendToggleAutoReply,
   sendCompleteTransaction,
+  sendStartChat,
 };
