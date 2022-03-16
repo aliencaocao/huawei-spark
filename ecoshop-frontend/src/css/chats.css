@@ -22,6 +22,7 @@ main {
 
 .chat-row.chat-row {
   width: 100%;
+  height: 70px;
   /* padding: 7px 0; */
 }
 .chat-row > .MuiListItem-root {

@@ -1,4 +1,4 @@
-import { loadMessages } from "./chat-websocket-message-senders";
+import { loadChats, loadMessages } from "./chat-websocket-message-senders";
 import wsMessageTypes from "./chat-websocket-message-types";
 const {
   responseTypes: {
@@ -66,6 +66,7 @@ const handleChatWebSocketMessage = (message, setChats, setMessages, setAutoReply
       break;
 
     case NEW_CHAT_NOTIF:
+      loadChats();
       break;
 
     case NEW_MSG_NOTIF:
