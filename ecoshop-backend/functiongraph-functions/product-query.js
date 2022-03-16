@@ -42,15 +42,30 @@ exports.handler = async (event, context) => {
     }
     else {
       if (!("fields" in body)) { // text-only query
+        let conditions = "", substitutions = [body["query"]];
+
+        if ("price" in body) {
+          if (body.price.condition == "gt") {
+            conditions += "AND (`product`.`price` > ?) ";
+          }
+          else if (body.price.condition == "lt") {
+            conditions += "AND (`product`.`price` < ?) ";
+          }
+          else {
+            conditions += "AND (`product`.`price` = ?) ";
+          }
+
+          substitutions.push(body.price.value);
+        }
+
         const [rows, fields] = await connection.execute("SELECT `id`, `name`, `price`, `type`, `quantity`, `owner`, `obs_image`, COUNT(`user_product_bookmark`.`user`) AS `bookmarks` FROM `product` " +
           "INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` " +
           "LEFT OUTER JOIN `user_product_bookmark` ON `user_product_bookmark`.`product` = `product`.`id` " +
           "WHERE MATCH(`name`, `tags`) AGAINST(? IN BOOLEAN MODE) " +
             "AND `product_image`.`order` = 1 " +
+            conditions +
           "GROUP BY `id` ORDER BY `id` DESC LIMIT 21 ",
-          [
-            body["query"],
-          ],
+          substitutions,
         );
 
         output = rows;
@@ -87,6 +102,20 @@ exports.handler = async (event, context) => {
             substitutions.push(searchField["attr"]);
             substitutions.push(searchField["value"] + "%");
           }
+        }
+
+        if ("price" in body) {
+          if (body.price.condition == "gt") {
+            conditions += "AND (`product`.`price` > ?) ";
+          }
+          else if (body.price.condition == "lt") {
+            conditions += "AND (`product`.`price` < ?) ";
+          }
+          else {
+            conditions += "AND (`product`.`price` = ?) ";
+          }
+
+          substitutions.push(body.price.value);
         }
 
         const [rows, fields] = await connection.execute("SELECT `id`, `name`, `price`, `type`, `quantity`, `owner`, `attr_name`, `attr_text`, `attr_int`, `obs_image`, COUNT(`user_product_bookmark`.`user`) AS `bookmarks` FROM `product` " +

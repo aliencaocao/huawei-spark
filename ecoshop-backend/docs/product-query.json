@@ -8,6 +8,10 @@
       "condition": "gt"
     }
   ],
+  "price": {
+    "condition": "gt",
+    "value": 200
+  },
   "response": {
     "success": true,
     "listings": [

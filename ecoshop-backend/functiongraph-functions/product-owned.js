@@ -28,7 +28,7 @@ exports.initializer = async (context, callback) => {
 
 exports.handler = async (event, context) => {
   try {
-    const body = JSON.parse((Buffer.from(event.body, 'base64')).toString());
+    // const body = JSON.parse((Buffer.from(event.body, 'base64')).toString());
     const authData = JSON.parse(event.headers["authData"]); // verified by API Gateway Custom Authorizer
 
     const [rows, fields] = await connection.execute("SELECT `id`, `name`, `price`, `type`, `quantity`, `owner`, `obs_image`, COUNT(`user_product_bookmark`.`user`) AS `bookmarks` FROM `product` " +
