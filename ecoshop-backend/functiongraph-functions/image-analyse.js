@@ -83,7 +83,7 @@ exports.handler = async (event, context) => {
     };
 
     taggingReqSigner.body = JSON.stringify({
-      "url": `${OBS_URL}/user-image/${body["image"]}`,
+      "url": `${OBS_URL}/user-image/${body["image"]}?x-image-process=style/limit-2000`,
       "limit": 10,
       "language": "en", // Chinese (ZH) or English (EN)
     });
