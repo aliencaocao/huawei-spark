@@ -1,0 +1,22 @@
+.listing-page {
+  width: 100%;
+}
+
+.listing-page-toolbar {
+  position: static;
+}
+
+.listing-page-toolbar > .MuiToolbar-root {
+  display: flex;
+  align-items: center;
+}
+
+.listing-page-toolbar-back-icon {
+  margin: 0 4px 0 -6px;
+}
+
+.listing-page-title {
+  font-size: 18px;
+  font-weight: 400;
+  transform: translateY(2px);
+}

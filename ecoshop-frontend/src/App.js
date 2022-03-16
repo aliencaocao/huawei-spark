@@ -180,7 +180,6 @@ const App = () => {
   const [username, updateUsername] = useState("")
   const [currentSliderIndex, updateCurrentSliderIndex, currentSliderIndexRef] = useStateRef(0)
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
-  const [itemListRender, updateItemListRender] = useState([])
   const [items, setItems] = useState([])
   const [openListingId, setOpenListingId] = useState(null)
   const [filterList, updateFilterList] = useState([])
@@ -477,8 +476,7 @@ const App = () => {
                                       <Fragment>
                                         {items.map((item) => (
                                           <Grid item xs={6} sm={6} md={4} lg={3} key={item.id}>
-                                            <Paper className='listing-styles' elevation={12}>
-                                              <Button onClick={() => {console.log(item.id);setOpenListingId(item.id)}}>yeet</Button>
+                                            <Paper className='listing-styles' elevation={12} onClick={() => setOpenListingId(item.id)}>
                                               <img src={window.mediaURL + item.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
                                               <div className='listing-info-style'>
                                                 <h5 className='listing-title-style'>{item.name}</h5>
@@ -506,7 +504,6 @@ const App = () => {
                                             />
                                           </Grid>
                                         ))}
-                                        {itemListRender}
                                       </Fragment>
                                     )}
                                   </Grid>
