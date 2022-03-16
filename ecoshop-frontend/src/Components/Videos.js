@@ -533,7 +533,17 @@ const Videos = (props) => {
                         </span>
                         <Divider />
 
-                        <Button fullWidth variant="contained" style={{ marginTop: "1.5ch", marginBottom: "2ch" }} endIcon={<ShoppingBagOutlined />}>View Product Info</Button>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            style={{ marginTop: "1.5ch", marginBottom: "2ch" }}
+                            endIcon={<ShoppingBagOutlined />}
+                            onClick={() => {
+                                const urlParams = new URLSearchParams();
+                                urlParams.append("productId", currentData.id);
+                                navigate(`/?${urlParams.toString()}`);
+                            }}
+                        >View Product Info</Button>
                     </div>
 
                     <div className='puller-style' />

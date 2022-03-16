@@ -370,8 +370,16 @@ const App = () => {
       if (page === "videos" && currentPlayer) currentPlayer.destroy()
       updatePage(currentPage)
     }
-
   }, [location])
+
+  // if listing ID is specified in query params, open the corresponding listing
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const listingIdFromParams = parseInt(urlParams.get("productId"));
+    if (!isNaN(listingIdFromParams) && listingIdFromParams >= 0) {
+      setOpenListingId(listingIdFromParams);
+    }
+  }, []);
 
   const handleVideoClick = async (id) => {
     navigate("/videos/" + id)
