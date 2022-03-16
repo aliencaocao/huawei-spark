@@ -5,10 +5,11 @@ import { Fragment, useEffect, useState } from "react";
 import { AccountCircle, Person } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews";
-import "../../css/chats.css";
 import ChatLog from "./ChatLog";
 import { sendInit, loadChats, sendToggleAutoReply, sendStartChat } from "../../utility/chats/chat-websocket-message-senders";
 import handleChatWebSocketMessage from "../../utility/chats/handle-chat-websocket-message";
+import "../../css/chats.css";
+import "../../css/global.css";
 
 const ChatList = (props) => {
   const [currentChatTab, setCurrentChatTab] = useState(0);

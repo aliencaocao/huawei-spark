@@ -30,6 +30,7 @@ import Videos from './Components/Videos';
 import { debounce } from 'lodash';
 import { blue } from '@mui/material/colors';
 import ListingDetailsPage from './Components/ListingDetails';
+import Profile from './Components/Profile';
 
 
 window.globalURL = "https://api.eco-shop.me"
@@ -392,6 +393,7 @@ const App = () => {
                   <Route path="/videos" element={<Videos setCurrentPlayer={setCurrentPlayer} currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
                   <Route path="/chats" element={<ChatList />} />
                   <Route path="/create" element={<Create />} />
+                  <Route path="/profile" element={<Profile />} />
                   <Route path="/" element={
                     <Fragment>
                       <AppBar>

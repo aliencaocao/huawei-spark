@@ -1,0 +1,60 @@
+#profile-top {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+#profile-top > .MuiAvatar-root {
+  width: 95px;
+  height: 95px;
+}
+
+#profile-top h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+#profile-top h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+#profile-green-points {
+  font-size: 16px;
+  background-color: #0cb035;
+}
+
+#profile-green-points > .MuiCardContent-root {
+  display: flex;
+  padding-bottom: 18px;
+  /* grid-template-columns: 1fr 20px 1fr; */
+}
+
+#profile-green-points > .MuiCardContent-root > .MuiBox-root {
+  flex: 1 0;
+}
+#profile-green-points > .MuiCardContent-root > .MuiBox-root:first-of-type {
+  font-size: 18px;
+}
+#profile-green-points > .MuiCardContent-root > .MuiBox-root:last-of-type {
+  display: flex;
+  align-items: center;
+}
+
+#profile-green-points > .MuiCardContent-root > .MuiBox-root:first-of-type > h1 {
+  margin-bottom: -4px;
+}
+
+#profile-green-points > .MuiCardContent-root > .MuiDivider-root {
+  margin: 0 17px;
+  background-color: #fff;
+}
+
+#profile-green-points h1 {
+  /* display: inline; */
+  margin: 0;
+}
