@@ -6,11 +6,13 @@ Thank you for checking out our GitHub Repository! Our frontend is built in React
 
 ## Key Features
 
-1. **Bulk Listing** - we allow users to upload one image containing multiple items, and automatically extract the items using **Huawei Cloud Image Tagging** to prepare multiple listings for users. This saves users' time and effort.
+1. **Bulk Listing** - we allow users to upload one image containing multiple items, and automatically extract the items using **Huawei Cloud Image Tagging** to prepare multiple listings for users. This saves users' time and effort!
 
-2. **Natural Language Processing Chatbot Suggestions** - powered by CTRLsum on **Huawei Cloud ModelArts**, our chat system scans seller-provided descriptions and buyer-sent questions to suggest the most suitable replies to the seller, reducing buyer waiting and effort required from sellers.
+2. **Natural Language Processing Chatbot Suggestions** - powered by CTRLsum on **Huawei Cloud ModelArts**, our chat system scans seller-provided descriptions and buyer-sent questions to suggest the most suitable replies to the seller, reducing buyer waiting and effort required from sellers!
 
-3. **Video Platform** - short-format videos have proven to be extremely effective in engaging users. Therefore, we incorporated a short-video oriented social media platform into EcoShop, allowing sellers to engage users - especially for repair services!
+3. **Video Platform** - short-format videos have proven to be extremely effective in engaging users. Therefore, we incorporated a short-video oriented social media platform into EcoShop, allowing sellers to market their products better - especially for repair services! Powered by **Huawei Cloud Media Processing Centre** and **Huawei Cloud Object Storage Service**.
+
+Our platform also incorporates other **Huawei Cloud** services to improve the user experience, allowing for **automatic information extraction, fast, responsive APIs, and more!**
 
 ## Cloud Services
 
