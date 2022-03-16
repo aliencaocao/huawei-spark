@@ -67,7 +67,7 @@ const renderFilterList = (data, numberValuesListRef, setNumbersValuesList, updat
     const current = data.attributes[i]
     const queryAttribute = (
       <div key={current.attr_name + "-attribute"} style={{ display: "flex", alignItems: "center", marginTop: "1ch", textTransform: "capitalize" }}>
-        <Checkbox name={"check-" + current.attr_name} />
+        <Checkbox defaultChecked name={"check-" + current.attr_name} />
         <TextField fullWidth onChange={(e) => {
           debouncedNumberCheck(e, current, setNumbersValuesList, numberValuesListRef, updateFilterList)
         }} name={"value-" + current.attr_name} label={current.attr_name} style={{ marginRight: "1ch" }} size="small" />
@@ -136,6 +136,7 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
       setFilterLoading(false)
     })
   }
+  else attributesList = []
   loadVideoList(query)
   await fetch(window.globalURL + "/product/query", {
     method: 'POST',
@@ -163,7 +164,7 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
     console.log(error)
   })
 
-  attributesList = []
+  
 
   setListLoading(false)
 }, 300)
@@ -216,22 +217,26 @@ const App = () => {
       if (currentCheckbox.checked) {
         let fields = {}
         const currentValue = e.target["value-" + attributesList[i]].value
-        fields.attr = attributesList[i]
-        if (numberValuesList[attributesList[i]]) {
-          // current attribute is a number attribute
-          fields.value = Number(currentValue)
-          fields.type = "int"
-          const currentEquality = e.target["equality-" + attributesList[i]].value
-          fields.condition = currentEquality
+        if (currentValue !== "") {
+          fields.attr = attributesList[i]
+          if (numberValuesList[attributesList[i]]) {
+            // current attribute is a number attribute
+            fields.value = Number(currentValue)
+            fields.type = "int"
+            const currentEquality = e.target["equality-" + attributesList[i]].value
+            fields.condition = currentEquality
+          }
+          else {
+            fields.value = currentValue
+            fields.type = "str"
+          }
+          fieldsObj.push(fields)
         }
-        else {
-          fields.value = currentValue
-          fields.type = "str"
-        }
-        fieldsObj.push(fields)
+      
       }
     }
     if (fieldsObj.length > 0) loadItemList(searchValue, fieldsObj)
+    else loadItemList(searchValue)
   }
 
   const updateItemList = async (data) => {
@@ -474,6 +479,7 @@ const App = () => {
                                     onSubmit={async (e) => {
                                       e.preventDefault()
                                       handleFilterSubmit(e)
+
                                     }}
                                   >
                                     {filterList}
