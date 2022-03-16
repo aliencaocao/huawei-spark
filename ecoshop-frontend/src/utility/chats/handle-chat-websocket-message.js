@@ -74,6 +74,7 @@ const handleChatWebSocketMessage = (message, setChats, setMessages, setAutoReply
 
       const newMessage = parsedWebSocketMessage.data;
       setMessages((oldMessages) => {
+        console.log(oldMessages, newMessage);
         // unshift, not push, because most recent message comes first
         oldMessages[newMessage.chatID].unshift(newMessage);
         // state update is ignored if new and old state have the same reference
