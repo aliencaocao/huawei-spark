@@ -29,7 +29,7 @@ import ecoShopIcon from './assets/ecoshop.svg';
 import Videos from './Components/Videos';
 import { debounce } from 'lodash';
 import { blue } from '@mui/material/colors';
-import ListingDetails from './Components/ListingDetails';
+import ListingDetailsPage from './Components/ListingDetails';
 
 
 window.globalURL = "https://api.eco-shop.me"
@@ -497,8 +497,9 @@ const App = () => {
                                               </div>
                                             </Paper>
                                   
-                                            <ListingDetails
-                                              listing={item}
+                                            <ListingDetailsPage
+                                              listingId={item.id}
+                                              listingImageId={item.obs_image}
                                               setOpenListingId={setOpenListingId}
                                               drawerIsOpen={openListingId === item.id}
                                             />

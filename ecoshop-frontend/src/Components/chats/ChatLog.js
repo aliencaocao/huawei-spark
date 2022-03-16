@@ -109,7 +109,6 @@ const ChatLog = ({ chatLogIsOpen, openChatLog, chatData, messages, setMessages }
         
         <Box className="chat-log-messages">{
           Array.isArray(messages[chatId]) &&
-          // create shallow copy and reverse it (doesn't mutate messages[chatId] itself)
           messages[chatId].map((message, messageIdx) => (
             <MessageBubble
               type={message.sender === tokenData.username ? "outgoing" : "incoming"}
