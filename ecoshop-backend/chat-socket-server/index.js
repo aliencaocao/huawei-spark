@@ -239,6 +239,7 @@ const startup = async () => {
                 "SELECT `description`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` WHERE `chat`.`id` = ? AND (`buyer` = ?)",
                 [data.chatID, tokenData.username],
               )
+              console.log("THE OFFLINE");
               console.log(checkEnabledRows)
               if (checkEnabledRows.length !== 1) return
               if (checkEnabledRows[0]["answer_bot"] === 0) return // if answering bot is not enabled, do not generate response
