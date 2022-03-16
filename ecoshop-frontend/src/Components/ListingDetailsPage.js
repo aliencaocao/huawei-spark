@@ -78,11 +78,10 @@ const ListingDetailsPage = ({ listingId, listingImageId, setOpenListingId, drawe
           <Box className="listing-tags">Tags:{
             listingDetails.tags ?
             listingDetails.tags.split(",").map((tag) => (
-              <ButtonBase className="listing-tag">{tag}</ButtonBase>
+              <ButtonBase className="listing-tag" key={tag}>{tag}</ButtonBase>
             )) :
             " none"
           }</Box>
-          {/* {Object.entries(listingDetails).map(([k, v]) => <div key={k}>{k}:{v}</div>)} */}
         </Box>
       </Box>
     </Drawer>
