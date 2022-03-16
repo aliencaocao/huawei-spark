@@ -73,7 +73,7 @@ const startup = async () => {
         }
         else if (data.action === "new-chat") {
           // answer_bot is "0" or "1" and determines whether answering bot is enabled in this chat
-          const [rows, fields] = await connection.execute('INSERT INTO `chat` (`buyer`, `seller`, `answer_bot`, `product`) VALUES (?, ?, ?, ?) ', [data.buyer, data.seller, data.answerBot, data.productID]);
+          const [rows, fields] = await connection.execute('INSERT INTO `chat` (`buyer`, `seller`, `answer_bot`, `product`) VALUES (?, ?, ?, ?) ', [data.buyer, data.seller, 1, data.productID]);
           socket.send(JSON.stringify({ type: "new-chat-created", success: true, chatID: rows.insertId }))
 
           // notify both parties that the new chat has been created
@@ -232,22 +232,53 @@ const startup = async () => {
               }
               */
 
-              // const autoReplyMsg = {
-              //   sender: receipient,
-              //   recipient: tokenData.username,
-              //   content: autoReplyContent,
-              //   sent: new Date(),
-              //   obs_image: "",
-              //   answer_bot: 1
-              // }
-              // for (let i = 0; i < socketList[tokenData.username].length; i++) {
-              //   socketList[tokenData.username][i].send(JSON.stringify({ type: "new-msg", success: true, data: autoReplyMsg }))
-              // }
+              // carry out QnA inference and send suggested response to seller
+              let autoReplyContent
+
+              const [checkEnabledRows, checkEnabledFields] = await connection.execute(
+                "SELECT `description`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` WHERE `chat`.`id` = ? AND (`buyer` = ?)",
+                [data.chatID, tokenData.username],
+              )
+              console.log(checkEnabledRows)
+              if (checkEnabledRows.length !== 1) return
+              if (checkEnabledRows[0]["answer_bot"] === 0) return // if answering bot is not enabled, do not generate response
+
+              let response = await fetch(process.env.QNA_URL, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Apig-Appcode": process.env.APPCODE,
+                },
+                body: JSON.stringify({
+                  "source": checkEnabledRows[0]["description"],
+                  "prompt": "",
+                  "query": msgData.content,
+                }),
+                timeout: 5000,
+              }).then(res => res.json())
+
+              console.log(msgData);
+              console.log(response);
+        
+              if (response.success) autoReplyContent = response.answer
+              else return
+
+              const autoReplyMsg = {
+                sender: receipient,
+                recipient: tokenData.username,
+                content: autoReplyContent,
+                sent: new Date(),
+                obs_image: "",
+                answer_bot: 1
+              }
+              for (let i = 0; i < socketList[tokenData.username].length; i++) {
+                socketList[tokenData.username][i].send(JSON.stringify({ type: "new-msg", success: true, data: autoReplyMsg }))
+              }
               
-              // await connection.execute(
-              //   'INSERT INTO `chat_message` (`chat_id`, `sender`, `recipient`, `content`, `answer_bot`, `answer_bot_feedback`, `obs_image`, `sent`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ',
-              //   [data.chatID, receipient, tokenData.username, autoReplyContent, 1, 0, "", currentTime],
-              // )
+              await connection.execute(
+                'INSERT INTO `chat_message` (`chat_id`, `sender`, `recipient`, `content`, `answer_bot`, `answer_bot_feedback`, `obs_image`, `sent`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ',
+                [data.chatID, receipient, tokenData.username, autoReplyContent, 1, 0, "", currentTime],
+              )
             }
           }
 
