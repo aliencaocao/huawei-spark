@@ -133,9 +133,9 @@ const ChatLog = ({ chatLogIsOpen, openChatLog, chatData, messages, setMessages }
             </Box>
           }
           <Box className="chat-log-bottom-main">
-            <IconButton className="chat-log-attach-image-button">
+            {/* <IconButton className="chat-log-attach-image-button">
               <ImageOutlinedIcon />
-            </IconButton>
+            </IconButton> */}
             <TextField
               value={newMessageText}
               onChange={(event) => setNewMessageText(event.target.value)}
