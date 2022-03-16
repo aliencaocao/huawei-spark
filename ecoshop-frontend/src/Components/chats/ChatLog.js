@@ -7,7 +7,7 @@ import MessageBubble from "./MessageBubble";
 import { sendChatMessage, sendCompleteTransaction } from "../../utility/chats/chat-websocket-message-senders";
 import { useState, Fragment } from "react";
 
-const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages, setMessages }) => {
+const ChatLog = ({ chatLogIsOpen, openChatLog, chatData, messages, setMessages }) => {
   const {
     id: chatId,
     buyer,
@@ -78,7 +78,7 @@ const ChatLog = ({ openedChatLogId, openChatLog, chatData, messages, setMessages
 
       <Drawer
         anchor="right"
-        open={openedChatLogId === chatId}
+        open={chatLogIsOpen}
         PaperProps={{ className: "chat-log" }}
       >
         <AppBar className="chat-log-toolbar">
