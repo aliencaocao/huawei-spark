@@ -4,6 +4,16 @@
 
 Thank you for checking out our GitHub Repository! Our frontend is built in React, and our backend is written in Python and NodeJS, powered by Huawei Cloud.
 
+## Key Features
+
+1. **Bulk Listing** - we allow users to upload one image containing multiple items, and automatically extract the items using **Huawei Cloud Image Tagging** to prepare multiple listings for users. This saves users' time and effort.
+
+2. **Natural Language Processing Chatbot Suggestions** - powered by CTRLsum on **Huawei Cloud ModelArts**, our chat system scans seller-provided descriptions and buyer-sent questions to suggest the most suitable replies to the seller, reducing buyer waiting and effort required from sellers.
+
+3. **Video Platform** - short-format videos have proven to be extremely effective in engaging users. Therefore, we incorporated a short-video oriented social media platform into EcoShop, allowing sellers to engage users - especially for repair services!
+
+## Cloud Services
+
 Here is a brief summary of most of the Huawei Cloud Services we have used:
 
 ---
@@ -15,6 +25,14 @@ Contains most of our app data, as our app's use-case is well-suited to the relat
 ### **Huawei Elastic Cloud Server**
 
 Hosts our buyer-seller Websocket-based chat server, and an API that connects to **Huawei Cloud Optical Character Recognition (OCR)**.
+
+### **Huawei Cloud ModelArts**
+
+ModelArts hosts the CTRLsum Natural Langauge Processing API which powers many of our features, including **chatbot suggestions and product attribute autofill**.
+
+### **Huawei Cloud Optical Character Recognition**
+
+We use Huawei Cloud OCR to identify and extract commonly-used product attributes from user-submitted images. **This eliminates the need for users to copy information into product listings.**
 
 ### **Huawei Cloud Object Storage Service**
 
@@ -49,11 +67,3 @@ Image Tagging is used to extract multiple items from one user-submitted image, p
 ### **Huawei Cloud Moderation**
 
 Huawei Cloud Moderation keeps our platform safe from inappropriate content.
-
-### **Huawei Cloud ModelArts**
-
-ModelArts hosts the CTRLsum Natural Langauge Processing API which powers many of our features, including **chatbot suggestions and product attribute autofill**.
-
-### **Huawei Cloud Optical Character Recognition**
-
-We use Huawei Cloud OCR to identify and extract commonly-used product attributes from user-submitted images. **This eliminates the need for users to copy information into product listings.**
