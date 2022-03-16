@@ -1,26 +1,15 @@
-import { AppBar, Avatar, Button, ButtonBase, CircularProgress, Divider, Drawer, IconButton, Input, InputAdornment, List, ListItem, ListItemAvatar, ListItemText, Tab, Tabs, TextField, Toolbar } from "@mui/material";
+import { AppBar, Avatar, Button, ButtonBase, CircularProgress, Divider, Drawer, FormControlLabel, IconButton, Input, InputAdornment, List, ListItem, ListItemAvatar, ListItemText, Switch, Tab, Tabs, TextField, Toolbar } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Fragment, useEffect, useState } from "react";
 import { AccountCircle, Person } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews";
-import "../../css/chats.css";
 import ChatLog from "./ChatLog";
-import { sendInit, loadChats, loadMessages } from "../../utility/chats/chat-websocket-message-senders";
+import { sendInit, loadChats, sendToggleAutoReply, sendStartChat } from "../../utility/chats/chat-websocket-message-senders";
 import handleChatWebSocketMessage from "../../utility/chats/handle-chat-websocket-message";
-
-
-const initChatWebSocketConnection = (setChats, setMessages) => {
-  // connection will fail without trailing slash in WS server URL
-  const CHAT_WEBSOCKET_URL = "wss://tkai.sieberrsec.tech/api/";
-  window.chatWebSocket = new WebSocket(CHAT_WEBSOCKET_URL);
-  window.chatWebSocket.addEventListener("message", (event) => {
-    console.log(event.data);
-    handleChatWebSocketMessage(event.data, setChats, setMessages);
-  });
-  window.chatWebSocket.addEventListener("open", sendInit);
-};
+import "../../css/chats.css";
+import "../../css/global.css";
 
 const ChatList = (props) => {
   const [currentChatTab, setCurrentChatTab] = useState(0);
@@ -28,24 +17,48 @@ const ChatList = (props) => {
   const [chats, setChats] = useState({});
   const [messages, setMessages] = useState({});
 
-  const handleTabChange = (event, newTabIdx) => {
-    setCurrentChatTab(newTabIdx);
+  let tokenData;
+  if (window.token) {
+    tokenData = JSON.parse(window.token.split(".")[0]);
+  }
+
+  const initChatWebSocketConnection = () => {
+    // connection will fail without trailing slash in WS server URL
+    const CHAT_WEBSOCKET_URL = "wss://tkai.sieberrsec.tech/api/";
+    window.chatWebSocket = new WebSocket(CHAT_WEBSOCKET_URL);
+    window.chatWebSocket.addEventListener("message", (event) => {
+      console.log(event.data);
+      handleChatWebSocketMessage(event.data, setChats, setMessages);
+    });
+    window.chatWebSocket.addEventListener("open", sendInit);
   };
 
   useEffect(() => {
     // run only on first render
     initChatWebSocketConnection(setChats, setMessages);
     window.chatWebSocket.addEventListener("open", loadChats);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("startChat") === "true") {
+      window.chatWebSocket.addEventListener("open", () => {
+        sendStartChat(
+          urlParams.get("buyer"),
+          urlParams.get("seller"),
+          Number(urlParams.get("isAutoReply") === "true"),
+          urlParams.get("productId"),
+        );
+      });
+    }
   }, []);
 
-  const createChatListItemFromChatData = (chatData) => {
+  const createChatListItemFromChatData = ([chatId, chatData]) => {
+    chatId = Number(chatId);
+
     const {
-      id: chatId,
-      buyer,
       seller,
       name: productName,
       obs_image: productImageUrl,
-      started: chatStartedTime,
+      answer_bot: isAutoReply,
     } = chatData;
 
     return (
@@ -53,7 +66,7 @@ const ChatList = (props) => {
         <ButtonBase onClick={() => openChatLog(chatId)} className="chat-row">
           <ListItem>
             <ListItemAvatar>
-              <Avatar src={productImageUrl}></Avatar>
+              <Avatar src={new URL(productImageUrl, window.mediaURL).href}></Avatar>
             </ListItemAvatar>
             <ListItemText
               primary={productName}
@@ -63,23 +76,39 @@ const ChatList = (props) => {
               }
             />
           </ListItem>
+
+          {seller === tokenData.username &&
+          <FormControlLabel
+            control={
+              <Switch
+                size="small"
+                checked={isAutoReply}
+                onChange={(event) => {
+                  setChats((oldChats) => {
+                    oldChats.withBuyers[chatId].answer_bot = Number(event.target.checked);
+                    return { ...oldChats };
+                  });
+                  
+                  // TODO: the below function is currently a no-op
+                  // make it send a request to toggle auto-reply
+                  sendToggleAutoReply(chatId);
+                }}
+                onClick={(event) => event.stopPropagation()}
+              />
+            }
+            label="Auto-reply"
+            labelPlacement="end"
+            className="auto-reply-switch-label"
+          />}
         </ButtonBase>
-        
-        {/* TODO: extract chat log Drawer component to ChatLog.js */}
-        <Drawer
-          anchor="right"
-          open={openedChatLogId === chatId}
-          PaperProps={{ className: "chat-log" }}
-        >
-          <AppBar position="fixed">
-            <Toolbar className="chat-log-toolbar">
-              <IconButton onClick={() => openChatLog(null)}>
-                <ArrowBackIcon></ArrowBackIcon>
-              </IconButton>
-              <ListItemText primary={productName} secondary={"Test"}></ListItemText>
-            </Toolbar>
-          </AppBar>
-        </Drawer>
+
+        <ChatLog
+          chatLogIsOpen={openedChatLogId === chatId}
+          openChatLog={openChatLog}
+          chatData={chatData}
+          messages={messages}
+          setMessages={setMessages}
+        />
       </Fragment>
     );
   };
@@ -99,7 +128,7 @@ const ChatList = (props) => {
       />
       
       <TabContext value={currentChatTab}>
-        <TabList onChange={handleTabChange}>
+        <TabList onChange={(event, newTabIdx) => setCurrentChatTab(newTabIdx)}>
           <Tab value={0} label="With sellers" />
           <Tab value={1} label="With buyers" />
         </TabList>
@@ -110,9 +139,9 @@ const ChatList = (props) => {
         >
           <TabPanel value={0} className="chat-tab-panel">
             <List>{
-              Array.isArray(chats.withSellers) ?
-                chats.withSellers.length > 0 ?
-                  chats.withSellers.map(createChatListItemFromChatData) :
+              typeof chats.withSellers === "object" ?
+                Object.keys(chats.withSellers).length > 0 ?
+                  Object.entries(chats.withSellers).map(createChatListItemFromChatData) :
                   "No chats."
                 :
               <CircularProgress className="chat-tab-loading-icon" />
@@ -120,10 +149,14 @@ const ChatList = (props) => {
           </TabPanel>
           <TabPanel value={1} className="chat-tab-panel">
             <List>{
-              Array.isArray(chats.withBuyers) ?
-                chats.withBuyers.length > 0 ?
-                  chats.withBuyers.map(createChatListItemFromChatData) :
-                  "No chats." 
+              // Array.isArray(chats.withBuyers) ?
+              //   chats.withBuyers.length > 0 ?
+              //     chats.withBuyers.map(createChatListItemFromChatData) :
+              //     "No chats." 
+              typeof chats.withBuyers === "object" ?
+                Object.keys(chats.withBuyers).length > 0 ?
+                  Object.entries(chats.withBuyers).map(createChatListItemFromChatData) :
+                  "No chats."
                 :
               <CircularProgress className="chat-tab-loading-icon" />
             }</List>

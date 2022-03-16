@@ -68,13 +68,13 @@ const startup = async () => {
           socket.send(JSON.stringify({ type: "load-msgs", success: true, data: { chatID: data.chatID, messages: rows } }))
         }
         else if (data.action === "load-chats") {
-          const [rows, fields] = await connection.execute('SELECT `chat`.`id`, `buyer`, `seller`, `name`, `obs_image`, `started` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` WHERE (`buyer` = ? OR `seller` = ?) AND `product_image`.`order` = 1 ORDER BY `started`', [tokenData.username, tokenData.username]);
+          const [rows, fields] = await connection.execute('SELECT `chat`.`id`, `buyer`, `seller`, `name`, `obs_image`, `started`, `answer_bot` FROM `chat` INNER JOIN `product` ON `product`.`id` = `chat`.`product` INNER JOIN `product_image` ON `product_image`.`product` = `product`.`id` WHERE (`buyer` = ? OR `seller` = ?) AND `product_image`.`order` = 1 ORDER BY `started`', [tokenData.username, tokenData.username]);
           socket.send(JSON.stringify({ type: "load-chats", success: true, data: rows }))
         }
         else if (data.action === "new-chat") {
           // answer_bot is "0" or "1" and determines whether answering bot is enabled in this chat
           const [rows, fields] = await connection.execute('INSERT INTO `chat` (`buyer`, `seller`, `answer_bot`, `product`) VALUES (?, ?, ?, ?) ', [data.buyer, data.seller, data.answerBot, data.productID]);
-          socket.send(JSON.stringify({ type: "new-chat-created", success: true }))
+          socket.send(JSON.stringify({ type: "new-chat-created", success: true, chatID: rows.insertId }))
 
           // notify both parties that the new chat has been created
           if (data.buyer in socketList) {
@@ -154,6 +154,7 @@ const startup = async () => {
           const [rows, fields] = await connection.execute('INSERT INTO `chat_message` (`chat_id`, `sender`, `recipient`, `content`, `answer_bot`, `answer_bot_feedback`, `obs_image`, `sent`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ', [data.chatID, tokenData.username, receipient, data.content, data.answerBot, 0, data.obs_image, currentTime]);
 
           const msgData = {
+            chatID: data.chatID,
             sender: tokenData.username,
             recipient: receipient,
             content: data.content,
@@ -209,7 +210,14 @@ const startup = async () => {
             else return
 
             for (let i = 0; i < socketList[receipient].length; i++) {
-              socketList[receipient][i].send(JSON.stringify({ type: "suggestion", success: true, data: autoReplyContent }))
+              socketList[receipient][i].send(JSON.stringify({
+                type: "suggestion",
+                success: true,
+                data: {
+                  chatID: data.chatID,
+                  suggestionText: autoReplyContent,
+                }
+              }))
             }
           }
           else {

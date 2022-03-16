@@ -7,6 +7,7 @@ const {
     LOAD_MSGS,
     CREATE_NEW_CHAT,
     SEND_NEW_MSG,
+    COMPLETE_TRANSACTION,
   },
 } = webSocketMessageTypes;
 
@@ -32,4 +33,75 @@ const loadMessages = (chatId) => {
   });
 };
 
-export { sendInit, loadChats, loadMessages };
+const sendChatMessage = (
+  chatId,
+  buyer,
+  seller,
+  messageText,
+  isAutoReply,
+  obsImageId,
+  setMessages
+) => {
+  const tokenData = JSON.parse(window.token.split(".")[0])
+
+  const newMessage = {
+    content: messageText,
+    obs_image: obsImageId,
+    answerBot: Number(isAutoReply),
+  };
+
+  sendJsonMessageToWebSocket(window.chatWebSocket, {
+    action: SEND_NEW_MSG,
+    token: window.token,
+    chatID: chatId,
+    ...newMessage,
+  });
+  
+  setMessages((oldMessages) => {
+    // unshift, not push, because most recent message comes first
+    oldMessages[chatId].unshift({
+      ...newMessage,
+      sender: tokenData.username,
+      recipient: buyer === tokenData.username ? seller : buyer,
+      sent: new Date().toISOString(),
+    });
+
+    // state update is ignored if new and old state have the same reference
+    // so construct a new object and return it
+    return { ...oldMessages };
+  });
+};
+
+const sendToggleAutoReply = (chatId) => {
+  // TODO: send request to toggle auto-reply for given chatId
+};
+
+const sendCompleteTransaction = (chatId, quantitySold) => {
+  sendJsonMessageToWebSocket(window.chatWebSocket, {
+    action: COMPLETE_TRANSACTION,
+    token: window.token,
+    quantity: quantitySold,
+    chatID: chatId,
+  });
+};
+
+const sendStartChat = (buyer, seller, isAutoReply, productId) => {
+  sendJsonMessageToWebSocket(window.chatWebSocket, {
+    action: CREATE_NEW_CHAT,
+    token: window.token,
+    buyer,
+    seller,
+    answerBot: Number(isAutoReply),
+    productID: productId,
+  });
+};
+
+export {
+  sendInit,
+  loadChats,
+  loadMessages,
+  sendChatMessage,
+  sendToggleAutoReply,
+  sendCompleteTransaction,
+  sendStartChat,
+};

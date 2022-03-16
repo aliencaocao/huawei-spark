@@ -13,7 +13,7 @@
 
 .video-container-style {
     width: 100% !important;
-    height: calc(100vh - 8ch) !important;
+    height: calc(100vh - 6.4ch) !important;
 }
 
 .login-page::before {

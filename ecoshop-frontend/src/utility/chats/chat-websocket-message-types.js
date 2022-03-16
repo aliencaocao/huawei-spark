@@ -5,6 +5,7 @@ export default {
     LOAD_MSGS: "load-msgs",
     CREATE_NEW_CHAT: "new-chat",
     SEND_NEW_MSG: "new-msg",
+    COMPLETE_TRANSACTION: "product-sold",
   },
   responseTypes: {
     INIT_SUCCESS: "init",
@@ -16,5 +17,6 @@ export default {
   eventTypes: {
     NEW_CHAT_NOTIF: "new-chat-notif",
     NEW_MSG_NOTIF: "new-msg",
+    AUTO_REPLY_SUGGESTION: "suggestion",
   }
 };

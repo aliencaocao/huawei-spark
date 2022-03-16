@@ -1,5 +1,5 @@
 import './App.css';
-import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction, Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem } from '@mui/material'
+import { Grow, Fade, CircularProgress, BottomNavigation, BottomNavigationAction, Paper, Checkbox, Grid, Divider, Avatar, AppBar, InputAdornment, TextField, Skeleton, Select, MenuItem, Button } from '@mui/material'
 import { LoadingButton } from '@mui/lab/';
 import { Routes, Route } from "react-router-dom";
 import { Fragment, useEffect, useState } from 'react';
@@ -29,9 +29,12 @@ import ecoShopIcon from './assets/ecoshop.svg';
 import Videos from './Components/Videos';
 import { debounce } from 'lodash';
 import { blue } from '@mui/material/colors';
+import ListingDetailsPage from './Components/ListingDetails';
+import Profile from './Components/Profile';
 
 
-window.globalURL = "https://550bf209274345648b958a0b003b655c.apig.ap-southeast-1.huaweicloudapis.com"
+window.globalURL = "https://api.eco-shop.me"
+window.mediaURL = "https://ecoshop-content.obs.ap-southeast-3.myhuaweicloud.com/user-image/";
 
 const listLoadingSkeleton = []
 for (let i = 0; i < 6; i++) {
@@ -66,7 +69,7 @@ const renderFilterList = (data, numberValuesListRef, setNumbersValuesList, updat
     const current = data.attributes[i]
     const queryAttribute = (
       <div key={current.attr_name + "-attribute"} style={{ display: "flex", alignItems: "center", marginTop: "1ch", textTransform: "capitalize" }}>
-        <Checkbox name={"check-" + current.attr_name} />
+        <Checkbox defaultChecked name={"check-" + current.attr_name} />
         <TextField fullWidth onChange={(e) => {
           debouncedNumberCheck(e, current, setNumbersValuesList, numberValuesListRef, updateFilterList)
         }} name={"value-" + current.attr_name} label={current.attr_name} style={{ marginRight: "1ch" }} size="small" />
@@ -89,7 +92,7 @@ const renderFilterList = (data, numberValuesListRef, setNumbersValuesList, updat
   updateFilterList(queryAttributeList)
 }
 
-const searchQuery = debounce(async (query, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading, loadVideoList) => {
+const searchQuery = debounce(async (query, setListLoading, setItems, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading, loadVideoList) => {
   setListLoading(true)
   let body = {}
   if (query !== "") {
@@ -135,6 +138,7 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
       setFilterLoading(false)
     })
   }
+  else attributesList = []
   loadVideoList(query)
   await fetch(window.globalURL + "/product/query", {
     method: 'POST',
@@ -144,7 +148,7 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
     return results.json(); //return data in JSON (since its JSON data)
   }).then(async (data) => {
     if (data.success === true) {
-      updateItemList(data)
+      setItems(data.listings)
     }
     else {
       enqueueSnackbar("Oops. Unknown error", {
@@ -162,7 +166,7 @@ const searchQuery = debounce(async (query, setListLoading, updateItemList, enque
     console.log(error)
   })
 
-  attributesList = []
+  
 
   setListLoading(false)
 }, 300)
@@ -178,7 +182,8 @@ const App = () => {
   const [username, updateUsername] = useState("")
   const [currentSliderIndex, updateCurrentSliderIndex, currentSliderIndexRef] = useStateRef(0)
   const [loadingGlobal, updateLoadingGlobal] = useState(true)
-  const [itemListRender, updateItemListRender] = useState([])
+  const [items, setItems] = useState([])
+  const [openListingId, setOpenListingId] = useState(null)
   const [filterList, updateFilterList] = useState([])
   const [listLoading, setListLoading] = useState(false)
   const [videoData, setVideoData] = useState([])
@@ -215,56 +220,26 @@ const App = () => {
       if (currentCheckbox.checked) {
         let fields = {}
         const currentValue = e.target["value-" + attributesList[i]].value
-        fields.attr = attributesList[i]
-        if (numberValuesList[attributesList[i]]) {
-          // current attribute is a number attribute
-          fields.value = Number(currentValue)
-          fields.type = "int"
-          const currentEquality = e.target["equality-" + attributesList[i]].value
-          fields.condition = currentEquality
+        if (currentValue !== "") {
+          fields.attr = attributesList[i]
+          if (numberValuesList[attributesList[i]]) {
+            // current attribute is a number attribute
+            fields.value = Number(currentValue)
+            fields.type = "int"
+            const currentEquality = e.target["equality-" + attributesList[i]].value
+            fields.condition = currentEquality
+          }
+          else {
+            fields.value = currentValue
+            fields.type = "str"
+          }
+          fieldsObj.push(fields)
         }
-        else {
-          fields.value = currentValue
-          fields.type = "str"
-        }
-        fieldsObj.push(fields)
+      
       }
     }
     if (fieldsObj.length > 0) loadItemList(searchValue, fieldsObj)
-  }
-
-  const updateItemList = async (data) => {
-    let itemList = []
-    for (let i = 0; i < data.listings.length; i++) {
-      const current = data.listings[i]
-      const itemComponent = (
-        <Grid item xs={6} sm={6} md={4} lg={3} key={current.name + "-" + current.owner}>
-          <Paper className='listing-styles' elevation={12}>
-            <img src={current.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
-            <div className='listing-info-style'>
-              <h5 className='listing-title-style'>{current.name}</h5>
-              <h4 className='listing-price-style'>${current.price}</h4>
-              <h5 className='listing-quantity-style'><b>Amount:</b> {current.quantity}</h5>
-              <h5 className='listing-type-style'>{current.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon /><span>Repair Service</span></Fragment>)}</h5>
-
-              <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>{current.bookmarks}</span></span>
-              <Divider />
-              <span className='listing-owner-style'>
-                <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
-                  <AccountCircleIcon />
-                </Avatar>
-                <span className='listing-owner-name-style'>
-                  {current.owner}
-                </span>
-              </span>
-            </div>
-          </Paper>
-        </Grid>
-      )
-      itemList.push(itemComponent)
-
-    }
-    updateItemListRender(itemList)
+    else loadItemList(searchValue)
   }
 
   const loadItemList = async (query = false, fields = false) => {
@@ -280,7 +255,8 @@ const App = () => {
       return results.json(); //return data in JSON (since its JSON data)
     }).then(async (data) => {
       if (data.success === true) {
-        updateItemList(data)
+        // updateItemList(data)
+        setItems(data.listings)
       }
       else {
         enqueueSnackbar("Oops. Unknown error", {
@@ -417,12 +393,13 @@ const App = () => {
                   <Route path="/videos" element={<Videos setCurrentPlayer={setCurrentPlayer} currentSliderIndexRef={currentSliderIndexRef} currentSliderIndex={currentSliderIndex} updateCurrentSliderIndex={updateCurrentSliderIndex} />} />
                   <Route path="/chats" element={<ChatList />} />
                   <Route path="/create" element={<Create />} />
+                  <Route path="/profile" element={<Profile />} />
                   <Route path="/" element={
                     <Fragment>
                       <AppBar>
                         <div style={{ height: "5ch", margin: "1ch", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                           <img className={(searchMode ? 'shrink-animation-style' : 'grow-animation-style') + ' icon-style'} src={ecoShopIcon} />
-                          <TextField value={searchValue} onChange={(e) => { searchQuery(e.target.value, setListLoading, updateItemList, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading, loadVideoList); setSearchValue(e.target.value) }} onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search Videos/Items/Products' size="small"
+                          <TextField value={searchValue} onChange={(e) => { searchQuery(e.target.value, setListLoading, setItems, enqueueSnackbar, updateFilterList, numberValuesListRef, setNumbersValuesList, setFilterLoading, loadVideoList); setSearchValue(e.target.value) }} onClick={() => { if (!searchMode) setSearchMode(true) }} variant='outlined' style={{ width: "100%", marginLeft: "1ch", marginRight: "1ch" }} placeholder='Search Videos/Items/Services' size="small"
                             InputProps={
                               searchMode ? {
                                 startAdornment: (
@@ -463,7 +440,7 @@ const App = () => {
                         return true
                       }} pullDownThreshold={90} maxPullDownDistance={115} refreshingContent={(<h1 className='pull-text-style' style={{ color: "#4caf50" }}>Let go to refresh <ArrowDownwardIcon /></h1>)} pullingContent={(<h5 className='pull-text-style'>Pull to refresh <ArrowUpwardIcon /></h5>)}>
                         <Grow in={true}>
-                          <div style={{ width: "100%", overflow: "hidden", overflowX: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
+                          <div style={{ width: "100%", overflow: "hidden",  display: "flex", alignItems: "center", justifyContent: "center", padding: "1.3ch", flexDirection: "column", marginBottom: "10vh", marginTop: "6ch" }}>
                             {searchMode && (
                               <Paper elevation={12} style={{ width: "100%", padding: "2ch", marginTop: "1ch" }}>
                                 <span style={{ fontSize: "2ch", fontWeight: "bold", display: "flex", alignContent: "center" }}>Filters <FilterListIcon style={{ marginLeft: "4px" }} /> {filterloading && (<CircularProgress size="2ch" style={{ marginLeft: "1ch" }} />)}</span>
@@ -473,6 +450,7 @@ const App = () => {
                                     onSubmit={async (e) => {
                                       e.preventDefault()
                                       handleFilterSubmit(e)
+
                                     }}
                                   >
                                     {filterList}
@@ -483,7 +461,7 @@ const App = () => {
                                 )}
                               </Paper>
                             )}
-                            <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h3>Your Videos</h3>)}</Divider>
+                            <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h3>Videos For You</h3>)}</Divider>
                             <VideoList data={videoData} handleVideoClick={handleVideoClick} loading={videoListLoading} />
                             <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Item/Services Results For: <b>{searchValue}</b></h5>) : (<h2>Your Picks</h2>)}</Divider>
                             {listLoading ? (
@@ -494,7 +472,7 @@ const App = () => {
                               : (
                                 <Fade in={true}>
                                   <Grid container spacing={2} style={{ width: "100%", marginBottom: "20vh" }}>
-                                    {itemListRender.length === 0 ? (
+                                    {items.length === 0 ? (
                                       <Grid item columns={12} style={{ width: "100%" }}>
                                         <Paper style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2ch" }} elevation={12}>
                                           <SentimentDissatisfiedIcon style={{ fontSize: "5ch", color: "#2196f3" }} />
@@ -504,7 +482,38 @@ const App = () => {
                                       </Grid>
                                     ) : (
                                       <Fragment>
-                                        {itemListRender}
+                                        {items.map((item) => (
+                                          <Grid item xs={6} sm={6} md={4} lg={3} key={item.id}>
+                                            <Paper className='listing-styles' elevation={12} onClick={() => setOpenListingId(item.id)}>
+                                              <img src={window.mediaURL + item.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
+                                              <div className='listing-info-style'>
+                                                <h5 className='listing-title-style'>{item.name}</h5>
+                                                <h4 className='listing-price-style'>${item.price}</h4>
+                                                <h5 className='listing-quantity-style'><b>Amount:</b> {item.quantity}</h5>
+                                                <h5 className='listing-type-style'>{item.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon className='type-style'/><span>Repair Service</span></Fragment>)}</h5>
+                                  
+                                                <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>{item.bookmarks}</span></span>
+                                                <Divider />
+                                                <span className='listing-owner-style'>
+                                                  <Avatar style={{ height: "3ch", width: "3ch", backgroundColor: blue[500] }}>
+                                                    <AccountCircleIcon />
+                                                  </Avatar>
+                                                  <span className='listing-owner-name-style'>
+                                                    {item.owner}
+                                                  </span>
+                                                </span>
+                                              </div>
+                                            </Paper>
+                                  
+                                            <ListingDetailsPage
+                                              listingId={item.id}
+                                              listingImageId={item.obs_image}
+                                              setOpenListingId={setOpenListingId}
+                                              drawerIsOpen={openListingId === item.id}
+                                              navigate={navigate}
+                                            />
+                                          </Grid>
+                                        ))}
                                       </Fragment>
                                     )}
                                   </Grid>
