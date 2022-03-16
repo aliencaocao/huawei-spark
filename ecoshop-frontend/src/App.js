@@ -29,7 +29,7 @@ import ecoShopIcon from './assets/ecoshop.svg';
 import Videos from './Components/Videos';
 import { debounce } from 'lodash';
 import { blue } from '@mui/material/colors';
-import ListingDetailsPage from './Components/ListingDetails';
+import ListingDetailsPage from './Components/ListingDetailsPage';
 import { isMobile } from 'react-device-detect';
 import Profile from './Components/Profile';
 
@@ -379,12 +379,12 @@ const App = () => {
 
   // if listing ID is specified in query params, open the corresponding listing
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     const listingIdFromParams = parseInt(urlParams.get("productId"));
     if (!isNaN(listingIdFromParams) && listingIdFromParams >= 0) {
       setOpenListingId(listingIdFromParams);
     }
-  }, []);
+  }, [location]);
 
   const handleVideoClick = async (id) => {
     navigate("/videos/" + id)
@@ -472,7 +472,6 @@ const App = () => {
                                     onSubmit={async (e) => {
                                       e.preventDefault()
                                       handleFilterSubmit(e)
-
                                     }}
                                   >
                                     {filterList}
