@@ -246,7 +246,7 @@ const App = () => {
               <h5 className='listing-title-style'>{current.name}</h5>
               <h4 className='listing-price-style'>${current.price}</h4>
               <h5 className='listing-quantity-style'><b>Amount:</b> {current.quantity}</h5>
-              <h5 className='listing-type-style'>{current.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon /><span>Repair Service</span></Fragment>)}</h5>
+              <h5 className='listing-type-style'>{current.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon className='type-style'/><span>Repair Service</span></Fragment>)}</h5>
 
               <span className='listing-bookmark-style'><FavoriteBorderIcon /> <span className='listing-bookmark-number-style'>{current.bookmarks}</span></span>
               <Divider />
@@ -484,7 +484,7 @@ const App = () => {
                                 )}
                               </Paper>
                             )}
-                            <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h3>Your Videos</h3>)}</Divider>
+                            <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Video Results For: <b>{searchValue}</b></h5>) : (<h3>Videos For You</h3>)}</Divider>
                             <VideoList data={videoData} handleVideoClick={handleVideoClick} loading={videoListLoading} />
                             <Divider textAlign='left' style={{ alignSelf: "start", width: "100%" }}>{searchMode ? (<h5 style={{ fontSize: "2ch", fontWeight: "normal" }}>Item/Services Results For: <b>{searchValue}</b></h5>) : (<h2>Your Picks</h2>)}</Divider>
                             {listLoading ? (

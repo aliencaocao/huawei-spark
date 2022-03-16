@@ -182,15 +182,15 @@ const Videos = (props) => {
                     else if (action === "dislike") {
                         videoData[id].self_dislike = 1
                         videoData[id].dislikes += 1
-                    } 
+                    }
                     else if (action === "unlike") {
                         videoData[id].self_like = 0
                         videoData[id].likes -= 1
-                    } 
+                    }
                     else if (action === "undislike") {
                         videoData[id].self_dislike = 0
                         videoData[id].dislikes -= 1
-                    } 
+                    }
                 }
                 else {
                     enqueueSnackbar("Oops. Unknown error", {
@@ -228,15 +228,15 @@ const Videos = (props) => {
                     else if (action === "dislike") {
                         videoData[id].self_dislike = 1
                         videoData[id].dislikes += 1
-                    } 
+                    }
                     else if (action === "unlike") {
                         videoData[id].self_like = 0
                         videoData[id].likes -= 1
-                    } 
+                    }
                     else if (action === "undislike") {
                         videoData[id].self_dislike = 0
                         videoData[id].dislikes -= 1
-                    } 
+                    }
                 }
                 else {
                     enqueueSnackbar("Oops. Unknown error", {
@@ -267,11 +267,11 @@ const Videos = (props) => {
                     if (oppositeAction === "unlike") {
                         videoData[id].self_like = 0
                         videoData[id].likes -= 1
-                    } 
+                    }
                     else if (oppositeAction === "undislike") {
                         videoData[id].self_dislike = 0
                         videoData[id].dislikes -= 1
-                    } 
+                    }
                 }
                 else {
                     enqueueSnackbar("Oops. Unknown error", {
@@ -486,12 +486,11 @@ const Videos = (props) => {
 
     return (
         <div className='fadeIn' style={{ overflow: "hidden", display: "flex", width: "100%", height: "100%" }}>
-            {loading && (
+            {loading ? (
                 <div style={{ overflow: "hidden", position: "absolute", left: "40%", top: "42%", zIndex: 2 }}>
                     <CircularProgress size="10ch" />
                 </div>
-            )}
-            <SwipeableDrawer
+            ) : (<SwipeableDrawer
                 className='video-drawer'
                 container={container}
                 anchor="top"
@@ -514,7 +513,7 @@ const Videos = (props) => {
                 PaperProps={{ style: { borderRadius: "25px", borderTopRightRadius: "0px", borderTopLeftRadius: "0px" } }}
             >
                 <div style={{ margin: "2ch" }} >
-                    <img src={currentData.obs_image} style={{ width: "100%", height: "25vh", objectFit: "cover", borderRadius: "15px" }} />
+                    <img src={window.mediaURL + currentData.obs_image} style={{ width: "100%", height: "25vh", objectFit: "cover", borderRadius: "15px" }} />
 
                     <div className='listing-info-style'>
                         <h5 className='listing-title-style'>{currentData.name}</h5>
@@ -539,7 +538,8 @@ const Videos = (props) => {
 
                     <div className='puller-style' />
                 </div>
-            </SwipeableDrawer>
+            </SwipeableDrawer>)}
+
             <VirtualizeSwipeableViews overscanSlideAfter={3} index={props.currentSliderIndex} slideRenderer={slideRenderer} onChangeIndex={handleChangeIndex} style={{ height: "95vh", width: "100vw", zIndex: 1 }} />
 
         </div>

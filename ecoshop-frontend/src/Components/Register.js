@@ -43,7 +43,7 @@ const handleSubmit = async (e, enqueueSnackbar, updateLoginLoading, handleNewLog
         }).then((results) => {
             return results.json(); //return data in JSON (since its JSON data)
         }).then(async (data) => {
-            if (data.success === true) handleNewLogin(data.token)
+            if (data.success === true) handleNewLogin(data.token, true)
             else {
 
                 if (data.error === "username-exists") {

@@ -9,10 +9,11 @@ import urllib3
 import requests
 import obtain_token
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
-token = obtain_token.get_token(region='ap-2')  # only AP-2 Bangkok supports web image OCR
+CORS(app)
 
 # Attribute tree dictionary below specify the alternate names or words to capture for each attribute under each category. Some are in Chinese for the sake of technical demonstration using Chinese pictures.
 attribute_tree = {'Computer': {'Brand': [], 'Model': [], 'Processor': ['processor', 'cpu'],
@@ -86,6 +87,7 @@ category_to_extractor = {'Computer': computer_extractor, 'Mobile Gadgets': mobil
 
 
 def ocr(image_url):
+    token = obtain_token.get_token(region='ap-2')  # only AP-2 Bangkok supports web image OCR
     url = 'https://ocr.ap-southeast-2.myhuaweicloud.com/v2/0ebb608a1580900e2faac00bec01abbd/ocr/web-image'
     headers = {'Content-Type': 'application/json', 'X-Auth-Token': token}
     payload = {'url': image_url, 'detect_direction': True}  # 'detect_direction': 'true' for some reason don't work here although its documented in docs
