@@ -5,6 +5,7 @@ export default {
     LOAD_MSGS: "load-msgs",
     CREATE_NEW_CHAT: "new-chat",
     SEND_NEW_MSG: "new-msg",
+    COMPLETE_TRANSACTION: "product-sold",
   },
   responseTypes: {
     INIT_SUCCESS: "init",

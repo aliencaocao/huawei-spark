@@ -52,6 +52,14 @@ label.auto-reply-switch-label::before {
   white-space: nowrap;
 }
 
+/* .complete-transaction-dialog {
+  padding: 20px;
+}
+
+.complete-transaction-dialog > .MuiDialogTitle-root {
+  padding: 0;
+} */
+
 .chat-log {
   display: flex;
   flex-direction: column;
@@ -69,6 +77,11 @@ label.auto-reply-switch-label::before {
 
 .chat-log-toolbar-avatar {
   margin-right: 11px;
+}
+
+.chat-log-toolbar-complete-transaction.chat-log-toolbar-complete-transaction {
+  width: min-content;
+  line-height: 1.5;
 }
 
 .chat-log-messages {

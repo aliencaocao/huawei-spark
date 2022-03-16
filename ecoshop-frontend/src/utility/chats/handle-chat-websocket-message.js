@@ -82,6 +82,8 @@ const handleChatWebSocketMessage = (message, setChats, setMessages, setAutoReply
       break;
 
     case AUTO_REPLY_SUGGESTION:
+      // this is to prevent "cannot redeclare block-scoped variable chatId"
+      // because it was also declared in an above case
       {
         console.log("Auto-reply suggestion received");
       
