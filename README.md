@@ -4,6 +4,13 @@
 
 Thank you for checking out our GitHub Repository! Our frontend is built in React, and our backend is written in Python and NodeJS, powered by Huawei Cloud.
 
+## Team Members
+- [Theodore Lee](https://github.com/TheoLeeCJ)
+- [Cao Yuxuan](https://github.com/aliencaocao)
+- [Ho Wing Yip](https://github.com/HoWingYip)
+- [Teo Kai Xiang](https://github.com/Tkaixiang)
+
+
 ## Key Features
 
 1. **Bulk Listing** - we allow users to upload one image containing multiple items, and automatically extract the items using **Huawei Cloud Image Tagging** to prepare multiple listings for users. This saves users' time and effort!
