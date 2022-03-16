@@ -2,7 +2,7 @@ import "../css/profile.css";
 import "../css/global.css"
 import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import VideocamIcon from '@mui/icons-material/Videocam';
-import { Avatar, Box, Button, Card, CardContent, Divider, Grid, Paper } from "@mui/material";
+import { Avatar, Box, Button, Card, CardContent, CircularProgress, Divider, Grid, Paper } from "@mui/material";
 import { useState, useEffect, Fragment } from "react";
 import { AccountCircle, Person } from "@mui/icons-material";
 
@@ -45,7 +45,7 @@ const Profile = (props) => {
   return (
     <main>
       <h1>My Profile</h1>
-      {userInfo !== null && (
+      {userInfo === null ? <CircularProgress sx={{ alignSelf: "center" }} /> : (
         <Fragment>
           <Box id="profile-top">
             {/* <Avatar src="https://ecoshop-content.obs.ap-southeast-3.myhuaweicloud.com/user-image/dievfAvZhNmFJGAtQrVf1h" /> */}

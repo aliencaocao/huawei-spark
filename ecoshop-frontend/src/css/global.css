@@ -1,3 +1,5 @@
 main {
+  display: flex;
+  flex-direction: column;
   padding: 15px 23px 71px;
 }
