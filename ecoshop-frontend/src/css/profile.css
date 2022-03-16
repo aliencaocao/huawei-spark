@@ -73,6 +73,14 @@
   padding: 12px 12px;
 }
 
+.profile-listing-add-video-button {
+  margin-top: 7px;
+}
+
+.profile-listing-add-video-button > .MuiSvgIcon-root {
+  margin-right: 6px;
+}
+
 .profile-listings img {
   display: block;
   width: 100%;

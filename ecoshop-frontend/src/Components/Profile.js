@@ -1,7 +1,8 @@
 import "../css/profile.css";
 import "../css/global.css"
 import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
-import { Avatar, Box, Card, CardContent, Divider, Grid, Paper } from "@mui/material";
+import VideocamIcon from '@mui/icons-material/Videocam';
+import { Avatar, Box, Button, Card, CardContent, Divider, Grid, Paper } from "@mui/material";
 import { useState, useEffect, Fragment } from "react";
 import { AccountCircle, Person } from "@mui/icons-material";
 
@@ -85,6 +86,11 @@ const Profile = (props) => {
                         <h3>{listing.name}</h3>
                         <div>${listing.price}</div>
                         <div>Quantity: {listing.quantity}</div>
+                        <Button
+                          variant="outlined"
+                          size="medium"
+                          className="profile-listing-add-video-button"
+                        ><VideocamIcon />Add video</Button>
                       </Box>
                     </Paper>
                   </Grid>
