@@ -11,10 +11,11 @@ const {
   eventTypes: {
     NEW_CHAT_NOTIF,
     NEW_MSG_NOTIF,
+    AUTO_REPLY_SUGGESTION,
   },
 } = wsMessageTypes;
 
-const handleChatWebSocketMessage = (message, setChats, setMessages) => {
+const handleChatWebSocketMessage = (message, setChats, setMessages, setAutoReplySuggestion) => {
   const tokenData = JSON.parse(window.token.split(".")[0]);
 
   const parsedWebSocketMessage = JSON.parse(message);
@@ -78,8 +79,17 @@ const handleChatWebSocketMessage = (message, setChats, setMessages) => {
         // so construct a new object and return it
         return { ...oldMessages };
       });
-
       break;
+
+    case AUTO_REPLY_SUGGESTION:
+      {
+        console.log("Auto-reply suggestion received");
+      
+        const { chatID: chatId, suggestionText } = parsedWebSocketMessage.data;
+        window.autoReplySuggestionSetters[chatId](suggestionText);
+
+        break;
+      }
   }
 };
 

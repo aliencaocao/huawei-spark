@@ -16,5 +16,6 @@ export default {
   eventTypes: {
     NEW_CHAT_NOTIF: "new-chat-notif",
     NEW_MSG_NOTIF: "new-msg",
+    AUTO_REPLY_SUGGESTION: "suggestion",
   }
 };

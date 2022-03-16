@@ -59,6 +59,10 @@ label.auto-reply-switch-label::before {
 }
 
 .chat-log-toolbar.chat-log-toolbar {
+  position: static;
+}
+
+.chat-log-toolbar.chat-log-toolbar > .MuiToolbar-root {
   /* gap: 7px; */
   padding: 2px 16px 0 10px;
 }
@@ -70,28 +74,48 @@ label.auto-reply-switch-label::before {
 .chat-log-messages {
   display: flex;
   flex-direction: column-reverse;
-  padding: 75px 17px 77px;
+  /* padding: 75px 17px 77px; */
+  padding: 17px 17px 0;
   overflow: auto;
 }
 
 .chat-log-bottom {
-  position: fixed;
+  /* position: fixed; */
   bottom: 0;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
   width: 100%;
   padding: 15px;
   background-color: #353535;
   /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5); */
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
 }
 
-.chat-log-bottom > * {
+.auto-reply-suggestion {
+  margin-bottom: 10px;
+  margin-top: -5px;
+}
+
+.auto-reply-suggestion > .MuiButtonBase-root {
+  margin: 5px 0;
+  padding: 2px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 99999px;
+  font-size: initial;
+  font-family: inherit;
+}
+
+.chat-log-bottom-main {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.chat-log-bottom-main > * {
   max-height: 45px;
 }
 
-.chat-log-bottom > .MuiIconButton-root {
+.chat-log-bottom-main > .MuiIconButton-root {
   width: 45px;
   height: 45px;
 }
