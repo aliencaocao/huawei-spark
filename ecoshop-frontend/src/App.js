@@ -244,7 +244,7 @@ const App = () => {
             <img src={window.mediaURL + current.obs_image} style={{ width: "100%", height: "15ch", objectFit: "cover" }} />
             <div className='listing-info-style'>
               <h5 className='listing-title-style'>{current.name}</h5>
-              <h4 className='listing-price-style'>${current.price}</h4>
+              <h4 className='listing-price-style'>${current.price} <span style={{fontSize: "70%"}}>each</span></h4>
               <h5 className='listing-quantity-style'><b>Amount:</b> {current.quantity}</h5>
               <h5 className='listing-type-style'>{current.type === 1 ? (<Fragment><ShoppingBasketIcon className='type-style' /><span>Product</span></Fragment>) : (<Fragment><HandymanIcon className='type-style'/><span>Repair Service</span></Fragment>)}</h5>
 
