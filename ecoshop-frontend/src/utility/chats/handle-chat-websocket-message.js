@@ -89,7 +89,7 @@ const handleChatWebSocketMessage = (message, setChats, setMessages, setAutoReply
         console.log("Auto-reply suggestion received");
       
         const { chatID: chatId, suggestionText } = parsedWebSocketMessage.data;
-        window.autoReplySuggestionSetters[chatId](suggestionText);
+        window.autoReplySuggestionSetters[chatId](suggestionText.split(" B:")[0]);
 
         break;
       }
