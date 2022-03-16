@@ -7,6 +7,7 @@ const {
     LOAD_MSGS,
     CREATE_NEW_CHAT,
     SEND_NEW_MSG,
+    COMPLETE_TRANSACTION,
   },
 } = webSocketMessageTypes;
 
@@ -75,10 +76,20 @@ const sendToggleAutoReply = (chatId) => {
   // TODO: send request to toggle auto-reply for given chatId
 };
 
+const sendCompleteTransaction = (chatId, quantitySold) => {
+  sendJsonMessageToWebSocket(window.chatWebSocket, {
+    action: COMPLETE_TRANSACTION,
+    token: window.token,
+    quantity: quantitySold,
+    chatID: chatId,
+  });
+};
+
 export {
   sendInit,
   loadChats,
   loadMessages,
   sendChatMessage,
-  sendToggleAutoReply
+  sendToggleAutoReply,
+  sendCompleteTransaction,
 };

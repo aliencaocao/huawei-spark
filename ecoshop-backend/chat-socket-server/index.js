@@ -210,7 +210,14 @@ const startup = async () => {
             else return
 
             for (let i = 0; i < socketList[receipient].length; i++) {
-              socketList[receipient][i].send(JSON.stringify({ type: "suggestion", success: true, data: autoReplyContent }))
+              socketList[receipient][i].send(JSON.stringify({
+                type: "suggestion",
+                success: true,
+                data: {
+                  chatID: data.chatID,
+                  suggestionText: autoReplyContent,
+                }
+              }))
             }
           }
           else {

@@ -10,24 +10,27 @@ import ChatLog from "./ChatLog";
 import { sendInit, loadChats, sendToggleAutoReply } from "../../utility/chats/chat-websocket-message-senders";
 import handleChatWebSocketMessage from "../../utility/chats/handle-chat-websocket-message";
 
-const initChatWebSocketConnection = (setChats, setMessages) => {
-  // connection will fail without trailing slash in WS server URL
-  const CHAT_WEBSOCKET_URL = "wss://tkai.sieberrsec.tech/api/";
-  window.chatWebSocket = new WebSocket(CHAT_WEBSOCKET_URL);
-  window.chatWebSocket.addEventListener("message", (event) => {
-    console.log(event.data);
-    handleChatWebSocketMessage(event.data, setChats, setMessages);
-  });
-  window.chatWebSocket.addEventListener("open", sendInit);
-};
-
 const ChatList = (props) => {
   const [currentChatTab, setCurrentChatTab] = useState(0);
   const [openedChatLogId, openChatLog] = useState(null);
   const [chats, setChats] = useState({});
   const [messages, setMessages] = useState({});
 
-  const tokenData = JSON.parse(window.token.split(".")[0]);
+  let tokenData;
+  if (window.token) {
+    tokenData = JSON.parse(window.token.split(".")[0]);
+  }
+
+  const initChatWebSocketConnection = () => {
+    // connection will fail without trailing slash in WS server URL
+    const CHAT_WEBSOCKET_URL = "wss://tkai.sieberrsec.tech/api/";
+    window.chatWebSocket = new WebSocket(CHAT_WEBSOCKET_URL);
+    window.chatWebSocket.addEventListener("message", (event) => {
+      console.log(event.data);
+      handleChatWebSocketMessage(event.data, setChats, setMessages);
+    });
+    window.chatWebSocket.addEventListener("open", sendInit);
+  };
 
   useEffect(() => {
     // run only on first render
@@ -72,6 +75,9 @@ const ChatList = (props) => {
                     oldChats.withBuyers[chatId].answer_bot = Number(event.target.checked);
                     return { ...oldChats };
                   });
+                  
+                  // TODO: the below function is currently a no-op
+                  // make it send a request to toggle auto-reply
                   sendToggleAutoReply(chatId);
                 }}
                 onClick={(event) => event.stopPropagation()}
