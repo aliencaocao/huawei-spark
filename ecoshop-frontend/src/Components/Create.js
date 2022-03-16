@@ -462,7 +462,7 @@ const Create = (props) => {
     }).then(async (data) => {
       const keys = Object.keys(data.result)
       for (const attribute in data.result) {
-        TotalFormData[currentFormID].attributes[attribute] = data.result[attribute]
+        TotalFormData[currentFormID].attributes[attribute] = data.result[attribute].replace(".", "")
       }
 
       setAttributes([])
