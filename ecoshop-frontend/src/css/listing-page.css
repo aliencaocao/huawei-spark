@@ -1,0 +1,66 @@
+.listing-page {
+  width: 100%;
+}
+
+.listing-page-toolbar {
+  position: static;
+}
+
+.listing-page-toolbar > .MuiToolbar-root {
+  display: flex;
+  align-items: center;
+}
+
+.listing-page-toolbar-back-icon {
+  margin: 0 6px 0 -6px;
+  padding-left: 0;
+}
+
+.listing-page-title {
+  font-size: 18px;
+  font-weight: 400;
+  transform: translateY(1px);
+}
+
+.listing-image {
+  width: 100%;
+}
+
+.listing-page-main-text {
+  padding: 15px 21px;
+}
+
+.title {
+  display: inline;
+  margin: 0 10px 4px 0;
+  font-weight: 500;
+  font-size: 28px;
+}
+
+.listing-price {
+  display: inline;
+}
+
+.subtitle {
+  margin: 0;
+  font-weight: 400;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.listing-description {
+  margin-top: 8px;
+}
+
+.listing-tags {
+  margin-top: 8px;
+}
+
+.listing-tag.listing-tag {
+  margin-left: 5px;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 99999px;
+  font-size: inherit;
+  font-family: inherit;
+}

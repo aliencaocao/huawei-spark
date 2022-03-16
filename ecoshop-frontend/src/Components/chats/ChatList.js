@@ -90,7 +90,7 @@ const ChatList = (props) => {
         </ButtonBase>
 
         <ChatLog
-          openedChatLogId={openedChatLogId}
+          chatLogIsOpen={openedChatLogId === chatId}
           openChatLog={openChatLog}
           chatData={chatData}
           messages={messages}
