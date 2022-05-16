@@ -1,3 +1,5 @@
+#All information below are NO LONGER VALID. It is only kept here for record purposes.
+
 #### APPCODE (applies to all APIs below): `b50c2b3280ce4962a72610a4a4e0fc14f3b6b05932de4346b21e41ec5c32c4ac`
 
 ## QnA
